@@ -28,7 +28,11 @@ expect(o2.a.b.c[1][1]).toBe(101);
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
-let o2 = iassign(o1, (o) => o.a.b.c[0][0].d, (d) => { return d + 1; });
+
+// Calling iassign()
+var o2 = iassign(o1, function (o) { return o.a.b.c[0][0].d; }, function (d) { return d + 1; });
+
+// Verify original object has not been changed.
 expect(o2).not.toBe(o1);
 expect(o2.a).not.toBe(o1.a);
 expect(o2.a.b).not.toBe(o1.a.b);

@@ -1,12 +1,16 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
     "test": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js"
   },
-  "author": "engineforce",
+  "author": {
+    "name": "engineforce",
+    "url": "https://github.com/engineforce"
+  },
+  "homepage": "https://github.com/engineforce/ImmutableAssign",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
@@ -16,6 +16,13 @@
   },
   "homepage": "https://github.com/engineforce/ImmutableAssign",
   "license": "MIT",
+  "keywords": [
+    "immutable",
+    "typescript",
+    "javascript",
+    "data",
+    "stateless"
+  ],
   "dependencies": {},
   "devDependencies": {
     "deep-freeze": "0.0.1",

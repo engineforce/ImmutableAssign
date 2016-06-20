@@ -10,6 +10,10 @@
     "name": "engineforce",
     "url": "https://github.com/engineforce"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/engineforce/ImmutableAssign.git"
+  },
   "homepage": "https://github.com/engineforce/ImmutableAssign",
   "license": "MIT",
   "dependencies": {},

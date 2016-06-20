@@ -1,0 +1,22 @@
+{
+  "name": "immutable-assign",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/iassign.js",
+  "scripts": {
+    "test": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js"
+  },
+  "author": "engineforce",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "deep-freeze": "0.0.1",
+    "gulp": "^3.9.1",
+    "gulp-less": "^3.1.0",
+    "gulp-typescript": "^2.13.6",
+    "istanbul": "^0.4.3",
+    "jasmine": "^2.4.1",
+    "merge2": "^1.0.2",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+        "node_modules": true,
+        "deploy": true,
+        "**/*.js": {"when": "$(basename).ts"},
+        "**/*.css": {"when": "$(basename).less"},
+        "**/*.jsx": {"when": "$(basename).tsx"}
+    }
+}

@@ -30,7 +30,7 @@ function iassign<TObj, TProp, TContext>(
 ####Example 1: Update nested property
 
 ```javascript
-var iassign = require("iassign");
+var iassign = require("immutable-assign");
 var deepFreeze = require("deep-freeze");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };

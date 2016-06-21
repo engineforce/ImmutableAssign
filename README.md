@@ -138,6 +138,7 @@ var o2 = iassign(
 
 * When passing context, **ctx** parameter must be called **ctx**, do not rename it, because it is used by reflection.
 * getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
-* Current version does not support complex string as the property name, i.e., it must not contain [].\
+* Current version does not support following characters in the property name, e.g., { "propery [].\\": {} } is invalid:
+    * [].\
 
 

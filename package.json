@@ -1,10 +1,12 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
-    "test": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js"
+    "test": "node_modules\\.bin\\jasmine",
+    "cover": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js",
+    "build": "gulp"
   },
   "author": {
     "name": "engineforce",

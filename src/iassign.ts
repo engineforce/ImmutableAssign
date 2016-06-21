@@ -1,21 +1,16 @@
 
 // Immutable Assign
 function iassign<TObj, TProp, TContext>(
-    obj: TObj,
-    getProp: (obj: TObj, context: TContext) => TProp,
-    setProp: (prop: TProp) => TProp,
-    ctx?: TContext): TObj {
+    obj: TObj,                                          // Object to set property, it will not be modified
+    getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated.
+    setProp: (prop: TProp) => TProp,                    // Function to set property
+    ctx?: TContext): TObj {                             // Context to be used in getProp() 
 
-    // Quick check if getProp() is valid.
+    // Check if getProp() is valid
     let value = getProp(obj, ctx);
 
-    var getPropBodyText = getFuncBodyText(getProp);
-
-    let accessorText = getPropBodyText.substr(getPropBodyText.indexOf("return ") + 7).trim();
-    if (accessorText[accessorText.length - 1] == ";") {
-        accessorText = accessorText.substring(0, accessorText.length - 1);
-    }
-    accessorText = accessorText.trim();
+    let getPropBodyText = getFuncBodyText(getProp);
+    let accessorText = getAccessorText(getPropBodyText);
 
     let propIndex = 0;
     let propValue = undefined;
@@ -26,10 +21,11 @@ function iassign<TObj, TProp, TContext>(
         let dotIndex = accessorText.indexOf(".");
         let propName = "";
         let propNameSource = ePropNameSource.none;
-        if (dotIndex == 0) {
-            accessorText = accessorText.substr(dotIndex + 1);
-            continue;
-        }
+
+        // if (dotIndex == 0) {
+        //     accessorText = accessorText.substr(dotIndex + 1);
+        //     continue;
+        // }
 
         if (openBracketIndex > -1 && closeBracketIndex <= -1) {
             throw new Error("Found open bracket but not close bracket.");
@@ -63,6 +59,10 @@ function iassign<TObj, TProp, TContext>(
             propNameSource = ePropNameSource.last;
         }
 
+        propName = propName.trim();
+        if (propName == "") {
+            continue;
+        }
         //console.log(propName);
 
         if (propIndex <= 0) {
@@ -118,6 +118,31 @@ enum ePropNameSource {
 function getFuncBodyText(func: Function) {
     var funcText = func.toString();
     return funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+}
+
+function getAccessorText(bodyText: string) {
+
+    let returnIndex = bodyText.indexOf("return ");
+
+    if (!(<any>iassign).disableAllCheck && !(<any>iassign).disableHasReturnCheck) {
+        if (returnIndex <= -1) {
+            throw new Error("getProp() function has no 'return' keyword.");
+        }
+    }
+
+    if (!(<any>iassign).disableAllCheck && !(<any>iassign).disableExtraStatementCheck) {
+        let otherBodyText = bodyText.substr(0, returnIndex).trim();
+        if (otherBodyText != "") {
+            throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
+        }
+    }
+
+    let accessorText = bodyText.substr(returnIndex + 7).trim();
+    if (accessorText[accessorText.length - 1] == ";") {
+        accessorText = accessorText.substring(0, accessorText.length - 1);
+    }
+    accessorText = accessorText.trim();
+    return accessorText;
 }
 
 function quickCopy<T>(value: T): T {

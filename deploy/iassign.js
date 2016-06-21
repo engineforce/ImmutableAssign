@@ -1,14 +1,13 @@
 "use strict";
 // Immutable Assign
-function iassign(obj, getProp, setProp, ctx) {
-    // Quick check if getProp() is valid.
+function iassign(obj, // Object to set property, it will not be modified
+    getProp, // Function to get property to be updated.
+    setProp, // Function to set property
+    ctx) {
+    // Check if getProp() is valid
     var value = getProp(obj, ctx);
     var getPropBodyText = getFuncBodyText(getProp);
-    var accessorText = getPropBodyText.substr(getPropBodyText.indexOf("return ") + 7).trim();
-    if (accessorText[accessorText.length - 1] == ";") {
-        accessorText = accessorText.substring(0, accessorText.length - 1);
-    }
-    accessorText = accessorText.trim();
+    var accessorText = getAccessorText(getPropBodyText);
     var propIndex = 0;
     var propValue = undefined;
     while (accessorText) {
@@ -17,10 +16,10 @@ function iassign(obj, getProp, setProp, ctx) {
         var dotIndex = accessorText.indexOf(".");
         var propName = "";
         var propNameSource = ePropNameSource.none;
-        if (dotIndex == 0) {
-            accessorText = accessorText.substr(dotIndex + 1);
-            continue;
-        }
+        // if (dotIndex == 0) {
+        //     accessorText = accessorText.substr(dotIndex + 1);
+        //     continue;
+        // }
         if (openBracketIndex > -1 && closeBracketIndex <= -1) {
             throw new Error("Found open bracket but not close bracket.");
         }
@@ -48,6 +47,10 @@ function iassign(obj, getProp, setProp, ctx) {
             propName = accessorText;
             accessorText = "";
             propNameSource = ePropNameSource.last;
+        }
+        propName = propName.trim();
+        if (propName == "") {
+            continue;
         }
         //console.log(propName);
         if (propIndex <= 0) {
@@ -95,6 +98,26 @@ var ePropNameSource;
 function getFuncBodyText(func) {
     var funcText = func.toString();
     return funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+}
+function getAccessorText(bodyText) {
+    var returnIndex = bodyText.indexOf("return ");
+    if (!iassign.disableAllCheck && !iassign.disableHasReturnCheck) {
+        if (returnIndex <= -1) {
+            throw new Error("getProp() function has no 'return' keyword.");
+        }
+    }
+    if (!iassign.disableAllCheck && !iassign.disableExtraStatementCheck) {
+        var otherBodyText = bodyText.substr(0, returnIndex).trim();
+        if (otherBodyText != "") {
+            throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
+        }
+    }
+    var accessorText = bodyText.substr(returnIndex + 7).trim();
+    if (accessorText[accessorText.length - 1] == ";") {
+        accessorText = accessorText.substring(0, accessorText.length - 1);
+    }
+    accessorText = accessorText.trim();
+    return accessorText;
 }
 function quickCopy(value) {
     var copyValue = {};

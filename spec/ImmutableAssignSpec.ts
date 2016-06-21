@@ -1,6 +1,7 @@
 
 import iassign = require("../src/iassign");
 import deepFreeze = require("deep-freeze");
+import _ = require("lodash");
 
 describe("Test", function () {
 
@@ -212,6 +213,58 @@ describe("Test", function () {
     expect(() => {
       iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
     }).toThrowError(TypeError, /object is not extensible/);
+  });
+
+  it("Update array using lodash", function () {
+    var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } } };
+    deepFreeze(o1);
+
+    let o2 = iassign(
+      o1,
+      (o) => o.a.b.c[0],
+      (c) => {
+        return _.map(c, (item) => { return iassign(item, (o) => o.d, (d) => d + 1); });
+      });
+
+    // expect o1 has not been changed
+    expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } } })
+
+    expect(o2.a.b.c[0][0].d).toBe(12);
+    expect(o2.a.b.c[0][1].d).toBe(14);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a.b).not.toBe(o1.a.b);
+    expect(o2.a.b.c).not.toBe(o1.a.b.c);
+    // expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
+    // expect(o2.a.b.c[1][0]).not.toBe(o1.a.b.c[1][0]);
+    // expect(o2.a.b.c[1][0].d).not.toBe(o1.a.b.c[1][0].d);
+    // expect(o2.a.b.c[1][0].d).toBe(22);
+  });
+
+  it("Update array using lodash 2", function () {
+    var o1 = { a: { b: { c: [1, 2, 3] } } };
+    deepFreeze(o1);
+
+    let o2 = iassign(
+      o1,
+      (o) => o.a.b.c,
+      (c) => { return _.map(c, (i) => i + 1); }
+    );
+
+    // expect o1 has not been changed
+    expect(o1).toEqual({ a: { b: { c: [1, 2, 3] } } })
+
+    expect(o2.a.b.c).toEqual([2, 3, 4]);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a.b).not.toBe(o1.a.b);
+    expect(o2.a.b.c).not.toBe(o1.a.b.c);
+    // expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
+    // expect(o2.a.b.c[1][0]).not.toBe(o1.a.b.c[1][0]);
+    // expect(o2.a.b.c[1][0].d).not.toBe(o1.a.b.c[1][0].d);
+    // expect(o2.a.b.c[1][0].d).toBe(22);
   });
 
 });

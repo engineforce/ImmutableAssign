@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "gulp-typescript": "^2.13.6",
     "istanbul": "^0.4.3",
     "jasmine": "^2.4.1",
+    "lodash": "^4.13.1",
     "merge2": "^1.0.2",
     "vinyl-source-stream": "^1.1.0"
   }

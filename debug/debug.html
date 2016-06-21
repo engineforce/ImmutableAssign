@@ -1,0 +1,24 @@
+<html>
+
+<head>
+    <title>Debug</title>
+    <style>
+        body {
+            font-family: Consolas, "Courier New", monospace;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script>
+        var bodyText = (function(o, ctx) { return o.a.b.c; }).toString();
+        var expected = "function (o, ctx) { return o.a.b.c; }";
+        var isValid = bodyText === expected;
+        document.write("Expected = " + bodyText + "<br />");
+        document.write("Body ... = " + expected + "<br />");
+        document.write("Is Valid = " + isValid + "<br />");
+    </script>
+</body>
+
+</html>

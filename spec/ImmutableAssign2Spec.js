@@ -5,7 +5,7 @@ var deepFreeze = require("deep-freeze");
 // Uncomment following line to test code coverage: npm run cover
 // iassign.disableExtraStatementCheck = true;
 
-describe("Test", function () {
+describe("Test 2", function () {
     beforeEach(function () {
     });
     it("No semicolon at the end", function () {
@@ -55,6 +55,46 @@ describe("Test", function () {
         expect(o2.a["prop b"].c[0][0].d).not.toBe(o1.a["prop b"].c[0][0].d);
 
         expect(o2.a["prop b"].c[0][0].d).toBe(12);
+    });
+
+    it("Access array using context parameter", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+        deepFreeze(o1);
+        var p1 = { a: 0 };
+
+        var o2 = iassign(
+            o1,
+            function (o, ctx) {
+                return o
+                    .
+                    a
+                    .
+                    b
+                    .
+                    c
+                [
+                    ctx
+                        .
+                        p1
+                        .
+                        a
+                ]
+                [
+                    0
+                ]
+                    ;
+            },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
     });
 
     xit("extra '[' should throw exception", function () {
@@ -177,7 +217,7 @@ describe("Test", function () {
         expect(o2.a.b).not.toBe(o1.a.b);
         expect(o2.a.b.c).not.toBe(o1.a.b.c);
         expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
-        
+
         // expect object graph for unchanged property in o2 is still equal to (===) o1.
         expect(o2.a2).toBe(o1.a2);
         expect(o2.a.b2).toBe(o1.a.b2);
@@ -185,5 +225,30 @@ describe("Test", function () {
         expect(o2.a.b.c[0]).toBe(o1.a.b.c[0]);
         expect(o2.a.b.c[0][0]).toBe(o1.a.b.c[0][0]);
         expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
+    });
+
+    it("Access array using context parameter", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
+        deepFreeze(o1);     // Ensure o1 is not changed, for testing only
+
+        //
+        // Calling iassign() to push increment to o1.a.b.c[0].d
+        //
+        var p1 = { a: 0 };
+        var o2 = iassign(
+            o1,
+            function (o, ctx) { return o.a.b.c[ctx.p1.a][0]; },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
     });
 });

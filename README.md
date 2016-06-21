@@ -27,7 +27,7 @@ function iassign<TObj, TProp, TContext>(
     ctx?: TContext): TObj;                              // (Optional) Context to be used in getProp().
 ```
 
-####Example 1: Update array
+####Example 1: Update nested property
 
 ```javascript
 var iassign = require("iassign");
@@ -73,7 +73,7 @@ expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
-####Example 2: Update nested property
+####Example 2: Update array
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
@@ -114,3 +114,30 @@ expect(o2.a.b.c[0]).toBe(o1.a.b.c[0]);
 expect(o2.a.b.c[0][0]).toBe(o1.a.b.c[0][0]);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
+
+
+####Example 3: Update nested property, referring to external context.
+
+```javascript
+var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
+deepFreeze(o1);     // Ensure o1 is not changed, for testing only
+
+//
+// Calling iassign() to push increment to o1.a.b.c[0].d
+//
+var p1 = { a: 0 };
+var o2 = iassign(
+    o1,
+    function (o, ctx) { return o.a.b.c[ctx.p1.a][0]; },
+    function (ci) { ci.d++; return ci; },
+    { p1: p1 }
+);
+```
+
+##Limitation and Constraints
+
+* When passing context, **ctx** parameter must be called **ctx**, do not rename it, because it is used by reflection.
+* getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+* Current version does not support complex string as the property name, i.e., it must not contain [].\
+
+

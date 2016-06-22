@@ -134,7 +134,7 @@ var o2 = iassign(
 );
 ```
 
-####Example 4: Works with 3rd party library, e.g., lodash
+####Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
 var o1 = { a: { b: { c: [1, 2, 3] } } };
@@ -171,9 +171,10 @@ expect(o2.a.b.c).not.toBe(o1.a.b.c);
 expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 ```
 
-##Limitation and Constraints
+##Limitations and Constraints
 
 * getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+
 * Current version does not support following characters in the property name:
     * [].\
     * e.g., { "propery [].\\\\": {} } is invalid

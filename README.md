@@ -137,6 +137,10 @@ var o2 = iassign(
 ####Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
+var iassign = require("immutable-assign");
+var deepFreeze = require("deep-freeze");
+var _ = require("lodash");
+
 var o1 = { a: { b: { c: [1, 2, 3] } } };
 
 deepFreeze(o1); // Ensure o1 is not changed, for testing only

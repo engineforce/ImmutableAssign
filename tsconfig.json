@@ -2,12 +2,12 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "jsx": "preserve",
-        "declaration": true
+        "jsx": "preserve" /*,
+        "declaration": true */
     },
     "compileOnSave": true,
     "exclude": [
-       "node_modules",
-       "bower_components"
-     ]
+        "node_modules",
+        "bower_components"
+    ]
 }

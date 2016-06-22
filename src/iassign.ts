@@ -67,8 +67,13 @@ function iassign<TObj, TProp, TContext>(
         //console.log(propName);
 
         if (propIndex <= 0) {
-            obj = quickCopy(obj);
-            propValue = obj;
+            propValue = quickCopy(obj);
+
+            if (!accessorText) {
+                propValue = setProp(propValue);
+            }
+
+            obj = propValue;
         }
         else {
             let prevPropValue = propValue;
@@ -92,14 +97,7 @@ function iassign<TObj, TProp, TContext>(
             }
 
             propValue = propValue[propName];
-            if (propValue != undefined && !(propValue instanceof Date)) {
-                if (propValue instanceof Array) {
-                    propValue = propValue.slice();
-                }
-                else if (typeof (propValue) === "object") {
-                    propValue = quickCopy(propValue);
-                }
-            }
+            propValue = quickCopy(propValue)
 
             if (!accessorText) {
                 propValue = setProp(propValue);
@@ -178,11 +176,21 @@ function getAccessorText(bodyText: string) {
 }
 
 function quickCopy<T>(value: T): T {
-    let copyValue: any = {};
-    for (var key in value) {
-        copyValue[key] = value[key];
+
+    if (value != undefined && !(value instanceof Date)) {
+        if (value instanceof Array) {
+            return (<any>value).slice();
+        }
+        else if (typeof (value) === "object") {
+            let copyValue: any = {};
+            for (var key in value) {
+                copyValue[key] = value[key];
+            }
+            return copyValue;
+        }
     }
-    return copyValue;
+
+    return value;
 }
 
 function evalStatement() {

@@ -54,8 +54,11 @@ function iassign(obj, // Object to set property, it will not be modified
         }
         //console.log(propName);
         if (propIndex <= 0) {
-            obj = quickCopy(obj);
-            propValue = obj;
+            propValue = quickCopy(obj);
+            if (!accessorText) {
+                propValue = setProp(propValue);
+            }
+            obj = propValue;
         }
         else {
             var prevPropValue = propValue;
@@ -77,14 +80,7 @@ function iassign(obj, // Object to set property, it will not be modified
                 }
             }
             propValue = propValue[propName];
-            if (propValue != undefined && !(propValue instanceof Date)) {
-                if (propValue instanceof Array) {
-                    propValue = propValue.slice();
-                }
-                else if (typeof (propValue) === "object") {
-                    propValue = quickCopy(propValue);
-                }
-            }
+            propValue = quickCopy(propValue);
             if (!accessorText) {
                 propValue = setProp(propValue);
             }
@@ -147,11 +143,19 @@ function getAccessorText(bodyText) {
     return accessorText;
 }
 function quickCopy(value) {
-    var copyValue = {};
-    for (var key in value) {
-        copyValue[key] = value[key];
+    if (value != undefined && !(value instanceof Date)) {
+        if (value instanceof Array) {
+            return value.slice();
+        }
+        else if (typeof (value) === "object") {
+            var copyValue = {};
+            for (var key in value) {
+                copyValue[key] = value[key];
+            }
+            return copyValue;
+        }
     }
-    return copyValue;
+    return value;
 }
 function evalStatement() {
     return eval(arguments[0]);

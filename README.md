@@ -134,10 +134,46 @@ var o2 = iassign(
 );
 ```
 
+####Example 4: Works with 3rd party library, e.g., lodash
+
+```javascript
+var o1 = { a: { b: { c: [1, 2, 3] } } };
+
+deepFreeze(o1); // Ensure o1 is not changed, for testing only
+
+//
+// Calling iassign() and _.map() to increment to every item in "c" array
+//
+var o2 = iassign(
+    o1,
+    function (o) { return o.a.b.c; },
+    function (c) {
+        return _.map(c, function (i) { return i + 1; });
+    }
+);
+```
+```javascript
+//
+// Jasmine Tests
+//
+
+// expect o1 has not been changed
+expect(o1).toEqual({ a: { b: { c: [1, 2, 3] } } });
+
+// expect o2.a.b.c has been updated.
+expect(o2.a.b.c).toEqual([2, 3, 4]);
+
+// expect object graph for changed property in o2 is now different from (!==) o1.
+expect(o2).not.toBe(o1);
+expect(o2.a).not.toBe(o1.a);
+expect(o2.a.b).not.toBe(o1.a.b);
+expect(o2.a.b.c).not.toBe(o1.a.b.c);
+expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+```
+
 ##Limitation and Constraints
 
-* When passing context, **ctx** parameter must be called **ctx**, do not rename it, because it is used by reflection.
-* getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+* getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
 * Current version does not support following characters in the property name:
     * [].\
     * e.g., { "propery [].\\\\": {} } is invalid

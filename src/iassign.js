@@ -3,11 +3,11 @@
 function iassign(obj, // Object to set property, it will not be modified
     getProp, // Function to get property to be updated.
     setProp, // Function to set property
-    ctx) {
+    context) {
     // Check if getProp() is valid
-    var value = getProp(obj, ctx);
-    var getPropBodyText = getFuncBodyText(getProp);
-    var accessorText = getAccessorText(getPropBodyText);
+    var value = getProp(obj, context);
+    var getPropFuncInfo = parseGetPropFuncInfo(getProp);
+    var accessorText = getAccessorText(getPropFuncInfo.bodyText);
     var propIndex = 0;
     var propValue = undefined;
     while (accessorText) {
@@ -62,7 +62,15 @@ function iassign(obj, // Object to set property, it will not be modified
             if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
                 var propNameInQuote = extractTextInQuote(propName);
                 if (propNameInQuote == undefined) {
-                    propName = eval("'use strict'; " + propName);
+                    var statement = "'use strict';\n";
+                    if (getPropFuncInfo.objParameterName) {
+                        statement += "var " + getPropFuncInfo.objParameterName + " = arguments[1];\n";
+                    }
+                    if (getPropFuncInfo.cxtParameterName) {
+                        statement += "var " + getPropFuncInfo.cxtParameterName + " = arguments[2];\n";
+                    }
+                    statement += "" + propName;
+                    propName = evalStatement(statement, obj, context);
                 }
                 else {
                     propName = propNameInQuote;
@@ -95,9 +103,28 @@ var ePropNameSource;
     ePropNameSource[ePropNameSource["inBracket"] = 3] = "inBracket";
     ePropNameSource[ePropNameSource["last"] = 4] = "last";
 })(ePropNameSource || (ePropNameSource = {}));
-function getFuncBodyText(func) {
+function parseGetPropFuncInfo(func) {
     var funcText = func.toString();
-    return funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+    var matches = /\(([^\)]*)\)/.exec(funcText);
+    var objParameterName = undefined;
+    var cxtParameterName = undefined;
+    if (matches) {
+        var parametersText = matches[1];
+        var parameters = parametersText.split(",");
+        objParameterName = parameters[0];
+        cxtParameterName = parameters[1];
+    }
+    if (objParameterName) {
+        objParameterName = objParameterName.trim();
+    }
+    if (cxtParameterName) {
+        cxtParameterName = cxtParameterName.trim();
+    }
+    return {
+        objParameterName: objParameterName,
+        cxtParameterName: cxtParameterName,
+        bodyText: funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"))
+    };
 }
 function getAccessorText(bodyText) {
     var returnIndex = bodyText.indexOf("return ");
@@ -125,6 +152,9 @@ function quickCopy(value) {
         copyValue[key] = value[key];
     }
     return copyValue;
+}
+function evalStatement() {
+    return eval(arguments[0]);
 }
 // function isTextInQuote(text: string): boolean {
 //     let quoteMarks = ["'", '"'];

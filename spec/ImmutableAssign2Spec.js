@@ -1,6 +1,7 @@
 "use strict";
 var iassign = require("../src/iassign");
 var deepFreeze = require("deep-freeze");
+var _ = require("lodash");
 
 // Uncomment following line to test code coverage: npm run cover
 // iassign.disableExtraStatementCheck = true;
@@ -78,6 +79,170 @@ describe("Test 2", function () {
                         p1
                         .
                         a
+                ]
+                [
+                    0
+                ]
+                    ;
+            },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
+    });
+
+    it("Access array using context parameter 2", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+        deepFreeze(o1);
+        var p1 = { a: 0 };
+
+        var o2 = iassign(
+            o1,
+            function (o, c) {
+                return o
+                    .
+                    a
+                    .
+                    b
+                    .
+                    c
+                [
+                    c
+                        .
+                        p1
+                        .
+                        a
+                ]
+                [
+                    0
+                ]
+                    ;
+            },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
+    });
+
+    it("Access array using context parameter 3", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+        deepFreeze(o1);
+        var p1 = { a: 0 };
+
+        var o2 = iassign(
+            o1,
+            function (o, context) {
+                return o
+                    .
+                    a
+                    .
+                    b
+                    .
+                    c
+                [
+                    context
+                        .
+                        p1
+                        .
+                        a
+                ]
+                [
+                    0
+                ]
+                    ;
+            },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
+    });
+
+    it("Access array using context parameter 4", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+        deepFreeze(o1);
+        var p1 = { a: 0 };
+
+        var o2 = iassign(
+            o1,
+            function (
+                o
+                , 
+                b
+                ) {
+                return o
+                    .
+                    a
+                    .
+                    b
+                    .
+                    c
+                [
+                    b
+                        .
+                        p1
+                        .
+                        a
+                ]
+                [
+                    0
+                ]
+                    ;
+            },
+            function (ci) { ci.d++; return ci; },
+            { p1: p1 }
+        );
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+        expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+        expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+        expect(o2.a.b.c[0][0].d).toBe(12);
+    });
+
+    it("Access array using context parameter 5", function () {
+        var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } }, a2: 0 };
+        deepFreeze(o1);
+        var p1 = { a: 0 };
+
+        var o2 = iassign(
+            o1,
+            function (
+                o
+                ) {
+                return o
+                    .
+                    a
+                    .
+                    b
+                    .
+                    c
+                [
+                    o
+                    .
+                    a2
                 ]
                 [
                     0
@@ -250,5 +415,35 @@ describe("Test 2", function () {
         expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
         expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
         expect(o2.a.b.c[0][0].d).toBe(12);
+    });
+
+    it("Update array using lodash 2", function () {
+        var o1 = { a: { b: { c: [1, 2, 3] } } };
+
+        deepFreeze(o1); // Ensure o1 is not changed, for testing only
+
+        //
+        // Calling iassign() and _.map() to increment to every item in "c" array
+        //
+        var o2 = iassign(
+            o1,
+            function (o) { return o.a.b.c; },
+            function (c) {
+                return _.map(c, function (i) { return i + 1; });
+            }
+        );
+
+        // expect o1 has not been changed
+        expect(o1).toEqual({ a: { b: { c: [1, 2, 3] } } });
+
+        // expect o2.a.b.c has been updated.
+        expect(o2.a.b.c).toEqual([2, 3, 4]);
+
+        // expect object graph for changed property in o2 is now different from (!==) o1.
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a.b).not.toBe(o1.a.b);
+        expect(o2.a.b.c).not.toBe(o1.a.b.c);
+        expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
     });
 });

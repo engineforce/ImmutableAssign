@@ -1,16 +1,17 @@
+"use strict";
 
 // Immutable Assign
 function iassign<TObj, TProp, TContext>(
     obj: TObj,                                          // Object to set property, it will not be modified
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated.
     setProp: (prop: TProp) => TProp,                    // Function to set property
-    ctx?: TContext): TObj {                             // Context to be used in getProp() 
+    context?: TContext): TObj {                             // Context to be used in getProp() 
 
     // Check if getProp() is valid
-    let value = getProp(obj, ctx);
+    let value = getProp(obj, context);
 
-    let getPropBodyText = getFuncBodyText(getProp);
-    let accessorText = getAccessorText(getPropBodyText);
+    let getPropFuncInfo = parseGetPropFuncInfo(getProp);
+    let accessorText = getAccessorText(getPropFuncInfo.bodyText);
 
     let propIndex = 0;
     let propValue = undefined;
@@ -75,7 +76,15 @@ function iassign<TObj, TProp, TContext>(
             if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
                 let propNameInQuote = extractTextInQuote(propName);
                 if (propNameInQuote == undefined) {
-                    propName = eval(`'use strict'; ${propName}`);
+                    let statement = `'use strict';\n`;
+                    if (getPropFuncInfo.objParameterName) {
+                        statement += `var ${getPropFuncInfo.objParameterName} = arguments[1];\n`
+                    }
+                    if (getPropFuncInfo.cxtParameterName) {
+                        statement += `var ${getPropFuncInfo.cxtParameterName} = arguments[2];\n`
+                    }
+                    statement += `${propName}`;
+                    propName = (<any>evalStatement)(statement, obj, context);
                 }
                 else {
                     propName = propNameInQuote;
@@ -115,9 +124,32 @@ enum ePropNameSource {
     last,
 }
 
-function getFuncBodyText(func: Function) {
-    var funcText = func.toString();
-    return funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+function parseGetPropFuncInfo(func: Function) {
+    let funcText = func.toString();
+
+    let matches = /\(([^\)]*)\)/.exec(funcText);
+    var objParameterName = undefined;
+    let cxtParameterName = undefined;
+    if (matches) {
+        let parametersText = matches[1];
+        let parameters = parametersText.split(",");
+        objParameterName = parameters[0];
+        cxtParameterName = parameters[1];
+    }
+
+    if (objParameterName) {
+        objParameterName = objParameterName.trim();
+    }
+
+    if (cxtParameterName) {
+        cxtParameterName = cxtParameterName.trim();
+    }
+
+    return {
+        objParameterName: objParameterName,
+        cxtParameterName: cxtParameterName,
+        bodyText: funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"))
+    }
 }
 
 function getAccessorText(bodyText: string) {
@@ -151,6 +183,10 @@ function quickCopy<T>(value: T): T {
         copyValue[key] = value[key];
     }
     return copyValue;
+}
+
+function evalStatement() {
+    return eval(arguments[0]);
 }
 
 // function isTextInQuote(text: string): boolean {

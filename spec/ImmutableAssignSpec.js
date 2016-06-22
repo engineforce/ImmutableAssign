@@ -166,7 +166,10 @@ describe("Test", function () {
     });
     it("Update array using lodash", function () {
         var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } } };
-        deepFreeze(o1);
+        deepFreeze(o1); // Ensure o1 is not changed, for testing only
+        //
+        // Calling iassign() and _.map() to increment to d in c[0] array
+        //
         var o2 = iassign(o1, function (o) { return o.a.b.c[0]; }, function (c) {
             return _.map(c, function (item) { return iassign(item, function (o) { return o.d; }, function (d) { return d + 1; }); });
         });
@@ -185,18 +188,19 @@ describe("Test", function () {
     });
     it("Update array using lodash 2", function () {
         var o1 = { a: { b: { c: [1, 2, 3] } } };
-        deepFreeze(o1);
+        deepFreeze(o1); // Ensure o1 is not changed, for testing only
+        //
+        // Calling iassign() and _.map() to increment to every item in "c" array
+        //
         var o2 = iassign(o1, function (o) { return o.a.b.c; }, function (c) { return _.map(c, function (i) { return i + 1; }); });
         // expect o1 has not been changed
         expect(o1).toEqual({ a: { b: { c: [1, 2, 3] } } });
+        // expect o2.a.b.c has been updated.
         expect(o2.a.b.c).toEqual([2, 3, 4]);
+        // expect object graph for changed property in o2 is now different from (!==) o1.
         expect(o2).not.toBe(o1);
         expect(o2.a).not.toBe(o1.a);
         expect(o2.a.b).not.toBe(o1.a.b);
         expect(o2.a.b.c).not.toBe(o1.a.b.c);
-        // expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
-        // expect(o2.a.b.c[1][0]).not.toBe(o1.a.b.c[1][0]);
-        // expect(o2.a.b.c[1][0].d).not.toBe(o1.a.b.c[1][0].d);
-        // expect(o2.a.b.c[1][0].d).toBe(22);
     });
 });

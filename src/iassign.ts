@@ -8,19 +8,21 @@ try {
     console.warn("Cannot load deep-freeze module, you can still use iassign() function.");
 }
 
-interface IIassign {
+interface IIassignOption {
+    freeze: boolean;                        // Deep freeze both input and output
+    freezeInput: boolean;                   // Deep freeze input
+    freezeOutput: boolean;                  // Deep freeze output
+    disableAllCheck: boolean;
+    disableHasReturnCheck: boolean;
+    disableExtraStatementCheck: boolean;
+}
+
+interface IIassign extends IIassignOption {
     <TObj, TProp, TContext>(
         obj: TObj,
         getProp: (obj: TObj, context: TContext) => TProp,
         setProp: (prop: TProp) => TProp,
         context?: TContext): TObj;
-
-    freeze?: boolean;
-    freezeInput?: boolean;
-    freezeOutput?: boolean;
-    disableAllCheck?: boolean;
-    disableHasReturnCheck?: boolean;
-    disableExtraStatementCheck?: boolean;
 }
 
 var iassign: IIassign = <any>_iassign;

@@ -1,22 +1,20 @@
 
 declare namespace ImmutableAssign {
-    interface IIassign {
+
+    interface IIassignOption {
+        freeze: boolean;              // Deep freeze both input and output
+        freezeInput: boolean;         // Deep freeze input
+        freezeOutput: boolean;        // Deep freeze output
+    }
+
+    interface IIassign extends IIassignOption {
         <TObj, TProp, TContext>(
             obj: TObj,
             getProp: (obj: TObj, context: TContext) => TProp,
             setProp: (prop: TProp) => TProp,
             context?: TContext): TObj;
-
-        freeze?: boolean;
-        freezeInput?: boolean;
-        freezeOutput?: boolean;
-        disableAllCheck?: boolean;
-        disableHasReturnCheck?: boolean;
-        disableExtraStatementCheck?: boolean;
-    }    
+    }
 }
-
-
 
 //declare function iassign<TObj, TProp, TContext>(obj: TObj, getProp: (obj: TObj, context: TContext) => TProp, setProp: (prop: TProp) => TProp, context?: TContext): TObj;
 //export = iassign;

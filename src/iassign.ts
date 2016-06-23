@@ -5,7 +5,7 @@
 try {
     var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
 } catch (ex) {
-    console.warn("Cannot load deep-freeze module, you can still use iassign() function.");
+    console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
 }
 
 interface IIassignOption {

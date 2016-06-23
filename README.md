@@ -10,7 +10,7 @@ This library is trying to solve following problems:
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
 * Most importantly (in my opinion), we lost TypeScript type checking. E.g., when calling nested2.getIn(['a', 'b', 'd']), TypeScript won't be able to warn me if I changed property 'd' to 'e'.
 
-This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us of by the 3rd party libraries.
+This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 
 ##Install with npm
 

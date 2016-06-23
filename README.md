@@ -10,7 +10,7 @@ This library is trying to solve following problems:
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
 * Most importantly (in my opinion), we lost TypeScript type checking. E.g., when calling nested2.getIn(['a', 'b', 'd']), TypeScript won't be able to warn me if I changed property 'd' to 'e'.
 
-This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated.
+This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 
 ##Install with npm
 
@@ -25,6 +25,13 @@ function iassign<TObj, TProp, TContext>(
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
     setProp: (prop: TProp) => TProp,                    // Function to set the property.
     ctx?: TContext): TObj;                              // (Optional) Context to be used in getProp().
+    
+// Global options
+interface IIassignOption {
+    freeze: boolean;              // Deep freeze both input and output
+    freezeInput: boolean;         // Deep freeze input
+    freezeOutput: boolean;        // Deep freeze output
+}
 ```
 
 ####Example 1: Update nested property
@@ -32,10 +39,10 @@ function iassign<TObj, TProp, TContext>(
 ```javascript
 var iassign = require("immutable-assign");
 
-var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
-
 // Deep freeze both input and output, can be used in development to make sure they don't change.
 iassign.freeze = true;
+
+var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
 //
 // Calling iassign() to increment o1.a.b.c[0][0].d
@@ -79,9 +86,6 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
-// Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
-
 //
 // Calling iassign() to push new item to o1.a.b.c[1]
 //
@@ -124,9 +128,6 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
 
-// Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
-
 //
 // Calling iassign() to push increment to o1.a.b.c[0].d
 //
@@ -144,6 +145,9 @@ var o2 = iassign(
 ```javascript
 var iassign = require("immutable-assign");
 var _ = require("lodash");
+
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
 
 var o1 = { a: { b: { c: [1, 2, 3] } } };
 

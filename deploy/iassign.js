@@ -1,9 +1,20 @@
 "use strict";
+//import deepFreeze = require("deep-freeze");
+try {
+    var deepFreeze = require("deep-freeze");
+}
+catch (ex) {
+    console.warn("Cannot load deep-freeze module, you can still use iassign() function.");
+}
+var iassign = _iassign;
 // Immutable Assign
-function iassign(obj, // Object to set property, it will not be modified
-    getProp, // Function to get property to be updated.
-    setProp, // Function to set property
+function _iassign(obj, // Object to set property, it will not be modified.
+    getProp, // Function to get property to be updated. Must be pure function.
+    setProp, // Function to set property.
     context) {
+    if (deepFreeze && (iassign.freeze || iassign.freezeInput)) {
+        deepFreeze(obj);
+    }
     // Check if getProp() is valid
     var value = getProp(obj, context);
     var getPropFuncInfo = parseGetPropFuncInfo(getProp);
@@ -88,6 +99,9 @@ function iassign(obj, // Object to set property, it will not be modified
         }
         //console.log(propValue);
         propIndex++;
+    }
+    if (deepFreeze && (iassign.freeze || iassign.freezeOutput)) {
+        deepFreeze(obj);
     }
     return obj;
 }

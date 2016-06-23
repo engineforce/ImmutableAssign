@@ -216,7 +216,7 @@ describe("Test", function () {
   });
 
   it("Update array using lodash", function () {
-    var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } } };
+    var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } }, a2: {} };
 
     deepFreeze(o1);   // Ensure o1 is not changed, for testing only
 
@@ -231,19 +231,19 @@ describe("Test", function () {
       });
 
     // expect o1 has not been changed
-    expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } } })
+    expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } }, a2: {} })
 
-    expect(o2.a.b.c[0][0].d).toBe(12);
-    expect(o2.a.b.c[0][1].d).toBe(14);
+    expect(o2).toEqual({ a: { b: { c: [[{ d: 12, e: 12 }, { d: 14, e: 14 }], [{ d: 21, e: 22 }]] } }, a2: {} });
 
     expect(o2).not.toBe(o1);
     expect(o2.a).not.toBe(o1.a);
     expect(o2.a.b).not.toBe(o1.a.b);
     expect(o2.a.b.c).not.toBe(o1.a.b.c);
-    // expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
-    // expect(o2.a.b.c[1][0]).not.toBe(o1.a.b.c[1][0]);
-    // expect(o2.a.b.c[1][0].d).not.toBe(o1.a.b.c[1][0].d);
-    // expect(o2.a.b.c[1][0].d).toBe(22);
+    expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+    expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+    expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
+
+    expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
   });
 
   it("Update array using lodash 2", function () {
@@ -366,7 +366,7 @@ describe("Test", function () {
     expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} });
 
     // expect o2 inner property has been updated.
-    expect(o2).toEqual({ a: { b: 1}, a2: {} });
+    expect(o2).toEqual({ a: { b: 1 }, a2: {} });
 
     // expect object graph for changed property in o2 is now different from (!==) o1.
     expect(o2).not.toBe(o1);
@@ -375,6 +375,75 @@ describe("Test", function () {
 
     // expect object graph for unchanged property in o2 is still equal to (===) o1.
     expect(o2.a2).toBe(o1.a2);
+  });
+
+  it("Use built-in deep freeze to protect input", function () {
+    var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+    iassign.freezeInput = true;
+
+    expect(() => {
+      iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
+    }).toThrowError(TypeError, /Can't add property/);
+
+    expect(() => {
+      iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
+    }).toThrowError(TypeError, /Cannot assign to read only property/);
+
+    expect(() => {
+      iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { (<any>ci[0]).g = 1; return ci; });
+    }).toThrowError(TypeError, /Can't add property/);
+
+    expect(() => {
+      iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
+    }).toThrowError(TypeError, /object is not extensible/);
+
+    iassign.freezeInput = undefined;
+  });
+
+  it("Use built-in deep freeze to protect output", function () {
+    var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } } };
+    iassign.freezeOutput = true;
+
+    let o2 = iassign(
+      o1,
+      (o) => o.a.b.c[0],
+      (c) => {
+        return _.map(c, (item) => { return iassign(item, (o) => o.d, (d) => d + 1); });
+      });
+
+    // expect o1 has not been changed
+    expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } } })
+
+    expect(o2.a.b.c[0][0].d).toBe(12);
+    expect(o2.a.b.c[0][1].d).toBe(14);
+    expect(o2.a.b.c[0][2].d).toBe(22);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a.b).not.toBe(o1.a.b);
+    expect(o2.a.b.c).not.toBe(o1.a.b.c);
+    expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+    expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+    expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
+    expect(o2.a.b.c[0][2]).not.toBe(o1.a.b.c[0][2]);
+
+    expect(() => {
+      o2.a.b.c[0].push(<any>3);
+    }).toThrowError(TypeError, /Can't add property/);
+
+    expect(() => {
+      o2.a.b.c[0][0].d++;
+    }).toThrowError(TypeError, /Cannot assign to read only property/);
+
+    expect(() => {
+      (<any>o2.a.b.c[0][0]).g = 1;
+    }).toThrowError(TypeError, /Can't add property/);
+
+    expect(() => {
+      o2.a.b.c[0].pop();
+    }).toThrowError(TypeError, /object is not extensible/);
+
+    iassign.freezeOutput = undefined;
   });
 
 });

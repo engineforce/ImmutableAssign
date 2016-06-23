@@ -31,10 +31,11 @@ function iassign<TObj, TProp, TContext>(
 
 ```javascript
 var iassign = require("immutable-assign");
-var deepFreeze = require("deep-freeze");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
-deepFreeze(o1); // Ensure o1 is not changed, for testing only
+
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
 
 //
 // Calling iassign() to increment o1.a.b.c[0][0].d
@@ -77,7 +78,9 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
-deepFreeze(o1); // Ensure o1 is not changed, for testing only
+
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
 
 //
 // Calling iassign() to push new item to o1.a.b.c[1]
@@ -120,7 +123,9 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
-deepFreeze(o1);     // Ensure o1 is not changed, for testing only
+
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
 
 //
 // Calling iassign() to push increment to o1.a.b.c[0].d
@@ -138,12 +143,12 @@ var o2 = iassign(
 
 ```javascript
 var iassign = require("immutable-assign");
-var deepFreeze = require("deep-freeze");
 var _ = require("lodash");
 
 var o1 = { a: { b: { c: [1, 2, 3] } } };
 
-deepFreeze(o1); // Ensure o1 is not changed, for testing only
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
 
 //
 // Calling iassign() and _.map() to increment to every item in "c" array

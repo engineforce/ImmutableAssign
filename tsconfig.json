@@ -8,6 +8,7 @@
     "compileOnSave": true,
     "exclude": [
         "node_modules",
-        "bower_components"
+        "bower_components",
+        "deploy"
     ]
 }

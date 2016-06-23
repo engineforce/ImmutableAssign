@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
@@ -26,6 +26,9 @@
     "stateless"
   ],
   "dependencies": {},
+  "optionalDependencies":{
+    "deep-freeze": "0.0.1"
+  },
   "devDependencies": {
     "deep-freeze": "0.0.1",
     "gulp": "^3.9.1",

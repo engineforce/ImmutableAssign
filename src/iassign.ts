@@ -1,11 +1,40 @@
 "use strict";
 
+//import deepFreeze = require("deep-freeze");
+
+try {
+    var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+} catch (ex) {
+    console.warn("Cannot load deep-freeze module, you can still use iassign() function.");
+}
+
+interface IIassign {
+    <TObj, TProp, TContext>(
+        obj: TObj,
+        getProp: (obj: TObj, context: TContext) => TProp,
+        setProp: (prop: TProp) => TProp,
+        context?: TContext): TObj;
+
+    freeze?: boolean;
+    freezeInput?: boolean;
+    freezeOutput?: boolean;
+    disableAllCheck?: boolean;
+    disableHasReturnCheck?: boolean;
+    disableExtraStatementCheck?: boolean;
+}
+
+var iassign: IIassign = <any>_iassign;
+
 // Immutable Assign
-function iassign<TObj, TProp, TContext>(
-    obj: TObj,                                          // Object to set property, it will not be modified
-    getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated.
-    setProp: (prop: TProp) => TProp,                    // Function to set property
-    context?: TContext): TObj {                             // Context to be used in getProp() 
+function _iassign<TObj, TProp, TContext>(
+    obj: TObj,                                          // Object to set property, it will not be modified.
+    getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated. Must be pure function.
+    setProp: (prop: TProp) => TProp,                    // Function to set property.
+    context?: TContext): TObj {                         // (Optional) Context to be used in getProp() .
+
+    if (deepFreeze && (iassign.freeze || iassign.freezeInput)) {
+        deepFreeze(obj);
+    }
 
     // Check if getProp() is valid
     let value = getProp(obj, context);
@@ -111,6 +140,10 @@ function iassign<TObj, TProp, TContext>(
         propIndex++;
     }
 
+    if (deepFreeze && (iassign.freeze || iassign.freezeOutput)) {
+        deepFreeze(obj);
+    }
+
     return obj;
 }
 
@@ -154,13 +187,13 @@ function getAccessorText(bodyText: string) {
 
     let returnIndex = bodyText.indexOf("return ");
 
-    if (!(<any>iassign).disableAllCheck && !(<any>iassign).disableHasReturnCheck) {
+    if (!iassign.disableAllCheck && !iassign.disableHasReturnCheck) {
         if (returnIndex <= -1) {
             throw new Error("getProp() function has no 'return' keyword.");
         }
     }
 
-    if (!(<any>iassign).disableAllCheck && !(<any>iassign).disableExtraStatementCheck) {
+    if (!iassign.disableAllCheck && !iassign.disableExtraStatementCheck) {
         let otherBodyText = bodyText.substr(0, returnIndex).trim();
         if (otherBodyText != "") {
             throw new Error("getProp() function has statements other than 'return': " + otherBodyText);

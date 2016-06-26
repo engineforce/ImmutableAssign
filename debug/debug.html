@@ -14,12 +14,112 @@
 <body>
 
     <script>
+
+        // Test function -> toString()
         var bodyText = (function(o, ctx) { return o.a.b.c; }).toString();
         var expected = "function (o, ctx) { return o.a.b.c; }";
         var isValid = bodyText === expected;
         document.write("Expected = " + bodyText + "<br />");
         document.write("Body ... = " + expected + "<br />");
         document.write("Is Valid = " + isValid + "<br />");
+
+        //{"pr\"o.p\\\'er[]ty abc": 1}
+
+        // Test
+
+        // var stringRegex = /abc/g;
+        // var bodyText = 'abc abc';
+        // var propertyNames = stringRegex.exec(bodyText);
+        // document.write(propertyNames + "<br />");
+        // var result = bodyText.match(stringRegex)
+        // document.write(result + "<br />");
+
+
+        var stringRegex = /(["'])((?:(?=(\\?))\3.)*?)\1/g;
+        var bodyText = 'a.b.c["1.pro.p\\\'er[]ty abc"]["2.pro.p\\\'er[]ty abc"]';
+        var propertyNames = bodyText.match(stringRegex);
+        document.write(propertyNames + "<br />");
+        document.write("1a. Strings = [" + propertyNames[0] + "]: " + (propertyNames[0] == '"1.pro.p\\\'er[]ty abc"') + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = bodyText.match(stringRegex);
+        document.write(propertyNames + "<br />");
+        document.write("1b. Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pr\"o.p\\\'er[]ty abc") + "<br />");
+        document.write("<br />");
+
+
+        var stringRegex = /(["'])((?:(?!\1)[^\\]|(?:\\\\)*\\[^\\])*)\1/;
+        var bodyText = 'a.b.c["pro.p\\\'er[]ty abc"]["pro.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        //document.write(propertyNames + "<br />");
+        document.write("2a. Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pro.p\\\'er[]ty abc") + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        document.write("2b. Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pr\"o.p\\\'er[]ty abc") + "<br />");
+        document.write("<br />");
+
+        var stringRegex = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/;
+        var bodyText = 'a.b.c["pro.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        //document.write(propertyNames + "<br />");
+        document.write("3a. Strings = [" + propertyNames + "]: " + (propertyNames == '"pro.p\\\'er[]ty abc"') + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        //document.write(propertyNames + "<br />");
+        document.write("3b. Strings = [" + propertyNames + "]: " + (propertyNames == '"pr\"o.p\\\'er[]ty abc"') + "<br />");
+        document.write("<br />");
+
+
+        var stringRegex = /(["'])((?:(?!\1)[^\\]|(?:\\\\)*|\\.)*?)\1/;
+        var bodyText = 'a.b.c["pro.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        document.write("4a. Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pro.p\\\'er[]ty abc") + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        document.write("4b. Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pr\"o.p\\\'er[]ty abc") + "<br />");
+        document.write("<br />");
+
+
+        var stringRegex = /"((?:\\.|[^"\\])*)"/;
+        var bodyText = 'a.b.c["pro.p\\\'er[]ty abc"]["pro.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        //document.write(propertyNames + "<br />");
+        document.write("5a. Strings = [" + propertyNames[1] + "]: " + (propertyNames[1] == "pro.p\\\'er[]ty abc") + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = stringRegex.exec(bodyText);
+        //document.write(propertyNames + "<br />");
+        document.write("5b. Strings = [" + propertyNames[1] + "]: " + (propertyNames[1] == "pr\"o.p\\\'er[]ty abc") + "<br />");
+        document.write("<br />");
+
+
+        var stringRegex = /(["'])((?:\\.|[^'"\\])*)\1/g;
+
+        var bodyText = 'a.b.c["1. pro.p\\\'er[]ty abc"]["2. pro.p\\\'er[]ty abc"]';
+        var propertyNames = bodyText.match(stringRegex);
+        document.write(propertyNames + "<br />");
+        document.write("Strings = [" + propertyNames[0] + "]: " + (propertyNames[0] == '"1. pro.p\\\'er[]ty abc"') + "<br />");
+        document.write("Strings = [" + propertyNames[1] + "]: " + (propertyNames[1] == '"2. pro.p\\\'er[]ty abc"') + "<br />");
+
+        var bodyText = 'a.b.c["pr\"o.p\\\'er[]ty abc"]["pr\"o.p\\\'er[]ty abc"]';
+        var propertyNames = bodyText.match(stringRegex);
+        document.write(propertyNames + "<br />");
+        document.write("Strings = [" + propertyNames[0] + "]: " + (propertyNames[0] == '"pr\"o.p\\\'er[]ty abc"') + "<br />");
+
+    //     var bodyText = "a.b.c['pro.p\\\'er[]ty abc']";
+    //     var propertyNames = stringRegex.exec(bodyText);
+    //     //document.write(propertyNames + "<br />");
+    //     document.write("Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pro.p\\\'er[]ty abc") + "<br />");
+
+    //     var bodyText = "a.b.c['pr\"o.p\\\'er[]ty abc']";
+    //     var propertyNames = stringRegex.exec(bodyText);
+    //    //document.write(propertyNames + "<br />");
+    //     document.write("Strings = [" + propertyNames[2] + "]: " + (propertyNames[2] == "pr\"o.p\\\'er[]ty abc") + "<br />");
+    //     document.write("<br />");
+
     </script>
 </body>
 

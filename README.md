@@ -1,4 +1,4 @@
-# ImmutableAssign
+# immutable-assign (iassign.js)
 
 Lightweight immutable helper that supports TypeScript type checking, and allows you to continue working with POJO (Plain Old JavaScript Object).
 
@@ -24,9 +24,10 @@ function iassign<TObj, TProp, TContext>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
     setProp: (prop: TProp) => TProp,                    // Function to set the property.
-    ctx?: TContext): TObj;                              // (Optional) Context to be used in getProp().
+    context?: TContext,                                 // (Optional) Context to be used in getProp().
+    option?: IIassignOption): TObj;                     // (Optional) Options
     
-// Global options
+// Options, can be applied globally or individually
 interface IIassignOption {
     freeze: boolean;              // Deep freeze both input and output
     freezeInput: boolean;         // Deep freeze input
@@ -184,12 +185,10 @@ expect(o2.a.b.c).not.toBe(o1.a.b.c);
 expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 ```
 
-##Limitations and Constraints
+##Constraints
 
-* getProp() function must be pure, it cannot access anything other than the input parameters. I.e., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+* getProp() must be pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
 
-* Current version does not support following characters in the property name:
-    * [].\
-    * e.g., { "propery [].\\\\": {} } is invalid
+
 
 

@@ -177,6 +177,71 @@ describe("Test", function () {
     expect(o2.a.propB.c[1][0].d).toBe(22);
   });
 
+  it("Access object property using string 2", function () {
+    let propBName = "p\\r\"o.p t[] e.s\'t'B";
+    let propCName = "h\\e'llo w\'or\"ld";
+    var o1 = { a: { [propBName]: { [propCName]: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+    deepFreeze(o1);
+
+    let o2 = iassign(o1, (o) => o.a["p\\r\"o.p t[] e.s\'t'B"]["h\\e'llo w\'or\"ld"]["1"][0].d, (d) => { return d + 1; });
+
+    expect(o2.a[propBName][propCName][1][0].d).toBe(22);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a[propBName]).not.toBe(o1.a[propBName]);
+    expect(o2.a[propBName][propCName]).not.toBe(o1.a[propBName][propCName]);
+    expect(o2.a[propBName][propCName][1]).not.toBe(o1.a[propBName][propCName][1]);
+    expect(o2.a[propBName][propCName][1][0]).not.toBe(o1.a[propBName][propCName][1][0]);
+    expect(o2.a[propBName][propCName][1][0].d).not.toBe(o1.a[propBName][propCName][1][0].d);
+  });
+
+  it("Access object property using string 3", function () {
+    let propBName = "p\\ro.p t[] e.stB";
+    let propCName = "h\\e'llo w\'or\"ld";
+    let propDName = 'h\\e"llo w\"or\'ld';
+    let propEName = 'p\\ro.p t[] e.stB';
+    var o1 = { a: { [propBName]: { [propCName]: { [propDName]: { [propEName]: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } } } };
+    deepFreeze(o1);
+
+    let o2 = iassign(o1, (o) => o.a["p\\ro.p t[] e.stB"]["h\\e'llo w\'or\"ld"]['h\\e"llo w\"or\'ld']['p\\ro.p t[] e.stB']["1"][0].d, (d) => { return d + 1; });
+
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).toBe(22);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a[propBName]).not.toBe(o1.a[propBName]);
+    expect(o2.a[propBName][propCName]).not.toBe(o1.a[propBName][propCName]);
+    expect(o2.a[propBName][propCName][propDName]).not.toBe(o1.a[propBName][propCName][propDName]);
+    expect(o2.a[propBName][propCName][propDName][propEName]).not.toBe(o1.a[propBName][propCName][propDName][propEName]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
+  });
+
+  it("Access object property using string 4", function () {
+    let propBName = "p\\r\"o.p t[] e.s't\'B";
+    let propCName = "h\\e'llo w\'or\"ld";
+    let propDName = 'h\\e"llo w\"or\'ld';
+    let propEName = 'p\\r\'o.p t[] e.s"t\"B';
+    var o1 = { a: { [propBName]: { [propCName]: { [propDName]: { [propEName]: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } } } };
+    deepFreeze(o1);
+
+    let o2 = iassign(o1, (o) => o.a["p\\r\"o.p t[] e.s't\'B"]["h\\e'llo w\'or\"ld"]['h\\e"llo w\"or\'ld']['p\\r\'o.p t[] e.s"t\"B']["1"][0].d, (d) => { return d + 1; });
+
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).toBe(22);
+
+    expect(o2).not.toBe(o1);
+    expect(o2.a).not.toBe(o1.a);
+    expect(o2.a[propBName]).not.toBe(o1.a[propBName]);
+    expect(o2.a[propBName][propCName]).not.toBe(o1.a[propBName][propCName]);
+    expect(o2.a[propBName][propCName][propDName]).not.toBe(o1.a[propBName][propCName][propDName]);
+    expect(o2.a[propBName][propCName][propDName][propEName]).not.toBe(o1.a[propBName][propCName][propDName][propEName]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
+    expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
+  });
+
   it("Access array using context parameter", function () {
     var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
     deepFreeze(o1);

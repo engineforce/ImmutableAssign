@@ -2,9 +2,9 @@
 declare namespace ImmutableAssign {
 
     interface IIassignOption {
-        freeze: boolean;              // Deep freeze both input and output
-        freezeInput: boolean;         // Deep freeze input
-        freezeOutput: boolean;        // Deep freeze output
+        freeze: boolean;                        // Deep freeze both input and output
+        freezeInput: boolean;                   // Deep freeze input
+        freezeOutput: boolean;                  // Deep freeze output
     }
 
     interface IIassign extends IIassignOption {
@@ -12,7 +12,8 @@ declare namespace ImmutableAssign {
             obj: TObj,
             getProp: (obj: TObj, context: TContext) => TProp,
             setProp: (prop: TProp) => TProp,
-            context?: TContext): TObj;
+            context?: TContext,
+            option?: IIassignOption): TObj;
     }
 }
 

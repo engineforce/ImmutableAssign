@@ -506,4 +506,48 @@ describe("Test 2", function () {
         // expect object graph for unchanged property in o2 is still equal to (===) o1.
         expect(o2.a2).toBe(o1.a2);
     });
+
+    it("Access object property using string 4", function () {
+        var propBName = "p\\r\"o.p t[] e.s't\'B";
+        var propCName = "h\\e'llo w\'or\"ld";
+        var propDName = 'h\\e"llo w\"or\'ld';
+        var propEName = 'p\\r\'o.p t[] e.s"t\"B';
+        var o1 = { a: (_a = {}, _a[propBName] = (_b = {}, _b[propCName] = (_c = {}, _c[propDName] = (_d = {}, _d[propEName] = [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], _d), _c), _b), _a) };
+        deepFreeze(o1);
+        var o2 = iassign(o1, function (o) { return o
+            . 
+            a 
+            [ 
+            "p\\r\"o.p t[] e.s't\'B" 
+            ] 
+            [ 
+                "h\\e'llo w\'or\"ld" 
+                ]         
+                [  
+                    'h\\e"llo w\"or\'ld'  
+                    ]  
+                    [  
+                        'p\\r\'o.p t[] e.s"t\"B'  
+                        ]   
+                        [  
+                            "1"  
+                            ]    
+                            [      
+                                0  
+                                ]   
+                                .   
+                                d    
+                                ; }, function (d) { return d + 1; });
+        expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).toBe(22);
+        expect(o2).not.toBe(o1);
+        expect(o2.a).not.toBe(o1.a);
+        expect(o2.a[propBName]).not.toBe(o1.a[propBName]);
+        expect(o2.a[propBName][propCName]).not.toBe(o1.a[propBName][propCName]);
+        expect(o2.a[propBName][propCName][propDName]).not.toBe(o1.a[propBName][propCName][propDName]);
+        expect(o2.a[propBName][propCName][propDName][propEName]).not.toBe(o1.a[propBName][propCName][propDName][propEName]);
+        expect(o2.a[propBName][propCName][propDName][propEName][1]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1]);
+        expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
+        expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
+        var _a, _b, _c, _d;
+    });
 });

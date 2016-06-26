@@ -22,7 +22,8 @@ interface IIassign extends IIassignOption {
         obj: TObj,
         getProp: (obj: TObj, context: TContext) => TProp,
         setProp: (prop: TProp) => TProp,
-        context?: TContext): TObj;
+        context?: TContext,
+        option?: IIassignOption): TObj;
 }
 
 var iassign: IIassign = <any>_iassign;
@@ -32,17 +33,25 @@ function _iassign<TObj, TProp, TContext>(
     obj: TObj,                                          // Object to set property, it will not be modified.
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated. Must be pure function.
     setProp: (prop: TProp) => TProp,                    // Function to set property.
-    context?: TContext): TObj {                         // (Optional) Context to be used in getProp() .
+    context?: TContext,                                 // (Optional) Context to be used in getProp().
+    option?: IIassignOption): TObj {
 
-    if (deepFreeze && (iassign.freeze || iassign.freezeInput)) {
+    if (option) {
+        option = extend({}, iassign, option);
+    }
+    else {
+        option = iassign;
+    }
+
+    if (deepFreeze && (option.freeze || option.freezeInput)) {
         deepFreeze(obj);
     }
 
     // Check if getProp() is valid
     let value = getProp(obj, context);
 
-    let getPropFuncInfo = parseGetPropFuncInfo(getProp);
-    let accessorText = getAccessorText(getPropFuncInfo.bodyText);
+    let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
+    let accessorText = getPropFuncInfo.accessorText;
 
     let propIndex = 0;
     let propValue = undefined;
@@ -95,6 +104,7 @@ function _iassign<TObj, TProp, TContext>(
         if (propName == "") {
             continue;
         }
+
         //console.log(propName);
 
         if (propIndex <= 0) {
@@ -110,8 +120,15 @@ function _iassign<TObj, TProp, TContext>(
             let prevPropValue = propValue;
 
             if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
-                let propNameInQuote = extractTextInQuote(propName);
-                if (propNameInQuote == undefined) {
+
+                if (propName[0] == "#") {
+                    let quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
+                    if (!quotedPropName) {
+                        throw new Error("Cannot find quoted text for " + quotedPropName);
+                    }
+                    propName = eval(quotedPropName);
+                }
+                else {
                     let statement = `'use strict';\n`;
                     if (getPropFuncInfo.objParameterName) {
                         statement += `var ${getPropFuncInfo.objParameterName} = arguments[1];\n`
@@ -121,9 +138,6 @@ function _iassign<TObj, TProp, TContext>(
                     }
                     statement += `${propName}`;
                     propName = (<any>evalStatement)(statement, obj, context);
-                }
-                else {
-                    propName = propNameInQuote;
                 }
             }
 
@@ -142,7 +156,7 @@ function _iassign<TObj, TProp, TContext>(
         propIndex++;
     }
 
-    if (deepFreeze && (iassign.freeze || iassign.freezeOutput)) {
+    if (deepFreeze && (option.freeze || option.freezeOutput)) {
         deepFreeze(obj);
     }
 
@@ -157,7 +171,7 @@ enum ePropNameSource {
     last,
 }
 
-function parseGetPropFuncInfo(func: Function) {
+function parseGetPropFuncInfo(func: Function, option: IIassignOption) {
     let funcText = func.toString();
 
     let matches = /\(([^\)]*)\)/.exec(funcText);
@@ -178,24 +192,29 @@ function parseGetPropFuncInfo(func: Function) {
         cxtParameterName = cxtParameterName.trim();
     }
 
+    let bodyText = funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+    let accessorTextInfo = getAccessorTextInfo(bodyText, option);
+
     return {
         objParameterName: objParameterName,
         cxtParameterName: cxtParameterName,
-        bodyText: funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"))
+        bodyText: bodyText,
+        accessorText: accessorTextInfo.accessorText,
+        quotedTextInfos: accessorTextInfo.quotedTextInfos,
     }
 }
 
-function getAccessorText(bodyText: string) {
+function getAccessorTextInfo(bodyText: string, option: IIassignOption) {
 
     let returnIndex = bodyText.indexOf("return ");
 
-    if (!iassign.disableAllCheck && !iassign.disableHasReturnCheck) {
+    if (!option.disableAllCheck && !option.disableHasReturnCheck) {
         if (returnIndex <= -1) {
             throw new Error("getProp() function has no 'return' keyword.");
         }
     }
 
-    if (!iassign.disableAllCheck && !iassign.disableExtraStatementCheck) {
+    if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
         let otherBodyText = bodyText.substr(0, returnIndex).trim();
         if (otherBodyText != "") {
             throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
@@ -207,7 +226,50 @@ function getAccessorText(bodyText: string) {
         accessorText = accessorText.substring(0, accessorText.length - 1);
     }
     accessorText = accessorText.trim();
-    return accessorText;
+
+    return parseTextInQuotes(accessorText, option);
+}
+
+function parseTextInQuotes(accessorText, option: IIassignOption) {
+    let quotedTextInfos: { [key: string]: string } = {}
+
+    let index = 0;
+    while (true) {
+        let singleQuoteIndex = accessorText.indexOf("'");
+        let doubleQuoteIndex = accessorText.indexOf('"');
+        let varName = "#" + index++;
+
+        if (singleQuoteIndex <= -1 && doubleQuoteIndex <= -1)
+            break;
+
+        let matches: RegExpExecArray = undefined;
+        let quoteIndex: number;
+
+        if (doubleQuoteIndex > -1 && (doubleQuoteIndex < singleQuoteIndex || singleQuoteIndex <= -1)) {
+            matches = /("[^"\\]*(?:\\.[^"\\]*)*")/.exec(accessorText);
+            quoteIndex = doubleQuoteIndex;
+        }
+        else if (singleQuoteIndex > -1 && (singleQuoteIndex < doubleQuoteIndex || doubleQuoteIndex <= -1)) {
+            matches = /('[^'\\]*(?:\\.[^'\\]*)*')/.exec(accessorText);
+            quoteIndex = singleQuoteIndex;
+        }
+
+        if (matches) {
+            quotedTextInfos[varName] = matches[1];
+            accessorText =
+                accessorText.substr(0, quoteIndex) +
+                varName +
+                accessorText.substr(matches.index + matches[1].length);
+        }
+        else {
+            throw new Error("Invalid text in quotes: " + accessorText);
+        }
+    }
+
+    return {
+        accessorText,
+        quotedTextInfos,
+    };
 }
 
 function quickCopy<T>(value: T): T {
@@ -217,15 +279,23 @@ function quickCopy<T>(value: T): T {
             return (<any>value).slice();
         }
         else if (typeof (value) === "object") {
-            let copyValue: any = {};
-            for (var key in value) {
-                copyValue[key] = value[key];
-            }
-            return copyValue;
+            return extend({}, value);
         }
     }
 
     return value;
+}
+
+function extend(destination: any, ...sources) {
+    for (var source of sources) {
+        for (var key in source) {
+            let value = source[key];
+            if (value !== undefined) {
+                destination[key] = value;
+            }
+        }
+    }
+    return destination;
 }
 
 function evalStatement() {
@@ -244,21 +314,21 @@ function evalStatement() {
 //     return false;
 // }
 
-function extractTextInQuote(text: string): string {
-    let quoteMarks = ["'", '"'];
+// function extractTextInQuote(text: string): string {
+//     let quoteMarks = ["'", '"'];
 
-    for (let mark of quoteMarks) {
-        if (text[0] == mark) {
-            let regex = new RegExp(`^[${mark}]([^${mark}]*)[${mark}]$`);
-            let match = regex.exec(text);
-            if (match) {
-                return match[1];
-            }
-        }
-    }
+//     for (let mark of quoteMarks) {
+//         if (text[0] == mark) {
+//             let regex = new RegExp(`^[${mark}]([^${mark}]*)[${mark}]$`);
+//             let match = regex.exec(text);
+//             if (match) {
+//                 return match[1];
+//             }
+//         }
+//     }
 
-    return undefined;
-}
+//     return undefined;
+// }
 
 export = iassign;
 

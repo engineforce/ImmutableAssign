@@ -12,6 +12,10 @@ This library is trying to solve following problems:
 
 This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 
+## Performance
+
+Performance of this library should not be a problem compare to Immutable.js, because read operations will always occur more than write operations. When using this library, all your react compoents can read object properties directly. E.g., you can use <TextBox value={this.state.userinfo.fullName} /> in your components, instad of <TextBox value={this.state.getIn(["userinfo", "fullName"])} />
+
 ##Install with npm
 
     npm install immutable-assign --save

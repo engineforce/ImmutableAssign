@@ -14,7 +14,7 @@ This library has only one method **iassign()**, which accept a POJO object and r
 
 ## Performance
 
-Performance of this library should not be a problem compare to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react compoents can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instad of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/).
+Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react compoents can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instad of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/).
 
 ##Install with npm
 

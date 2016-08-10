@@ -1,3 +1,4 @@
+"use strict";
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports);
@@ -21,7 +22,7 @@
             }
             throw new Error("Unable to require: " + name);
         };
-        root.iassign = factory(require_1, {});
+        factory(require_1, {});
     }
 })(this, function (require, exports) {
     var iassign = require("../src/iassign");
@@ -243,7 +244,7 @@
             }).toThrowError(TypeError, /Can't add property/);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /object is not extensible/);
+            }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
         });
         it("Update array using lodash", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } }, a2: {} };
@@ -368,7 +369,7 @@
             }).toThrowError(TypeError, /Can't add property/);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /object is not extensible/);
+            }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
             iassign.freezeInput = undefined;
         });
         it("Use built-in deep freeze to protect output", function () {
@@ -401,7 +402,7 @@
             }).toThrowError(TypeError, /Can't add property/);
             expect(function () {
                 o2.a.b.c[0].pop();
-            }).toThrowError(TypeError, /object is not extensible/);
+            }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
             iassign.freezeOutput = undefined;
         });
     });

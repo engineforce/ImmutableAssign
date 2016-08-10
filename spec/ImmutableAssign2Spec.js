@@ -23,7 +23,8 @@
 
       throw new Error("Unable to require: " + name);
     }
-    root.iassign = factory(require, {});
+
+    factory(require, {});
   }
 })(this, function (require, exports) {
         

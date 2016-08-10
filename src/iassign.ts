@@ -1,3 +1,4 @@
+"use strict"
 
 declare var define;
 

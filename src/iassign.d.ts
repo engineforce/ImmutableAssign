@@ -24,3 +24,5 @@ declare module "immutable-assign" {
     let iassign: ImmutableAssign.IIassign;
     export = iassign;
 }
+
+declare var iassign: ImmutableAssign.IIassign;

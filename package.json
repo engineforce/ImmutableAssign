@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.12",
+  "version": "1.0.14",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {

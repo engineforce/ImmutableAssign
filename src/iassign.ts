@@ -310,6 +310,9 @@ interface IIassign extends IIassignOption {
     function extend(destination: any, ...sources) {
         for (var source of sources) {
             for (var key in source) {
+                if (!Object.prototype.hasOwnProperty.call(source, key)) {
+                    continue;
+                }
                 let value = source[key];
                 if (value !== undefined) {
                     destination[key] = value;

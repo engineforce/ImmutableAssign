@@ -244,6 +244,9 @@
         for (var _a = 0, sources_1 = sources; _a < sources_1.length; _a++) {
             var source = sources_1[_a];
             for (var key in source) {
+                if (!Object.prototype.hasOwnProperty.call(source, key)) {
+                    continue;
+                }
                 var value = source[key];
                 if (value !== undefined) {
                     destination[key] = value;

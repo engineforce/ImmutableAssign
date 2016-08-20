@@ -39,7 +39,8 @@
             iassign.disableExtraStatementCheck = true;
         }
     }
-    else if (typeof(window) !== "undefined") {
+    
+    if (typeof(window) !== "undefined") {
         console.log("In browser");
         if (window.__coverage__) {
             iassign.disableExtraStatementCheck = true;

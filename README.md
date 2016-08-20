@@ -4,11 +4,12 @@ Lightweight immutable helper that supports TypeScript type checking, and allows 
 
 This library is trying to solve following problems:
 
-* Most immutable JavaScript libraries try to encapsulate the data, and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
+* Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
 * Encapsulated data is no more POJO, therefore cannot be easily used with other libraries, e.g., lodash, underscore, etc.
+* Most immutable libraries leak themselves throughout your entire application, however, they should have been encapsulated at the place where updates happen. This is also a pain when you need to change to another immutable library that has its own APIs.
 * [seamless-immutable](https://github.com/rtfeldman/seamless-immutable) address some of above issues when reading the properties, but still use verbose APIs to write properties.
-* [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
-* Most importantly (in my opinion), we lost TypeScript type checking. E.g., when calling nested2.getIn(['a', 'b', 'd']), TypeScript won't be able to warn me if I changed property 'd' to 'e'.
+* [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us to work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
+* In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(['a', 'b', 'd']), TypeScript won't be able to warn me if I changed property 'd' to 'e'.
 
 This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 

@@ -32,8 +32,16 @@
     var deepFreeze = require("deep-freeze");
     var _ = require("lodash");
 
-    // Uncomment following line to test code coverage: npm run cover
-    // iassign.disableExtraStatementCheck = true;
+    if (typeof(global) !== "undefined") {
+        console.log("In node");
+        if (global.process.env.running_under_istanbul) {
+            // Handle coverage tool that may modify the source code.
+            iassign.disableExtraStatementCheck = true;
+        }
+    }
+    else if (typeof(window) !== "undefined") {
+        console.log("In browser");
+    }
 
     describe("Test 2", function () {
         beforeEach(function () {
@@ -327,9 +335,10 @@
             }).toThrowError(/has no 'return' keyword/);
         });
 
-        it("getProp() function has other statements should throw exception", function () {
-            if (iassign.disableExtraStatementCheck)
+        it("getProp() function has other statements should throw exception", function () {            
+            if (iassign.disableExtraStatementCheck) {
                 return;
+            }
 
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
@@ -340,6 +349,57 @@
                     return o.a.b.c[0][0]
                 }, function (ci) { ci.d++; return ci; });
             }).toThrowError(/has statements other than 'return'/);
+        });        
+        
+        it("getProp() disableExtraStatementCheck", function () {
+
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+            deepFreeze(o1);
+
+            var o2 = iassign(
+                o1,
+                function (o) {
+                    var text = "unexpected text";
+                    return o.a.b.c[0][0];
+                },
+                function (ci) { ci.d++; return ci; },
+                undefined,
+                {
+                    disableExtraStatementCheck: true
+                }
+            );
+
+            //
+            // Jasmine Tests
+            //
+
+            // expect o1 has not been changed
+            expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} })
+
+            // expect o2 inner property has been updated.
+            expect(o2.a.b.c[0][0].d).toBe(12);
+
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2.a).not.toBe(o1.a);
+            expect(o2.a.b).not.toBe(o1.a.b);
+            expect(o2.a.b.c).not.toBe(o1.a.b.c);
+            expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+            expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+            expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+
+            // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2.a2).toBe(o1.a2);
+            expect(o2.a.b2).toBe(o1.a.b2);
+            expect(o2.a.b.c2).toBe(o1.a.b.c2);
+            expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
+            expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
+            expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
+
+            // var o2 = iassign(o1, function (o) {
+            //     var text = "unexpected text";
+            //     return o.a.b.c[0][0];
+            // }, function (ci) { ci.d++; return ci; });
         });
 
         it("Access array item", function () {

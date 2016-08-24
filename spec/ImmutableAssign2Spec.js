@@ -8,7 +8,7 @@
     define(["require", "exports"], factory);
   } else {
     // Browser globals (root is window)
-    let require = (name) => {
+    var require = function(name) {
       if (name == "deep-freeze" && root.deepFreeze) {
         return root.deepFreeze;
       }
@@ -307,7 +307,7 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
-            expect(() => {
+            expect(function () {
                 var o2 = iassign(o1, function (o) {
                     return o.a.b.c[0]["["]
                 }, function (ci) { ci.d++; return ci; });
@@ -318,7 +318,7 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
-            expect(() => {
+            expect(function () {
                 var o2 = iassign(o1, function (o) {
                     return o.a.b.c[0]["]"]
                 }, function (ci) { ci.d++; return ci; });
@@ -332,7 +332,7 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
-            expect(() => {
+            expect(function () {
                 var o2 = iassign(o1, function (o) {
                     o.a.b.c[0][0]
                 }, function (ci) { ci.d++; return ci; });
@@ -347,7 +347,7 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
-            expect(() => {
+            expect(function () {
                 var o2 = iassign(o1, function (o) {
                     var text = "unexpected text";
                     return o.a.b.c[0][0]

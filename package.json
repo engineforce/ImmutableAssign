@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
@@ -39,7 +39,10 @@
     "jasmine": "^2.4.1",
     "karma": "^1.1.2",
     "karma-chrome-launcher": "^1.0.1",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.1",
     "lodash": "^4.13.1",
     "merge2": "^1.0.2",
     "vinyl-source-stream": "^1.1.0"

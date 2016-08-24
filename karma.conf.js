@@ -58,8 +58,10 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
-
+    // If our browser install to the default location, we need to set the environment variable point to the installation path.
+    // E.g., SET FIREFOX_BIN="C:\Program Files (x86)\MozillaFirefox4x\firefox.exe"
+    // Refer to http://karma-runner.github.io/1.0/config/browsers.html
+    browsers: ["Chrome", "Firefox", "IE", "PhantomJS" ],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

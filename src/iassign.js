@@ -179,7 +179,7 @@
         }
         if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
             var otherBodyText = bodyText.substr(0, returnIndex).trim();
-            if (otherBodyText != "") {
+            if (otherBodyText != "" && otherBodyText != '"use strict";') {
                 throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
             }
         }

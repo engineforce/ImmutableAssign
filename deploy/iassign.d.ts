@@ -5,6 +5,9 @@ declare namespace ImmutableAssign {
         freeze: boolean;                        // Deep freeze both input and output
         freezeInput: boolean;                   // Deep freeze input
         freezeOutput: boolean;                  // Deep freeze output
+        disableAllCheck: boolean;
+        disableHasReturnCheck: boolean;
+        disableExtraStatementCheck: boolean;
     }
 
     interface IIassign extends IIassignOption {

@@ -194,6 +194,8 @@ expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 
 * getProp() must be pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
 
+##History
 
+* 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, PhantomJS 2)
 
 

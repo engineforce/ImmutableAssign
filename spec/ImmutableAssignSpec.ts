@@ -294,19 +294,19 @@
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /Can't|writable|doesn't|support|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
-      }).toThrowError(TypeError, /Cannot assign to read only property/);
+      }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { (<any>ci[0]).g = 1; return ci; });
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /add|extensible|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-      }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
+      }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
     });
 
     it("Update array using lodash", function () {
@@ -477,19 +477,19 @@
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /Can't|writable|doesn't|support|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
-      }).toThrowError(TypeError, /Cannot assign to read only property/);
+      }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { (<any>ci[0]).g = 1; return ci; });
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /add|extensible|readonly/i);
 
       expect(() => {
         iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-      }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
+      }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
 
       iassign.freezeInput = undefined;
     });
@@ -523,19 +523,19 @@
 
       expect(() => {
         o2.a.b.c[0].push(<any>3);
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /Can't|writable|doesn't|support|readonly/i);
 
       expect(() => {
         o2.a.b.c[0][0].d++;
-      }).toThrowError(TypeError, /Cannot assign to read only property/);
+      }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
 
       expect(() => {
         (<any>o2.a.b.c[0][0]).g = 1;
-      }).toThrowError(TypeError, /Can't add property/);
+      }).toThrowError(TypeError, /add|extensible|readonly/i);
 
       expect(() => {
         o2.a.b.c[0].pop();
-      }).toThrowError(TypeError, /object is not extensible|Cannot delete property/);
+      }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
 
       iassign.freezeOutput = undefined;
     });

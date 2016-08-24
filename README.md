@@ -196,6 +196,6 @@ expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 
 ##History
 
-* 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, PhantomJS 2)
+* 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 
 

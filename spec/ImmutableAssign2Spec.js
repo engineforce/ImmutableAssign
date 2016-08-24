@@ -1,31 +1,32 @@
 "use strict";
 
 (function (root, factory) {
-  if (typeof module === 'object' && typeof module.exports === 'object') {
-    var v = factory(require, exports); if (v !== undefined) module.exports = v;
-  }
-  else if (typeof define === 'function' && define.amd) {
-    define(["require", "exports"], factory);
-  } else {
-    // Browser globals (root is window)
-    var require = function(name) {
-      if (name == "deep-freeze" && root.deepFreeze) {
-        return root.deepFreeze;
-      }
 
-      if (name == "lodash" && root._) {
-        return root._;
-      }
-
-      if (name.indexOf("iassign") > -1 && root.iassign) {
-        return root.iassign;
-      }
-
-      throw new Error("Unable to require: " + name);
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
     }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    } else {
+        // Browser globals (root is window)
+        var myRequire = function(name) {
+            if (name == "deep-freeze" && root.deepFreeze) {
+                return root.deepFreeze;
+            }
 
-    factory(require, {});
-  }
+            if (name == "lodash" && root._) {
+                return root._;
+            }
+
+            if (name.indexOf("iassign") > -1 && root.iassign) {
+                return root.iassign;
+            }
+
+            throw new Error("Unable to require: " + name);
+        }
+
+        factory(myRequire, {});
+    }
 })(this, function (require, exports) {
         
     var iassign = require("../src/iassign");

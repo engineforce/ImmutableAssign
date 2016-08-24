@@ -10,7 +10,7 @@
     }
     else {
         // Browser globals (root is window)
-        var require_1 = function (name) {
+        var browserRequire = function (name) {
             if (name == "deep-freeze" && root.deepFreeze) {
                 return root.deepFreeze;
             }
@@ -22,7 +22,7 @@
             }
             throw new Error("Unable to require: " + name);
         };
-        factory(require_1, {});
+        factory(browserRequire, {});
     }
 })(this, function (require, exports) {
     var iassign = require("../src/iassign");

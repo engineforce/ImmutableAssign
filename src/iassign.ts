@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 declare var define;
 
@@ -28,14 +28,14 @@ interface IIassign extends IIassignOption {
         define(["require", "exports"], factory);
     } else {
         // Browser globals (root is window)
-        let require = (name) => {
+        let browserRequire = (name) => {
             if (name == "deep-freeze" && root.deepFreeze) {
                 return root.deepFreeze;
             }
 
             throw new Error("Unable to require: " + name);
         }
-        root.iassign = factory(require, {});
+        root.iassign = factory(browserRequire, {});
     }
 })(this, function (require, exports) {
 
@@ -236,8 +236,10 @@ interface IIassign extends IIassignOption {
         }
 
         if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
-            let otherBodyText = bodyText.substr(0, returnIndex).trim();
-            if (otherBodyText != "" && otherBodyText != '"use strict";') {
+            let otherBodyText = bodyText.substr(0, returnIndex);
+            otherBodyText = otherBodyText.replace(/['"]use strict['"];*/g, "");
+            otherBodyText = otherBodyText.trim();
+            if (otherBodyText != "") {
                 throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
             }
         }

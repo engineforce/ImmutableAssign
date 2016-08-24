@@ -10,13 +10,13 @@
     }
     else {
         // Browser globals (root is window)
-        var require_1 = function (name) {
+        var browserRequire = function (name) {
             if (name == "deep-freeze" && root.deepFreeze) {
                 return root.deepFreeze;
             }
             throw new Error("Unable to require: " + name);
         };
-        root.iassign = factory(require_1, {});
+        root.iassign = factory(browserRequire, {});
     }
 })(this, function (require, exports) {
     //import deepFreeze = require("deep-freeze");
@@ -178,8 +178,10 @@
             }
         }
         if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
-            var otherBodyText = bodyText.substr(0, returnIndex).trim();
-            if (otherBodyText != "" && otherBodyText != '"use strict";') {
+            var otherBodyText = bodyText.substr(0, returnIndex);
+            otherBodyText = otherBodyText.replace(/['"]use strict['"];*/g, "");
+            otherBodyText = otherBodyText.trim();
+            if (otherBodyText != "") {
                 throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
             }
         }

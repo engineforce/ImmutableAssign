@@ -9,7 +9,7 @@
     define(["require", "exports"], factory);
   } else {
     // Browser globals (root is window)
-    let require = (name) => {
+    let browserRequire = (name) => {
       if (name == "deep-freeze" && root.deepFreeze) {
         return root.deepFreeze;
       }
@@ -24,7 +24,7 @@
 
       throw new Error("Unable to require: " + name);
     }
-    factory(require, {});
+    factory(browserRequire, {});
   }
 })(this, function (require, exports) {
 

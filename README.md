@@ -1,6 +1,6 @@
 # immutable-assign (iassign.js)
 
-Lightweight immutable helper that supports TypeScript type checking, and allows you to continue working with POJO (Plain Old JavaScript Object).
+Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object).
 
 This library is trying to solve following problems:
 
@@ -13,7 +13,9 @@ This library is trying to solve following problems:
 
 This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 
-This library will leave your POJO objects completely untouched (except optional deep-freeze), it does not wrap around nor add method/properties to your POJO objects.
+This library will leave your POJO objects completely untouched (except the optional deep-freeze), it does not wrap around nor add methods/properties to your POJO objects.
+
+This library works in JavaScript and it works really well with TypeScript, because of its [generic type argument inference](https://www.typescriptlang.org/docs/handbook/generics.html); and since you are working with POJO (not the wrapper objects), you can utilize the full power of TypeScript: IntelliSense, type checking and refactoring, etc.
 
 ## Performance
 

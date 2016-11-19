@@ -166,9 +166,6 @@ iassign.freeze = true;
 
 var o1 = { a: { b: { c: [1, 2, 3] } } };
 
-// Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
-
 //
 // Calling iassign() and _.map() to increment to every item in "c" array
 //

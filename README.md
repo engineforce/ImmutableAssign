@@ -1,6 +1,6 @@
 # immutable-assign (iassign.js)
 
-Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object).
+Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking
 
 This library is trying to solve following problems:
 

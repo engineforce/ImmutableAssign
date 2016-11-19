@@ -1,11 +1,12 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "",
   "main": "src/iassign.js",
   "scripts": {
     "test": "node_modules\\.bin\\jasmine",
     "test-karma": "node_modules\\.bin\\karma start",
+    "test-karma-mac": "node_modules\\.bin\\karma start --browsers Safari,Chrome",
     "cover": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js",
     "build": "gulp"
   },
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "deep-freeze": "0.0.1",
+    "edge-launcher": "*",
     "gulp": "^3.9.1",
     "gulp-less": "^3.1.0",
     "gulp-typescript": "^2.13.6",
@@ -39,11 +41,11 @@
     "jasmine": "^2.4.1",
     "karma": "^1.1.2",
     "karma-chrome-launcher": "^1.0.1",
-    "edge-launcher": "*",
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.1",
+    "karma-safari-launcher": "^1.0.0",
     "lodash": "^4.13.1",
     "merge2": "^1.0.2",
     "vinyl-source-stream": "^1.1.0"

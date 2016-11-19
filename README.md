@@ -6,16 +6,18 @@ This library is trying to solve following problems:
 
 * Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
 * Encapsulated data is no more POJO, therefore cannot be easily used with other libraries, e.g., lodash, underscore, etc.
-* Most immutable libraries leak themselves throughout your entire application, however, they should have been encapsulated at the place where updates happen. This is also a pain when you need to change to another immutable library that has its own APIs.
+* Most immutable libraries leak themselves throughout your entire application (including view components), however, they should have been encapsulated at the place where updates happen (e.g., Redux reducers). This is also a pain when you need to change to another immutable library that has its own APIs.
 * [seamless-immutable](https://github.com/rtfeldman/seamless-immutable) address some of above issues when reading the properties, but still use verbose APIs to write properties.
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us to work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
-* In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(['a', 'b', 'd']), TypeScript won't be able to warn me if I changed property 'd' to 'e'.
+* In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(["a", "b", "c"]), TypeScript won't be able to warn me if I changed property "c" to "d".
 
 This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries.
 
+This library will leave your POJO objects completely untouched (except optional deep-freeze), it does not wrap around nor add method/properties to your POJO objects.
+
 ## Performance
 
-Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/).
+Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/).
 
 ##Install with npm
 
@@ -37,6 +39,11 @@ interface IIassignOption {
     freeze: boolean;              // Deep freeze both input and output
     freezeInput: boolean;         // Deep freeze input
     freezeOutput: boolean;        // Deep freeze output
+
+    // Disable validation for extra statements in the getProp() function, 
+    // which is needed when running the coverage, e.g., istanbul.js does add 
+    // instrument statements in our getProp() function, which can be safely ignored. 
+    disableExtraStatementCheck: boolean;   
 }
 ```
 
@@ -192,10 +199,11 @@ expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 
 ##Constraints
 
-* getProp() must be pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+* getProp() must be a pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
 
 ##History
 
+* 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 
 

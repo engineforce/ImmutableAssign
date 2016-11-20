@@ -698,5 +698,71 @@
             expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
             var _a, _b, _c, _d;
         });
+        it("Answer stackoverflow: http://stackoverflow.com/questions/40519819/how-to-make-this-piece-of-code-looks-better", function () {
+            var state = 
+                {
+                    sideCart: {
+                        orderItems: {
+                            1: {
+                                id: 'orderItems-1',
+                                name: 'AI Brown\'s BBQ Fillet of Beef with Brown Mushroom Brandy Sauce',
+                                quantity: 10,
+                                price: 12,
+                                subitems: ['0', '1', '2'],
+                                instruction: 'No rosemary for beef',
+                            },
+                            2: {
+                                id: 'orderItems-2',
+                                name: 'AI Brown\'s BBQ Fillet',
+                                quantity: 10,
+                                price: 14,
+                                subitems: ['0', '1', '2'],
+                                instruction: 'No rosemary for beef',
+                            }
+                        }
+                    }
+                };
+
+            // For validation
+            var stateText = JSON.stringify(state);
+            var item = {id: 1};
+
+            var newState = iassign(state, 
+                // Return the property you need to modify in you state.
+                // This function must be pure function, therefore "item" 
+                // need to be passed in via the context parameter. 
+                function(state, context) {                    
+                    return state.sideCart.orderItems[context.item.id] 
+                }, 
+                // Modify selected part of your state
+                // Don't need to be pure, therefore you can access "item" directly
+                function(currentItem) { 
+                    if (currentItem.quantity) 
+                        item.quantity = currentItem.quantity + 1;
+                    else 
+                        item.quantity = 1;
+                    
+                    return item;
+                },
+                // Context
+                {
+                    item: item
+                });
+
+            expect(newState.sideCart.orderItems[1].quantity).toBe(11);
+
+            // Expect state has not changed
+            expect(JSON.stringify(state)).toBe(stateText);          
+
+            // expect object graph for changed property in newState is now different from (!==) state.
+            expect(state).not.toBe(newState);
+            expect(state.sideCart).not.toBe(newState.sideCart);
+            expect(state.sideCart.orderItems).not.toBe(newState.sideCart.orderItems);
+            expect(state.sideCart.orderItems[1]).not.toBe(newState.sideCart.orderItems[1]);
+            expect(state.sideCart.orderItems[1].quantity).not.toBe(newState.sideCart.orderItems[1].quantity);
+
+            // expect object graph for unchanged property in newState is still equal to (===) state.
+            expect(state.sideCart.orderItems[2]).toBe(newState.sideCart.orderItems[2]);
+        });
     });
 });

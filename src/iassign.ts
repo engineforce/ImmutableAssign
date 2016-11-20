@@ -1,5 +1,7 @@
 "use strict";
 
+// TODO: handle comments in getProp() function.
+
 declare var define;
 
 interface IIassignOption {

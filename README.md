@@ -15,7 +15,7 @@ This library has only one method **iassign()**, which accept a POJO object and r
 
 * I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries. 
 
-This library will leave your POJO objects completely untouched (except the optional deep-freeze), it does not wrap around nor add methods/properties to your POJO objects.
+This library will leave your POJO objects completely untouched (except the optional deep-freeze), it does not wrap around nor add any methods/properties to your POJO objects.
 
 This library works in JavaScript and it works really well with TypeScript, because of its [generic type argument inference](https://www.typescriptlang.org/docs/handbook/generics.html); and since you are working with POJO (not the wrapper objects), you can utilize the full power of TypeScript: IntelliSense, type checking and refactoring, etc.
 
@@ -201,6 +201,7 @@ expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 ##Constraints
 
 * getProp() must be a pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
+* getProp() currently does not support comments in the function body, you can work around this by putting comments outside of the function body.
 
 ##History
 

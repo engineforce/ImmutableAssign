@@ -7,4 +7,6 @@
         "**/*.css": {"when": "$(basename).less"},
         "**/*.jsx": {"when": "$(basename).tsx"}
     }
+,
+"typescript.check.workspaceVersion": false
 }

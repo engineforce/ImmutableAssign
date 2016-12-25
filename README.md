@@ -63,9 +63,8 @@ iassign.freeze = true;
 
 var map1 = { a:1, b:2, c:3 };
 
-//
-// Calling iassign() to update map1.b
-//
+
+// 1: Calling iassign() to update map1.b
 var map2 = iassign(
     map1,
     function (m) { return m; },
@@ -84,9 +83,8 @@ var iassign = require("immutable-assign");
 
 var list1 = [1, 2];
 
-//
-// 1. Calling iassign() to push items to list1
-//
+
+// 2.1: Calling iassign() to push items to list1
 var list2 = iassign(
     list1,
     function (l) { return l; },
@@ -96,9 +94,8 @@ var list2 = iassign(
 // list2 = [1, 2, 3, 4, 5]
 // list2 !== list1
 
-//
-// 2. Calling iassign() to unshift item to list2
-//
+
+// 2.2: Calling iassign() to unshift item to list2
 var list3 = iassign(
     list2,
     function (l) { return l; },
@@ -108,9 +105,8 @@ var list3 = iassign(
 // list3 = [0, 1, 2, 3, 4, 5]
 // list3 !== list2
 
-//
-// 3. Calling iassign() to concat list1, list2 and list3
-//
+
+// 2.3, Calling iassign() to concat list1, list2 and list3
 var list4 = iassign(
     list1,
     function (l) { return l; },
@@ -119,6 +115,17 @@ var list4 = iassign(
 
 // list4 = [1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]
 // list4 !== list1
+
+
+// 2.4, Calling iassign() to concat sort list4
+var list5 = iassign(
+    list4,
+    function (l) { return l; },
+    function (l) { return l.sort(); }
+);
+
+// list5 = [0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5]
+// list5 !== list4
 
 ```
 
@@ -129,9 +136,8 @@ var iassign = require("immutable-assign");
 
 var nested1 = { a:{ b:{ c:[3, 4, 5] } } };
 
-//
-// Calling iassign() to assign d to nested1.a.b
-//
+
+// 3.1: Calling iassign() to assign d to nested1.a.b
 var nested2 = iassign(
     nested1,
     function (n) { return n.a.b; },
@@ -142,9 +148,7 @@ var nested2 = iassign(
 // nested2 !== nested1
 
 
-//
-// Calling iassign() to increment nested2.a.b.d
-//
+// 3.2: Calling iassign() to increment nested2.a.b.d
 var nested3 = iassign(
     nested2,
     function (n) { return n.a.b.d; },
@@ -155,9 +159,7 @@ var nested3 = iassign(
 // nested3 !== nested2
 
 
-//
-// Calling iassign() to push item to nested3.a.b.c
-//
+// 3.3: Calling iassign() to push item to nested3.a.b.c
 var nested4 = iassign(
     nested3,
     function (n) { return n.a.b.c; },
@@ -177,9 +179,8 @@ var _ = require("lodash");
 
 var nested1 = { a: { b: { c: [1, 2, 3] } } };
 
-//
-// Calling iassign() and _.map() to increment to every item in "c" array
-//
+
+// 4.1: Calling iassign() and _.map() to increment to every item in "c" array
 var nested2 = iassign(
     nested1,
     function (n) { return n.a.b.c; },
@@ -192,9 +193,7 @@ var nested2 = iassign(
 // nested2 !== nested1
 
 
-//
-// Calling iassign() and _.flatMap()
-//
+// 4.2: Calling iassign() and _.flatMap()
 var nested3 = iassign(
     nested2,
     function (n) { return n.a.b.c; },
@@ -208,37 +207,16 @@ var nested3 = iassign(
 
 ```
 
-####Example 5: Update list/array 2
 
-```javascript
-var iassign = require("immutable-assign");
-
-var list1 = [3, 1, 4];
-
-//
-// Calling iassign() to sort array
-//
-var list2 = iassign(
-    list1,
-    function (l) { return l; },
-    function (l) { return l.sort(); }
-);
-
-// list2 = [1, 3, 4];
-// list2 !== list1
-
-```
-
-####Advanced example 6: Update nested property
+####Advanced example 5: Update nested property
 
 ```javascript
 var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
-//
-// Calling iassign() to increment o1.a.b.c[0][0].d
-//
+
+// 5: Calling iassign() to increment o1.a.b.c[0][0].d
 var o2 = iassign(
     o1,
     function (o) { return o.a.b.c[0][0]; },
@@ -273,16 +251,15 @@ expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
-####Advanced example 7: Update array
+####Advanced example 6: Update array
 
 ```javascript
 var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
-//
-// Calling iassign() to push new item to o1.a.b.c[1]
-//
+
+// 6: Calling iassign() to push new item to o1.a.b.c[1]
 var o2 = iassign(
     o1,
     function (o) { return o.a.b.c[1]; },
@@ -317,16 +294,15 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
 
-####Advanced example 8: Update nested property, referring to external context.
+####Advanced example 7: Update nested property, referring to external context.
 
 ```javascript
 var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] } } };
 
-//
-// Calling iassign() to push increment to o1.a.b.c[0].d
-//
+
+// 7: Calling iassign() to push increment to o1.a.b.c[0].d
 var external = { a: 0 };
 
 var o2 = iassign(

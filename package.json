@@ -5,6 +5,7 @@
   "main": "src/iassign.js",
   "types": "src/iassign.d.ts",
   "scripts": {
+    "postinstall": "npm run build",
     "test": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
     "test-backup": "node node_modules/jasmine/bin/jasmine.js",
     "test-karma": "node_modules\\.bin\\karma start",

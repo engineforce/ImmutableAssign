@@ -9,7 +9,8 @@
     "test-karma": "node_modules\\.bin\\karma start",
     "test-karma-mac": "node_modules\\.bin\\karma start --browsers Safari,Chrome",
     "cover": "node_modules\\.bin\\istanbul cover node_modules\\jasmine\\bin\\jasmine.js",
-    "build": "gulp"
+    "build": "gulp",
+    "coveralls": "cat .\\coverage\\lcov.info | .\\node_modules\\.bin\\coveralls"
   },
   "author": {
     "name": "engineforce",

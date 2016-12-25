@@ -114,7 +114,7 @@ var list3 = iassign(
 var list4 = iassign(
     list1,
     function (l) { return l; },
-    function (l) { l = l.concat(list2, list3); return l; }
+    function (l) { return l.concat(list2, list3); }
 );
 
 // list4 = [1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]
@@ -208,7 +208,7 @@ var nested3 = iassign(
 );
 
 // nested3 = { a: { b: { c: [2, 2, 3, 3, 4, 4] } } };
-// nested4 !== nested2
+// nested3 !== nested2
 
 ```
 
@@ -239,9 +239,6 @@ var list2 = iassign(
 
 ```javascript
 var iassign = require("immutable-assign");
-
-// Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
@@ -285,6 +282,8 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ####Advanced example 7: Update array
 
 ```javascript
+var iassign = require("immutable-assign");
+
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
 //
@@ -327,18 +326,47 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ####Advanced example 8: Update nested property, referring to external context.
 
 ```javascript
-var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
+var iassign = require("immutable-assign");
+
+var o1 = { a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] } } };
 
 //
 // Calling iassign() to push increment to o1.a.b.c[0].d
 //
-var p1 = { a: 0 };
+var external = { a: 0 };
+
 var o2 = iassign(
     o1,
-    function (o, ctx) { return o.a.b.c[ctx.p1.a][0]; },
+    function (o, ctx) { return o.a.b.c[ctx.external.a]; },
     function (ci) { ci.d++; return ci; },
-    { p1: p1 }
+    { external: external }
 );
+```
+```javascript
+//
+// Jasmine Tests
+//
+
+// expect o1 has not been changed
+expect(o1).toEqual({ a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] });
+
+// expect o2 inner property has been updated.
+expect(o2.a.b.c[external.a].d).toBe(12);
+
+// expect object graph for changed property in o2 is now different from (!==) o1.
+expect(o2).not.toBe(o1);
+expect(o2.a).not.toBe(o1.a);
+expect(o2.a.b).not.toBe(o1.a.b);
+expect(o2.a.b.c).not.toBe(o1.a.b.c);
+expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+expect(o2.a.b.c[0].d).not.toBe(o1.a.b.c[0].d);
+
+// expect object graph for unchanged property in o2 is still equal to (===) o1.
+expect(o2.a.b.c[0].e).toBe(o1.a.b.c[0].e);
+expect(o2.a.b.c[1]).toBe(o1.a.b.c[1]);
+expect(o2.a.b.c[1].d).toBe(o1.a.b.c[1].d);
+expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
+
 ```
 
 

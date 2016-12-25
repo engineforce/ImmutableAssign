@@ -2,7 +2,7 @@
 
 Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking.
 
-[![Build Status][1]][2]
+[![Build Status][1]][2] [![NPM version][3]][4]
 
 This library is trying to solve following problems:
 
@@ -379,3 +379,5 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 [1]: https://travis-ci.org/engineforce/ImmutableAssign.svg?branch=master
 [2]: https://travis-ci.org/engineforce/ImmutableAssign
+[3]: https://badge.fury.io/js/immutable-assign.svg
+[4]: https://badge.fury.io/js/immutable-assign

@@ -2,6 +2,8 @@
 
 Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking.
 
+[![Build Status][1]][2]
+
 This library is trying to solve following problems:
 
 * Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
@@ -375,3 +377,5 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 
 
+[1]: https://travis-ci.org/engineforce/ImmutableAssign.svg?branch=master
+[2]: https://travis-ci.org/engineforce/ImmutableAssign

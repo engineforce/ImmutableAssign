@@ -1,6 +1,6 @@
 # immutable-assign (iassign.js)
 
-Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking
+Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking.
 
 This library is trying to solve following problems:
 
@@ -11,7 +11,7 @@ This library is trying to solve following problems:
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us to work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
 * In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(["a", "b", "c"]), TypeScript won't be able to warn me if I changed property "c" to "d".
 
-This library has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. However, since it works with other libraries such as lodash (refer to [example 4](#example-4-work-with-3rd-party-libraries-eg-lodash)), it provides all the functionalities you need plus immutability.
+This library is an alternative to [Immutable.js](https://facebook.github.io/immutable-js/), it has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. However, since it works with other libraries such as lodash (refer to [example 4](#example-4-work-with-3rd-party-libraries-eg-lodash)), it provides all the functionalities you need plus immutability.
 
 * I have added some options to freeze input and output using [deep-freeze](https://github.com/substack/deep-freeze), which can be used in development to make sure they don't change unintentionally by us or the 3rd party libraries. 
 
@@ -27,7 +27,7 @@ Performance of this library should be comparable to [Immutable.js](https://faceb
 
     npm install immutable-assign --save
 
-#### Function Signature
+#### Function Signature (TypeScript syntax)
 
 ```javascript
 // Return a new POJO object with property updated.
@@ -51,7 +51,191 @@ interface IIassignOption {
 }
 ```
 
-####Example 1: Update nested property
+####Example 1: Update object
+
+```javascript
+var iassign = require("immutable-assign");
+
+// Deep freeze both input and output, can be used in development to make sure they don't change.
+iassign.freeze = true;
+
+var map1 = { a:1, b:2, c:3 };
+
+//
+// Calling iassign() to update map1.b
+//
+var map2 = iassign(
+    map1,
+    function (m) { return m; },
+    function (m) { m.b = 50; return m; }
+);
+
+// map2 = { a:1, b: 50, c:3 }
+// map2 !== map1
+
+```
+
+####Example 2: Update list/array
+
+```javascript
+var iassign = require("immutable-assign");
+
+iassign.freeze = true;    // Deep freeze both input and output
+
+var list1 = [1, 2];
+
+//
+// 1. Calling iassign() to push items to list1
+//
+var list2 = iassign(
+    list1,
+    function (l) { return l; },
+    function (l) { l.push(3, 4, 5); return l; }
+);
+
+// list2 = [1, 2, 3, 4, 5]
+// list2 !== list1
+
+//
+// 2. Calling iassign() to unshift item to list2
+//
+var list3 = iassign(
+    list2,
+    function (l) { return l; },
+    function (l) { l.unshift(0); return l; }
+);
+
+// list3 = [0, 1, 2, 3, 4, 5]
+// list3 !== list2
+
+//
+// 3. Calling iassign() to concat list1, list2 and list3
+//
+var list4 = iassign(
+    list1,
+    function (l) { return l; },
+    function (l) { l = l.concat(list2, list3); return l; }
+);
+
+// list4 = [1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]
+// list4 !== list1
+
+```
+
+####Example 3: Update nested structures
+
+```javascript
+var iassign = require("immutable-assign");
+
+iassign.freeze = true;    // Deep freeze both input and output
+
+var nested1 = { a:{ b:{ c:[3, 4, 5] } } };
+
+//
+// Calling iassign() to assign d to nested1.a.b
+//
+var nested2 = iassign(
+    nested1,
+    function (n) { return n.a.b; },
+    function (b) { b.d = 6; return b; }
+);
+
+// nested2 = { a:{ b:{ c:[3, 4, 5], d: 6 } } }
+// nested2 !== nested1
+
+
+//
+// Calling iassign() to increment nested2.a.b.d
+//
+var nested3 = iassign(
+    nested2,
+    function (n) { return n.a.b.d; },
+    function (d) { return d + 1; }
+);
+
+// nested3 = { a:{ b:{ c:[3, 4, 5], d: 7 } } }
+// nested3 !== nested2
+
+
+//
+// Calling iassign() to push item to nested3.a.b.c
+//
+var nested4 = iassign(
+    nested3,
+    function (n) { return n.a.b.c; },
+    function (c) { c.push(6); return c; }
+);
+
+// nested4 = { a:{ b:{ c:[3, 4, 5, 6], d: 7 } } }
+// nested4 !== nested3
+
+```
+
+####Example 4: Work with 3rd party libraries, e.g., lodash
+
+```javascript
+var iassign = require("immutable-assign");
+var _ = require("lodash");
+
+iassign.freeze = true;    // Deep freeze both input and output
+
+var nested1 = { a: { b: { c: [1, 2, 3] } } };
+
+//
+// Calling iassign() and _.map() to increment to every item in "c" array
+//
+var nested2 = iassign(
+    nested1,
+    function (n) { return n.a.b.c; },
+    function (c) {
+        return _.map(c, function (i) { return i + 1; });
+    }
+);
+
+// nested2 = { a: { b: { c: [2, 3, 4] } } };
+// nested2 !== nested1
+
+
+//
+// Calling iassign() and _.flatMap()
+//
+var nested3 = iassign(
+    nested2,
+    function (n) { return n.a.b.c; },
+    function (c) {
+        return _.flatMap(c, function (i) { return [i, i]; });
+    }
+);
+
+// nested3 = { a: { b: { c: [2, 2, 3, 3, 4, 4] } } };
+// nested4 !== nested2
+
+```
+
+####Example 5: Update list/array 2
+
+```javascript
+var iassign = require("immutable-assign");
+
+iassign.freeze = true;    // Deep freeze both input and output
+
+var list1 = [3, 1, 4];
+
+//
+// Calling iassign() to sort array
+//
+var list2 = iassign(
+    list1,
+    function (l) { return l; },
+    function (l) { return l.sort(); }
+);
+
+// list2 = [1, 3, 4];
+// list2 !== list1
+
+```
+
+####Advanced example 6: Update nested property
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -98,7 +282,7 @@ expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
-####Example 2: Update array
+####Advanced example 7: Update array
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
@@ -140,7 +324,7 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
 
-####Example 3: Update nested property, referring to external context.
+####Advanced example 8: Update nested property, referring to external context.
 
 ```javascript
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]] } } };
@@ -157,46 +341,7 @@ var o2 = iassign(
 );
 ```
 
-####Example 4: Work with 3rd party libraries, e.g., lodash
 
-```javascript
-var iassign = require("immutable-assign");
-var _ = require("lodash");
-
-// Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
-
-var o1 = { a: { b: { c: [1, 2, 3] } } };
-
-//
-// Calling iassign() and _.map() to increment to every item in "c" array
-//
-var o2 = iassign(
-    o1,
-    function (o) { return o.a.b.c; },
-    function (c) {
-        return _.map(c, function (i) { return i + 1; });
-    }
-);
-```
-```javascript
-//
-// Jasmine Tests
-//
-
-// expect o1 has not been changed
-expect(o1).toEqual({ a: { b: { c: [1, 2, 3] } } });
-
-// expect o2.a.b.c has been updated.
-expect(o2.a.b.c).toEqual([2, 3, 4]);
-
-// expect object graph for changed property in o2 is now different from (!==) o1.
-expect(o2).not.toBe(o1);
-expect(o2.a).not.toBe(o1.a);
-expect(o2.a.b).not.toBe(o1.a.b);
-expect(o2.a.b.c).not.toBe(o1.a.b.c);
-expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
-```
 
 ##Constraints
 
@@ -205,6 +350,7 @@ expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
 
 ##History
 
+* 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 

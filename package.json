@@ -1,8 +1,9 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.18",
-  "description": "",
+  "version": "1.0.19",
+  "description": "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
   "main": "src/iassign.js",
+  "types": "src/iassign.d.ts",
   "scripts": {
     "test": "node_modules\\.bin\\jasmine",
     "test-karma": "node_modules\\.bin\\karma start",

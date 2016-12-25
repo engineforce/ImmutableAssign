@@ -80,8 +80,6 @@ var map2 = iassign(
 ```javascript
 var iassign = require("immutable-assign");
 
-iassign.freeze = true;    // Deep freeze both input and output
-
 var list1 = [1, 2];
 
 //
@@ -126,8 +124,6 @@ var list4 = iassign(
 
 ```javascript
 var iassign = require("immutable-assign");
-
-iassign.freeze = true;    // Deep freeze both input and output
 
 var nested1 = { a:{ b:{ c:[3, 4, 5] } } };
 
@@ -177,8 +173,6 @@ var nested4 = iassign(
 var iassign = require("immutable-assign");
 var _ = require("lodash");
 
-iassign.freeze = true;    // Deep freeze both input and output
-
 var nested1 = { a: { b: { c: [1, 2, 3] } } };
 
 //
@@ -216,8 +210,6 @@ var nested3 = iassign(
 
 ```javascript
 var iassign = require("immutable-assign");
-
-iassign.freeze = true;    // Deep freeze both input and output
 
 var list1 = [3, 1, 4];
 

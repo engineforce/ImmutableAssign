@@ -63,7 +63,6 @@ iassign.freeze = true;
 
 var map1 = { a:1, b:2, c:3 };
 
-
 // 1: Calling iassign() to update map1.b
 var map2 = iassign(
     map1,
@@ -215,7 +214,6 @@ var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
-
 // 5: Calling iassign() to increment o1.a.b.c[0][0].d
 var o2 = iassign(
     o1,
@@ -258,7 +256,6 @@ var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
-
 // 6: Calling iassign() to push new item to o1.a.b.c[1]
 var o2 = iassign(
     o1,
@@ -300,7 +297,6 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 var iassign = require("immutable-assign");
 
 var o1 = { a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] } } };
-
 
 // 7: Calling iassign() to push increment to o1.a.b.c[0].d
 var external = { a: 0 };

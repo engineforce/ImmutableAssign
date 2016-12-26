@@ -346,6 +346,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ##History
 
+* 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)
 * 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)

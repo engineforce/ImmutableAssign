@@ -5,3 +5,6 @@ node_js:
   - "4"
   - "iojs"
 after_success: 'npm run coveralls'
+
+env:
+  - SAUCE_USERNAME=engineforce

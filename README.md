@@ -4,6 +4,8 @@ Lightweight immutable helper that allows you to continue working with POJO (Plai
 
 [![NPM version][3]][4] [![Build Status][1]][2] [![coverage status][5]][6]
 
+[![Sauce Test Status][7]][8]
+
 This library is trying to solve following problems:
 
 * Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
@@ -355,3 +357,5 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 [4]: https://badge.fury.io/js/immutable-assign
 [5]: https://coveralls.io/repos/github/engineforce/ImmutableAssign/badge.svg?branch=master
 [6]: https://coveralls.io/github/engineforce/ImmutableAssign?branch=master
+[7]: https://saucelabs.com/browser-matrix/engineforce.svg
+[8]: https://saucelabs.com/u/engineforce

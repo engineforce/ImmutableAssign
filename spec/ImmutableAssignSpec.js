@@ -238,10 +238,10 @@
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
-            }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].g = 1; return ci; });
-            }).toThrowError(TypeError, /add|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
             }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
@@ -363,10 +363,10 @@
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
-            }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].g = 1; return ci; });
-            }).toThrowError(TypeError, /add|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
             }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
@@ -396,10 +396,10 @@
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
             expect(function () {
                 o2.a.b.c[0][0].d++;
-            }).toThrowError(TypeError, /Cannot|read only|read-only|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 o2.a.b.c[0][0].g = 1;
-            }).toThrowError(TypeError, /add|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
             expect(function () {
                 o2.a.b.c[0].pop();
             }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);

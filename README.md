@@ -34,24 +34,34 @@ Performance of this library should be comparable to [Immutable.js](https://faceb
 #### Function Signature (TypeScript syntax)
 
 ```javascript
+
 // Return a new POJO object with property updated.
+
+// function overload 1: 
 function iassign<TObj, TProp, TContext>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
     setProp: (prop: TProp) => TProp,                    // Function to set the property.
     context?: TContext,                                 // (Optional) Context to be used in getProp().
     option?: IIassignOption): TObj;                     // (Optional) Options
-    
+
+// function overload 2: you can skip getProp() if you trying to update the root object, refer to example [1](#example-1-update-object) and [2](#example-2-update-listarray)
+function iassign<TObj>(
+    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
+    setProp: setPropFunc<TObj>,                         // Function to set the property.
+    option?: IIassignOption): TObj;                     // (Optional) Options
+
+
 // Options, can be applied globally or individually
 interface IIassignOption {
-    freeze: boolean;              // Deep freeze both input and output
-    freezeInput: boolean;         // Deep freeze input
-    freezeOutput: boolean;        // Deep freeze output
+    freeze?: boolean;              // Deep freeze both input and output
+    freezeInput?: boolean;         // Deep freeze input
+    freezeOutput?: boolean;        // Deep freeze output
 
     // Disable validation for extra statements in the getProp() function, 
     // which is needed when running the coverage, e.g., istanbul.js does add 
     // instrument statements in our getProp() function, which can be safely ignored. 
-    disableExtraStatementCheck: boolean;   
+    disableExtraStatementCheck?: boolean;
 }
 ```
 
@@ -65,10 +75,9 @@ iassign.freeze = true;
 
 var map1 = { a:1, b:2, c:3 };
 
-// 1: Calling iassign() to update map1.b
+// 1: Calling iassign() to update map1.b, using overload 2
 var map2 = iassign(
     map1,
-    function (m) { return m; },
     function (m) { m.b = 50; return m; }
 );
 
@@ -85,10 +94,9 @@ var iassign = require("immutable-assign");
 var list1 = [1, 2];
 
 
-// 2.1: Calling iassign() to push items to list1
+// 2.1: Calling iassign() to push items to list1, using overload 2
 var list2 = iassign(
     list1,
-    function (l) { return l; },
     function (l) { l.push(3, 4, 5); return l; }
 );
 
@@ -96,10 +104,9 @@ var list2 = iassign(
 // list2 !== list1
 
 
-// 2.2: Calling iassign() to unshift item to list2
+// 2.2: Calling iassign() to unshift item to list2, using overload 2
 var list3 = iassign(
     list2,
-    function (l) { return l; },
     function (l) { l.unshift(0); return l; }
 );
 
@@ -107,10 +114,9 @@ var list3 = iassign(
 // list3 !== list2
 
 
-// 2.3, Calling iassign() to concat list1, list2 and list3
+// 2.3, Calling iassign() to concat list1, list2 and list3, using overload 2
 var list4 = iassign(
     list1,
-    function (l) { return l; },
     function (l) { return l.concat(list2, list3); }
 );
 
@@ -118,10 +124,9 @@ var list4 = iassign(
 // list4 !== list1
 
 
-// 2.4, Calling iassign() to concat sort list4
+// 2.4, Calling iassign() to concat sort list4, using overload 2
 var list5 = iassign(
     list4,
-    function (l) { return l; },
     function (l) { return l.sort(); }
 );
 
@@ -338,7 +343,6 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 ```
 
 
-
 ##Constraints
 
 * getProp() must be a pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
@@ -346,6 +350,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ##History
 
+* 1.0.21 - Added function overload to skip getProp() if you trying to update the root object, refer to example [1](#example-1-update-object) and [2](#example-2-update-listarray)
 * 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)
 * 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)

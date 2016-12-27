@@ -5,23 +5,41 @@
 declare var define;
 
 interface IIassignOption {
-    freeze: boolean;                        // Deep freeze both input and output
-    freezeInput: boolean;                   // Deep freeze input
-    freezeOutput: boolean;                  // Deep freeze output
-    disableAllCheck: boolean;               
-    disableHasReturnCheck: boolean;
+    freeze?: boolean;                        // Deep freeze both input and output
+    freezeInput?: boolean;                   // Deep freeze input
+    freezeOutput?: boolean;                  // Deep freeze output
+    disableAllCheck?: boolean;
+    disableHasReturnCheck?: boolean;
     // Disable validation for extra statements in the getProp() function, 
     // which is needed when running the coverage, e.g., istanbul.js does add 
     // instrument statements in our getProp() function, which can be safely ignored. 
-    disableExtraStatementCheck: boolean;    
+    disableExtraStatementCheck?: boolean;
 }
 
+type getPropFunc<TObj, TProp, TContext> = (obj: TObj, context: TContext) => TProp;
+type setPropFunc<TProp> = (prop: TProp) => TProp;
+
 interface IIassign extends IIassignOption {
+
+    // Intellisense for the TObj parameter in getProp will only work if we remove the auto added closing bracket of iassign, 
+    // and manually add the closing bracket at last. i.e., 
+    //
+    //   1. Type iassign( in the editor
+    //   2. Most editor will auto complete with closing bracket, e.g., iassign()
+    //   3. If we continue to type without removing the closing bracket, e.g., iassign(nested, (n) => n.),
+    //      editor such as VS Code will not show any intellisense for "n"
+    //   4. We must remove the closing bracket of iassign(), and intellisense will be shown for "n"
+
     <TObj, TProp, TContext>(
         obj: TObj,
-        getProp: (obj: TObj, context: TContext) => TProp,
-        setProp: (prop: TProp) => TProp,
+        getProp: getPropFunc<TObj, TProp, TContext>,
+        setProp: setPropFunc<TProp>,
         context?: TContext,
+        option?: IIassignOption): TObj;
+
+    <TObj>(
+        obj: TObj,
+        setProp: setPropFunc<TObj>,
         option?: IIassignOption): TObj;
 }
 
@@ -56,11 +74,23 @@ interface IIassign extends IIassignOption {
 
     // Immutable Assign
     function _iassign<TObj, TProp, TContext>(
-        obj: TObj,                                          // Object to set property, it will not be modified.
-        getProp: (obj: TObj, context: TContext) => TProp,   // Function to get property to be updated. Must be pure function.
-        setProp: (prop: TProp) => TProp,                    // Function to set property.
-        context?: TContext,                                 // (Optional) Context to be used in getProp().
-        option?: IIassignOption): TObj {
+        obj: TObj,                                                                   // Object to set property, it will not be modified.
+        getPropOrSetProp: getPropFunc<TObj, TProp, TContext> | setPropFunc<TProp>,   // Function to get property to be updated. Must be pure function.
+        setPropOrOption: setPropFunc<TProp> | IIassignOption,                        // Function to set property.
+        contextOrUndefined?: TContext,                                               // (Optional) Context to be used in getProp().
+        optionOrUndefined?: IIassignOption): TObj {
+
+        let getProp = <getPropFunc<TObj, TProp, TContext>>getPropOrSetProp;
+        let setProp = <setPropFunc<TProp>>setPropOrOption;
+        let context = contextOrUndefined;
+        let option = optionOrUndefined;
+
+        if (typeof setPropOrOption !== "function") {
+            getProp = undefined;
+            setProp = <setPropFunc<TProp>>getPropOrSetProp;
+            context = undefined;
+            option = <IIassignOption>setPropOrOption;
+        }
 
         if (option) {
             option = extend({}, iassign, option);
@@ -73,113 +103,119 @@ interface IIassign extends IIassignOption {
             deepFreeze(obj);
         }
 
-        // Check if getProp() is valid
-        let value = getProp(obj, context);
+        if (!getProp) {
+            obj = quickCopy(obj);
+            obj = <any>setProp(<any>obj);
+        }
+        else {
+            // Check if getProp() is valid
+            let value = getProp(obj, context);
 
-        let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
-        let accessorText = getPropFuncInfo.accessorText;
+            let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
+            let accessorText = getPropFuncInfo.accessorText;
 
-        let propIndex = 0;
-        let propValue = undefined;
+            let propIndex = 0;
+            let propValue = undefined;
 
-        while (accessorText) {
-            let openBracketIndex = accessorText.indexOf("[");
-            let closeBracketIndex = accessorText.indexOf("]");
-            let dotIndex = accessorText.indexOf(".");
-            let propName = "";
-            let propNameSource = ePropNameSource.none;
+            while (accessorText) {
+                let openBracketIndex = accessorText.indexOf("[");
+                let closeBracketIndex = accessorText.indexOf("]");
+                let dotIndex = accessorText.indexOf(".");
+                let propName = "";
+                let propNameSource = ePropNameSource.none;
 
-            // if (dotIndex == 0) {
-            //     accessorText = accessorText.substr(dotIndex + 1);
-            //     continue;
-            // }
+                // if (dotIndex == 0) {
+                //     accessorText = accessorText.substr(dotIndex + 1);
+                //     continue;
+                // }
 
-            if (openBracketIndex > -1 && closeBracketIndex <= -1) {
-                throw new Error("Found open bracket but not close bracket.");
-            }
-
-            if (openBracketIndex <= -1 && closeBracketIndex > -1) {
-                throw new Error("Found close bracket but not open bracket.");
-            }
-
-            if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
-                propName = accessorText.substr(0, dotIndex);
-                accessorText = accessorText.substr(dotIndex + 1);
-                propNameSource = ePropNameSource.beforeDot;
-            }
-            else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
-
-                if (openBracketIndex > 0) {
-                    propName = accessorText.substr(0, openBracketIndex);
-                    accessorText = accessorText.substr(openBracketIndex);
-                    propNameSource = ePropNameSource.beforeBracket;
-                }
-                else {
-                    propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
-                    accessorText = accessorText.substr(closeBracketIndex + 1);
-                    propNameSource = ePropNameSource.inBracket;
-                }
-            }
-            else {
-                propName = accessorText;
-                accessorText = "";
-                propNameSource = ePropNameSource.last;
-            }
-
-            propName = propName.trim();
-            if (propName == "") {
-                continue;
-            }
-
-            //console.log(propName);
-
-            if (propIndex <= 0) {
-                propValue = quickCopy(obj);
-
-                if (!accessorText) {
-                    propValue = setProp(propValue);
+                if (openBracketIndex > -1 && closeBracketIndex <= -1) {
+                    throw new Error("Found open bracket but not close bracket.");
                 }
 
-                obj = propValue;
-            }
-            else {
-                let prevPropValue = propValue;
+                if (openBracketIndex <= -1 && closeBracketIndex > -1) {
+                    throw new Error("Found close bracket but not open bracket.");
+                }
 
-                if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
+                if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
+                    propName = accessorText.substr(0, dotIndex);
+                    accessorText = accessorText.substr(dotIndex + 1);
+                    propNameSource = ePropNameSource.beforeDot;
+                }
+                else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
 
-                    if (propName[0] == "#") {
-                        let quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
-                        if (!quotedPropName) {
-                            throw new Error("Cannot find quoted text for " + quotedPropName);
-                        }
-                        propName = eval(quotedPropName);
+                    if (openBracketIndex > 0) {
+                        propName = accessorText.substr(0, openBracketIndex);
+                        accessorText = accessorText.substr(openBracketIndex);
+                        propNameSource = ePropNameSource.beforeBracket;
                     }
                     else {
-                        let statement = `'use strict';\n`;
-                        if (getPropFuncInfo.objParameterName) {
-                            statement += `var ${getPropFuncInfo.objParameterName} = arguments[1];\n`
-                        }
-                        if (getPropFuncInfo.cxtParameterName) {
-                            statement += `var ${getPropFuncInfo.cxtParameterName} = arguments[2];\n`
-                        }
-                        statement += `${propName}`;
-                        propName = (<any>evalStatement)(statement, obj, context);
+                        propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
+                        accessorText = accessorText.substr(closeBracketIndex + 1);
+                        propNameSource = ePropNameSource.inBracket;
                     }
                 }
-
-                propValue = propValue[propName];
-                propValue = quickCopy(propValue)
-
-                if (!accessorText) {
-                    propValue = setProp(propValue);
+                else {
+                    propName = accessorText;
+                    accessorText = "";
+                    propNameSource = ePropNameSource.last;
                 }
 
-                prevPropValue[propName] = propValue;
+                propName = propName.trim();
+                if (propName == "") {
+                    continue;
+                }
+
+                //console.log(propName);
+
+                if (propIndex <= 0) {
+                    propValue = quickCopy(obj);
+
+                    if (!accessorText) {
+                        propValue = setProp(propValue);
+                    }
+
+                    obj = propValue;
+                }
+                else {
+                    let prevPropValue = propValue;
+
+                    if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
+
+                        if (propName[0] == "#") {
+                            let quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
+                            if (!quotedPropName) {
+                                throw new Error("Cannot find quoted text for " + quotedPropName);
+                            }
+                            propName = eval(quotedPropName);
+                        }
+                        else {
+                            let statement = `'use strict';\n`;
+                            if (getPropFuncInfo.objParameterName) {
+                                statement += `var ${getPropFuncInfo.objParameterName} = arguments[1];\n`
+                            }
+                            if (getPropFuncInfo.cxtParameterName) {
+                                statement += `var ${getPropFuncInfo.cxtParameterName} = arguments[2];\n`
+                            }
+                            statement += `${propName}`;
+                            propName = (<any>evalStatement)(statement, obj, context);
+                        }
+                    }
+
+                    propValue = propValue[propName];
+                    propValue = quickCopy(propValue)
+
+                    if (!accessorText) {
+                        propValue = setProp(propValue);
+                    }
+
+                    prevPropValue[propName] = propValue;
+                }
+
+                //console.log(propValue);
+
+                propIndex++;
             }
-
-            //console.log(propValue);
-
-            propIndex++;
         }
 
         if (deepFreeze && (option.freeze || option.freezeOutput)) {

@@ -433,6 +433,34 @@
             expect(map3).not.toBe(map2);
             expect(function () { map3.a = 3; }).not.toThrow();
         });
+        it("Example 1c: update object that pass undefined to getProp()", function () {
+            //var iassign = require("immutable-assign");
+            // Deep freeze both input and output, can be used in development to make sure they don't change. 
+            iassign.freeze = true;
+            var map1 = { a: 1, b: 2, c: 3 };
+            // 1c: Calling iassign() to update map1.b 
+            var map2 = iassign(map1, undefined, function (m) { m.b = 50; return m; });
+            expect(map1).toEqual({ a: 1, b: 2, c: 3 });
+            expect(map2).toEqual({ a: 1, b: 50, c: 3 });
+            expect(map2).not.toBe(map1);
+        });
+        it("Example 1d: update object with option that pass undefined to getProp()", function () {
+            //var iassign = require("immutable-assign");
+            // Deep freeze both input and output, can be used in development to make sure they don't change. 
+            iassign.freeze = true;
+            var map1 = { a: 1, b: 2, c: 3 };
+            // 1: Calling iassign() to update map1.b 
+            var map2 = iassign(map1, undefined, function (m) { m.b = 50; return m; });
+            expect(map1).toEqual({ a: 1, b: 2, c: 3 });
+            expect(map2).toEqual({ a: 1, b: 50, c: 3 });
+            expect(map2).not.toBe(map1);
+            expect(function () { map2.a = 3; }).toThrow();
+            var map3 = iassign(map2, undefined, function (m) { m.c = 60; return m; }, undefined, { freeze: false });
+            expect(map2).toEqual({ a: 1, b: 50, c: 3 });
+            expect(map3).toEqual({ a: 1, b: 50, c: 60 });
+            expect(map3).not.toBe(map2);
+            expect(function () { map3.a = 3; }).not.toThrow();
+        });
         it("Example 2: update list/array", function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change. 
@@ -459,6 +487,36 @@
             expect(list4).not.toBe(list3);
             // 2.4, Calling iassign() to concat sort list4 
             var list5 = iassign(list4, function (l) { return l.sort(); });
+            expect(list4).toEqual([1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]);
+            expect(list5).toEqual([0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5]);
+            expect(list5).not.toBe(list4);
+        });
+        it("Example 2b: update list/array that pass undefined to getProp()", function () {
+            //var iassign = require("immutable-assign");
+            // Deep freeze both input and output, can be used in development to make sure they don't change. 
+            iassign.freeze = true;
+            var list1 = [1, 2];
+            // 2.1: Calling iassign() to push items to list1 
+            var list2 = iassign(list1, undefined, function (l) { l.push(3, 4, 5); return l; });
+            expect(list1).toEqual([1, 2]);
+            expect(list2).toEqual([1, 2, 3, 4, 5]);
+            expect(list2).not.toBe(list1);
+            // 2.2: Calling iassign() to unshift item to list2 
+            var list3 = iassign(list2, undefined, function (l) { l.unshift(0); return l; });
+            expect(list2).toEqual([1, 2, 3, 4, 5]);
+            expect(list3).toEqual([0, 1, 2, 3, 4, 5]);
+            expect(list3).not.toBe(list2);
+            // 2.3, Calling iassign() to concat list1, list2 and list3 
+            var list4 = iassign(list1, undefined, function (l) { return l.concat(list2, list3); });
+            expect(list1).toEqual([1, 2]);
+            expect(list2).toEqual([1, 2, 3, 4, 5]);
+            expect(list3).toEqual([0, 1, 2, 3, 4, 5]);
+            expect(list4).toEqual([1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]);
+            expect(list4).not.toBe(list1);
+            expect(list4).not.toBe(list2);
+            expect(list4).not.toBe(list3);
+            // 2.4, Calling iassign() to concat sort list4 
+            var list5 = iassign(list4, undefined, function (l) { return l.sort(); });
             expect(list4).toEqual([1, 2, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]);
             expect(list5).toEqual([0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5]);
             expect(list5).not.toBe(list4);

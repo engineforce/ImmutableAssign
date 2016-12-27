@@ -10,6 +10,29 @@ module.exports = function (config) {
     //     //     platform: 'Windows 7',
     //     //     version: 'latest'
     //     // }        
+    //     // sl_ie9: {                    // Deep freeze is not working
+    //     //     base: 'SauceLabs',
+    //     //     browserName: 'internet explorer',
+    //     //     platform: 'Windows 7',
+    //     //     version: '9'
+    //     // },
+    //     sl_ios_iphone: {
+    //         base: 'SauceLabs',
+    //         browserName: 'iphone',
+    //         platform: 'iOS 10',
+    //     },
+    //     sl_android_chrome: {         // Deep freeze is not working
+    //         base: 'SauceLabs',
+    //         browserName: 'android',
+    //         platform: 'Android 4',
+    //         version: "4.4"
+    //     },
+    //     sl_android_chrome: {         // Deep freeze is not working
+    //         base: 'SauceLabs',
+    //         browserName: 'android',
+    //         platform: 'Android 5',
+    //         version: "5"
+    //     }
     // }
 
     var customLaunchers = {
@@ -17,7 +40,13 @@ module.exports = function (config) {
             base: 'SauceLabs',
             browserName: 'internet explorer',
             platform: 'Windows 10',
-            version: 'latest'
+            version: '11'
+        },
+        sl_ie10: {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 8',
+            version: '10'
         },
         sl_edge: {
             base: 'SauceLabs',
@@ -37,7 +66,7 @@ module.exports = function (config) {
             platform: 'Windows 10',
             version: 'latest'
         },
-    
+
         sl_mac_chrome: {
             base: 'SauceLabs',
             browserName: 'chrome',
@@ -57,10 +86,16 @@ module.exports = function (config) {
             version: 'latest'
         },
 
-        sl_ios_safari: {
+        sl_ios_10_iphone: {
             base: 'SauceLabs',
             browserName: 'iphone',
             platform: 'iOS 10',
+        },
+        sl_android_5: {
+            base: 'SauceLabs',
+            browserName: 'android',
+            platform: 'Android 5',
+            varsion: "5"
         },
     }
     config.set({
@@ -143,8 +178,9 @@ module.exports = function (config) {
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true,
 
-        captureTimeout: 300000,
+        captureTimeout: 120000,
         browserNoActivityTimeout: 300000,
+        retryLimit: 5,
 
         // Concurrency level
         // how many browser should be started simultaneous

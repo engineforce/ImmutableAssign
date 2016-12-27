@@ -45,7 +45,7 @@ function iassign<TObj, TProp, TContext>(
     context?: TContext,                                 // (Optional) Context to be used in getProp().
     option?: IIassignOption): TObj;                     // (Optional) Options
 
-// function overload 2: you can skip getProp() if you trying to update the root object, refer to example [1](#example-1-update-object) and [2](#example-2-update-listarray)
+// function overload 2: you can skip getProp() if you trying to update the root object, refer to example 1 and 2
 function iassign<TObj>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     setProp: setPropFunc<TObj>,                         // Function to set the property.
@@ -350,7 +350,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ##History
 
-* 1.0.21 - Added function overload to skip getProp() if you trying to update the root object, refer to example [1](#example-1-update-object) and [2](#example-2-update-listarray)
+* 1.0.21 - Added new function overload to skip getProp() if you trying to update the root object, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)
 * 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)
 * 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)

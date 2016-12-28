@@ -156,7 +156,7 @@ module.exports = function (config) {
             username: 'engineforce',
             accessKey: '61e43f6c-d263-4843-8561-a8ca4c482b70',
             startConnect: false,
-            build: Math.random().toString()
+            build: (new Date).getTime() //Math.random().toString()
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),

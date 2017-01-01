@@ -25,14 +25,9 @@ This library works in JavaScript and it works really well with TypeScript, becau
 
 ## Performance
 
-Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following is benchmarks using 5 to 1 as read to write ratio:
+Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following are benchmarks for mutlple immutable libraries (assume read to write rate is 5 to 1):
 
-<p align="center">
-    <a href="benchmarks.png?raw=true" target="_blank">
-        <img src="benchmarks.png?raw=true" alt="Benchmarks" title="Benchmarks">
-    </a>
-</p>
-
+![benchmarks](benchmarks.png?raw=true "benchmarks")
 
 ##Install with npm
 

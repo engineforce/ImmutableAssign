@@ -25,61 +25,14 @@ This library works in JavaScript and it works really well with TypeScript, becau
 
 ## Performance
 
-Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/).
+Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following is benchmarks using 5 to 1 as read to write ratio:
 
-```
-**Mutable**
-  Verification: P-FPFP-PP-FPFFP-PP-FPPPPP-FFPFP-PFFF-FFPP
-  Object: read (x500000): 10 ms
-  Object: write (x100000): 0 ms
-  Object: deep read (x500000): 10 ms
-  Object: deep write (x100000): 0 ms
-  Object: very deep read (x500000): 20 ms
-  Object: very deep write (x100000): 10 ms
-  Object: merge (x100000): 30 ms
-  Array: read (x500000): 0 ms
-  Array: write (x100000): 0 ms
-Total elapsed = 80 ms = 40 (read) + 40 (write).
+<p align="center">
+    <a href="benchmarks.png?raw=true" target="_blank">
+        <img src="benchmarks.png?raw=true" alt="Benchmarks" title="Benchmarks">
+    </a>
+</p>
 
-Immutable (iassign)
-  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP
-  Object: read (x500000): 10 ms
-  Object: write (x100000): 70 ms
-  Object: deep read (x500000): 10 ms
-  Object: deep write (x100000): 293 ms
-  Object: very deep read (x500000): 20 ms
-  Object: very deep write (x100000): 520 ms
-  Object: merge (x100000): 70 ms
-  Array: read (x500000): 10 ms
-  Array: write (x100000): 370 ms
-Total elapsed = **1373 ms = 50 (read) + 1323 (write).**
-
-Immutable (ImmutableJS)
-  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP
-  Object: read (x500000): 5 ms
-  Object: write (x100000): 30 ms
-  Object: deep read (x500000): 160 ms
-  Object: deep write (x100000): 90 ms
-  Object: very deep read (x500000): 300 ms
-  Object: very deep write (x100000): 203 ms
-  Object: merge (x100000): 452 ms
-  Array: read (x500000): 20 ms
-  Array: write (x100000): 60 ms
-Total elapsed = **1320 ms = 485 (read) + 835 (write).**
-
-Immutable (seamless-immutable)
-  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP
-  Object: read (x500000): 10 ms
-  Object: write (x100000): 1191 ms
-  Object: deep read (x500000): 10 ms
-  Object: deep write (x100000): 2638 ms
-  Object: very deep read (x500000): 20 ms
-  Object: very deep write (x100000): 6293 ms
-  Object: merge (x100000): 1355 ms
-  Array: read (x500000): 10 ms
-  Array: write (x100000): 38353 ms
-Total elapsed = 49880 ms = 50 (read) + 49830 (write).
-```
 
 ##Install with npm
 

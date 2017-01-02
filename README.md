@@ -31,9 +31,11 @@ Performance of this library should be comparable to [Immutable.js](https://faceb
 npm run benchmarks
 ```
 
-
-
-![benchmarks](benchmarks.png?raw=true "benchmarks")
+<p>
+    <a href="benchmarks.png?raw=true" target="_blank">
+        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" width="70%;">
+    </a>
+</p>
 
 ##Install with npm
 

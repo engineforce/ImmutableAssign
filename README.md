@@ -33,7 +33,7 @@ npm run benchmarks
 
 <p>
     <a href="benchmarks.png?raw=true" target="_blank">
-        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" style="width:70%;">
+        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" style="width:80%;">
     </a>
 </p>
 

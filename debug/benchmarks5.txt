@@ -1,4 +1,8 @@
 
+//
+// Update benchmarks.js: added benchmarks for Object.assign() and array deep read/write
+//
+
 Mutable
   Verification: P-FPFP-PP-FPFFP-PP-FPPPPP-FFPFP-PFFF-FFPP-FFPP
   Object: read (x500000): 10 ms

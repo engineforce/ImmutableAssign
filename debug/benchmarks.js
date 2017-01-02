@@ -2,6 +2,8 @@
 // Copied and modifed from https://github.com/guigrpa/timm/blob/master/tools/benchmarks.coffee
 
 (function () {
+    "use strict";
+
     var ARRAY_LENGTH, DEEP_PATH, INITIAL_ARRAY, INITIAL_OBJECT, Immutable, R, Seamless, _, _addResult, _allTests, _getIn, _solImmutableJs, _solImmutableSeamless, _solImmutableTimm, _solMutable, _test, _toggle, _verify, chalk, i, n, ref, timm;
 
     process.env.NODE_ENV = 'production';
@@ -16,9 +18,13 @@
 
     timm = require('timm');
 
-    iassign = require("../src/iassign");
+    var _isDevel = false;
 
-    INITIAL_OBJECT = {
+    var deepFreeze = require("deep-freeze");
+
+    var iassign = require("../src/iassign");
+
+    var INITIAL_OBJECT = {
         toggle: false,
         b: 3,
         str: 'foo',
@@ -40,11 +46,11 @@
         }
     };
 
-    DEEP_PATH = ['d', 'd9', 'b', 'b', 'b'];
+    var DEEP_PATH = ['d', 'd9', 'b', 'b', 'b'];
 
-    ARRAY_LENGTH = 1000;
+    var ARRAY_LENGTH = 1000;
 
-    INITIAL_ARRAY = new Array(ARRAY_LENGTH);
+    var INITIAL_ARRAY = new Array(ARRAY_LENGTH);
 
     for (n = i = 0, ref = ARRAY_LENGTH; 0 <= ref ? i < ref : i > ref; n = 0 <= ref ? ++i : --i) {
         INITIAL_ARRAY[n] = {
@@ -53,12 +59,12 @@
         };
     }
 
-    INITIAL_DEEP_ARRAY = [0, 1, 2, INITIAL_ARRAY, [5, 6, 7]];
+    var INITIAL_DEEP_ARRAY = [0, 1, 2, INITIAL_ARRAY, [5, 6, 7]];
 
-    R = 5e5;
-    W = R / 5;
+    var R = 5e5;
+    var W = R / 5;
 
-    _getIn = function (obj, path) {
+    var _getIn = function (obj, path) {
         var j, key, len, out;
         out = obj;
         for (j = 0, len = path.length; j < len; j++) {
@@ -68,7 +74,7 @@
         return out;
     };
 
-    _solMutable = {
+    var _solMutable = {
         init: function () {
             return _.cloneDeep(INITIAL_OBJECT);
         },
@@ -128,9 +134,13 @@
         }
     };
 
-    _solObjectAssign = {
+    var _solObjectAssign = {
         init: function () {
-            return _.cloneDeep(INITIAL_OBJECT);
+            var obj = _.cloneDeep(INITIAL_OBJECT);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
         },
         get: function (obj, key) {
             return obj[key];
@@ -180,7 +190,12 @@
             if (!array) {
                 array = INITIAL_ARRAY;
             }
-            return _.cloneDeep(array);
+
+            var obj = _.cloneDeep(array);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
         },
         getAt: function (arr, idx) {
             return arr[idx];
@@ -207,9 +222,13 @@
         },
     };
 
-    _solIassign = {
+    var _solIassign = {
         init: function () {
-            return _.cloneDeep(INITIAL_OBJECT);
+            var obj = _.cloneDeep(INITIAL_OBJECT);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
         },
         get: function (obj, key) {
             return obj[key];
@@ -271,7 +290,11 @@
                 array = INITIAL_ARRAY;
             }
 
-            return _.cloneDeep(array);
+            var obj = _.cloneDeep(array);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
         },
         getAt: function (arr, idx) {
             return arr[idx];
@@ -306,7 +329,7 @@
     };
 
 
-    _solImmutableTimm = {
+    var _solImmutableTimm = {
         init: function () {
             return _.cloneDeep(INITIAL_OBJECT);
         },
@@ -343,7 +366,7 @@
         }
     };
 
-    _solImmutableJs = {
+    var _solImmutableJs = {
         init: function () {
             return Immutable.fromJS(INITIAL_OBJECT);
         },
@@ -388,7 +411,7 @@
         }
     };
 
-    _solImmutableSeamless = {
+    var _solImmutableSeamless = {
         init: function () {
             return Seamless(INITIAL_OBJECT);
         },
@@ -431,15 +454,15 @@
         }
     };
 
-    _toggle = function (solution, obj) {
+    var _toggle = function (solution, obj) {
         return solution.set(obj, 'toggle', !(solution.get(obj, 'toggle')));
     };
 
-    _addResult = function (results, condition) {
+    var _addResult = function (results, condition) {
         return results.push(condition ? chalk.green.bold('P') : chalk.green.red('F'));
     };
 
-    _verify = function (solution) {
+    var _verify = function (solution) {
         var arr, arr2, get, getAt, getAtDeep, getIn, init, initArr, merge, obj, obj2, results, set, setAt, setDeep, setIn, setAtDeep;
         results = [];
         init = solution.init, get = solution.get, set = solution.set, setDeep = solution.setDeep, getIn = solution.getIn,
@@ -527,7 +550,7 @@
         return console.log("  Verification: " + (results.join('')));
     };
 
-    _test = function (desc, cb) {
+    var _test = function (desc, cb) {
         var tac, tic;
         tic = new Date().getTime();
         cb();
@@ -537,7 +560,7 @@
         return elapsed;
     };
 
-    _allTests = function (desc, solution) {
+    var _allTests = function (desc, solution) {
         var MERGE_OBJ, arr, obj;
         console.log("\n" + chalk.bold(desc));
         _verify(solution);
@@ -632,15 +655,15 @@
     };
 
     _allTests("Mutable", _solMutable);
-
     _allTests("Immutable (Object.assign)", _solObjectAssign);
-
     _allTests("Immutable (immutable-assign)", _solIassign);
-
     _allTests("Immutable (immutable.js)", _solImmutableJs);
-
     // _allTests("Immutable (timm)", _solImmutableTimm);
-
     _allTests("Immutable (seamless-immutable)", _solImmutableSeamless);
+
+    // Deep freeze initial object/array
+    _isDevel = true;
+    _allTests("Immutable (Object.assign) + deep freeze", _solObjectAssign);
+    _allTests("Immutable (immutable-assign) + deep freeze", _solIassign);
 
 }).call(this);

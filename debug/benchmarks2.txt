@@ -1,4 +1,8 @@
 
+//
+// Optimization 1: cache getProp()
+//
+
 > immutable-assign@1.0.22 benchmarks E:\Git\Misc\ImmutableAssign
 > node debug/benchmarks
 

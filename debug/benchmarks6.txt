@@ -1,0 +1,113 @@
+
+//
+// Updated benchmarks.js: Added results for deep freeze initial object/array
+//
+
+> immutable-assign@1.0.23 benchmarks E:\Git\Misc\ImmutableAssign
+> node debug/benchmarks
+
+
+Mutable
+  Verification: P-FPFP-PP-FPFFP-PP-FPPPPP-FFPFP-PFFF-FFPP-FFPP
+  Object: read (x500000): 7 ms
+  Object: write (x100000): 3 ms
+  Object: deep read (x500000): 9 ms
+  Object: deep write (x100000): 2 ms
+  Object: very deep read (x500000): 23 ms
+  Object: very deep write (x100000): 5 ms
+  Object: merge (x100000): 32 ms
+  Array: read (x500000): 5 ms
+  Array: write (x100000): 1 ms
+  Array: deep read (x500000): 6 ms
+  Array: deep write (x100000): 2 ms
+Total elapsed = 95 ms = 50 ms (read) + 45 ms (write).
+
+Immutable (Object.assign)
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 7 ms
+  Object: write (x100000): 194 ms
+  Object: deep read (x500000): 8 ms
+  Object: deep write (x100000): 369 ms
+  Object: very deep read (x500000): 23 ms
+  Object: very deep write (x100000): 709 ms
+  Object: merge (x100000): 317 ms
+  Array: read (x500000): 0 ms
+  Array: write (x100000): 347 ms
+  Array: deep read (x500000): 15 ms
+  Array: deep write (x100000): 370 ms
+Total elapsed = 2359 ms = 53 ms (read) + 2306 ms (write).
+
+Immutable (immutable-assign)
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 0 ms
+  Object: write (x100000): 80 ms
+  Object: deep read (x500000): 9 ms
+  Object: deep write (x100000): 342 ms
+  Object: very deep read (x500000): 16 ms
+  Object: very deep write (x100000): 577 ms
+  Object: merge (x100000): 71 ms
+  Array: read (x500000): 5 ms
+  Array: write (x100000): 366 ms
+  Array: deep read (x500000): 0 ms
+  Array: deep write (x100000): 665 ms
+Total elapsed = 2131 ms = 30 ms (read) + 2101 ms (write).
+
+Immutable (immutable.js)
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 16 ms
+  Object: write (x100000): 41 ms
+  Object: deep read (x500000): 156 ms
+  Object: deep write (x100000): 105 ms
+  Object: very deep read (x500000): 286 ms
+  Object: very deep write (x100000): 213 ms
+  Object: merge (x100000): 496 ms
+  Array: read (x500000): 15 ms
+  Array: write (x100000): 71 ms
+  Array: deep read (x500000): 132 ms
+  Array: deep write (x100000): 134 ms
+Total elapsed = 1665 ms = 605 ms (read) + 1060 ms (write).
+
+Immutable (seamless-immutable)
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 20 ms
+  Object: write (x100000): 1185 ms
+  Object: deep read (x500000): 0 ms
+  Object: deep write (x100000): 2620 ms
+  Object: very deep read (x500000): 15 ms
+  Object: very deep write (x100000): 6321 ms
+  Object: merge (x100000): 1352 ms
+  Array: read (x500000): 0 ms
+  Array: write (x100000): 37634 ms
+  Array: deep read (x500000): 16 ms
+  Array: deep write (x100000): 40199 ms
+Total elapsed = 89362 ms = 51 ms (read) + 89311 ms (write).
+
+Immutable (Object.assign) + deep freeze
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 0 ms
+  Object: write (x100000): 189 ms
+  Object: deep read (x500000): 0 ms
+  Object: deep write (x100000): 357 ms
+  Object: very deep read (x500000): 31 ms
+  Object: very deep write (x100000): 731 ms
+  Object: merge (x100000): 339 ms
+  Array: read (x500000): 16 ms
+  Array: write (x100000): 22329 ms
+  Array: deep read (x500000): 16 ms
+  Array: deep write (x100000): 22698 ms
+Total elapsed = 46706 ms = 63 ms (read) + 46643 ms (write).
+
+Immutable (immutable-assign) + deep freeze
+  Verification: P-PPPP-PP-PPPPP-PP-PPPPPP-PPPPP-PPPP-PPPP-PPPP
+  Object: read (x500000): 16 ms
+  Object: write (x100000): 70 ms
+  Object: deep read (x500000): 8 ms
+  Object: deep write (x100000): 350 ms
+  Object: very deep read (x500000): 31 ms
+  Object: very deep write (x100000): 584 ms
+  Object: merge (x100000): 78 ms
+  Array: read (x500000): 10 ms
+  Array: write (x100000): 22882 ms
+  Array: deep read (x500000): 15 ms
+  Array: deep write (x100000): 23035 ms
+Total elapsed = 47079 ms = 80 ms (read) + 46999 ms (write).

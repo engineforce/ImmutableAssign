@@ -1,4 +1,8 @@
 
+//
+// No optimization
+//
+
 > immutable-assign@1.0.22 benchmarks E:\Git\Misc\ImmutableAssign
 > node debug/benchmarks
 

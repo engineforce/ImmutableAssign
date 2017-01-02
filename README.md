@@ -32,8 +32,8 @@ npm run benchmarks
 ```
 
 <p>
-    <a href="benchmarks.png?raw=true" target="_blank">
-        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" width="70%;">
+    <a href="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/benchmarks.png" target="_blank">
+        <img src="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/benchmarks.png" alt="benchmarks" title="benchmarks" width="70%;">
     </a>
 </p>
 

@@ -27,6 +27,10 @@ This library works in JavaScript and it works really well with TypeScript, becau
 
 Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following are the benchmarks for mutlple immutable libraries (assuming the read to write ratio is 5 to 1):
 
+```
+npm run benchmarks
+```
+
 ![benchmarks](benchmarks.png?raw=true "benchmarks")
 
 ##Install with npm

@@ -53,6 +53,8 @@
         };
     }
 
+    INITIAL_DEEP_ARRAY = [0, 1, 2, INITIAL_ARRAY, [5, 6, 7]];
+
     R = 5e5;
     W = R / 5;
 
@@ -104,8 +106,11 @@
             }
             return results1;
         },
-        initArr: function () {
-            return _.cloneDeep(INITIAL_ARRAY);
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+            return _.cloneDeep(array);
         },
         getAt: function (arr, idx) {
             return arr[idx];
@@ -113,7 +118,93 @@
         setAt: function (arr, idx, val) {
             arr[idx] = val;
             return arr;
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr[idx1][idx2];
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            arr[idx1][idx2] = val;
+            return arr;
         }
+    };
+
+    _solObjectAssign = {
+        init: function () {
+            return _.cloneDeep(INITIAL_OBJECT);
+        },
+        get: function (obj, key) {
+            return obj[key];
+        },
+        set: function (obj, key, val) {
+            if (obj[key] === val)
+                return obj;
+
+            obj = Object.assign({}, obj);
+            obj[key] = val;
+            return obj;
+        },
+        getDeep: function (obj, key1, key2) {
+            return obj[key1][key2];
+        },
+        setDeep: function (obj, key1, key2, val) {
+            if (obj[key1][key2] === val)
+                return obj;
+
+            obj = Object.assign({}, obj);
+            obj[key1] = Object.assign({}, obj[key1]);
+            obj[key1][key2] = val;
+            return obj;
+        },
+        getIn: _getIn,
+        setIn: function (obj, path, val) {
+
+            obj = Object.assign({}, obj);
+            var prop = obj;
+            for (var i = 0; i < path.length; ++i) {
+                var pathPart = path[i];
+                if (i < path.length - 1) {
+                    prop[pathPart] = Object.assign({}, prop[pathPart]);
+                    prop = prop[pathPart];
+                }
+                else {
+                    prop[pathPart] = val;
+                }
+            }
+
+            return obj;
+        },
+        merge: function (obj1, obj2) {
+            return Object.assign({}, obj1, obj2);
+        },
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+            return _.cloneDeep(array);
+        },
+        getAt: function (arr, idx) {
+            return arr[idx];
+        },
+        setAt: function (arr, idx, val) {
+            if (arr[idx] === val)
+                return arr;
+
+            arr = arr.slice(0);
+            arr[idx] = val;
+            return arr;
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr[idx1][idx2];
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            if (arr[idx1][idx2] === val)
+                return arr;
+
+            arr = arr.slice(0);
+            arr[idx1] = arr[idx1].slice(0);
+            arr[idx1][idx2] = val;
+            return arr;
+        },
     };
 
     _solIassign = {
@@ -137,6 +228,7 @@
             return obj[key1][key2];
         },
         setDeep: function (obj, key1, key2, val) {
+            // Paul Note
             if (obj[key1][key2] === val)
                 return obj;
 
@@ -174,13 +266,18 @@
                 }
             )
         },
-        initArr: function () {
-            return _.cloneDeep(INITIAL_ARRAY);
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+
+            return _.cloneDeep(array);
         },
         getAt: function (arr, idx) {
             return arr[idx];
         },
         setAt: function (arr, idx, val) {
+            // Paul Note
             if (arr[idx] === val)
                 return arr;
 
@@ -188,6 +285,23 @@
                 arr,
                 function (arr) { arr[idx] = val; return arr; }
             );
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr[idx1][idx2];
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            if (arr[idx1][idx2] === val)
+                return arr;
+
+            return iassign(
+                arr,
+                function (arr, ctx) { return arr[ctx.idx1][ctx.idx2]; },
+                function (prop) { return val; },
+                {
+                    idx1: idx1,
+                    idx2: idx2
+                }
+            )
         }
     };
 
@@ -215,8 +329,11 @@
         merge: function (obj1, obj2) {
             return timm.merge(obj1, obj2);
         },
-        initArr: function () {
-            return _.cloneDeep(INITIAL_ARRAY);
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+            return _.cloneDeep(array);
         },
         getAt: function (arr, idx) {
             return arr[idx];
@@ -251,14 +368,23 @@
         merge: function (obj1, obj2) {
             return obj1.merge(obj2);
         },
-        initArr: function () {
-            return Immutable.List(INITIAL_ARRAY);
+        initArr: function (array) {
+            if (!array) {
+                return Immutable.List(INITIAL_ARRAY);
+            }
+            return Immutable.fromJS(array);
         },
         getAt: function (arr, idx) {
             return arr.get(idx);
         },
         setAt: function (arr, idx, val) {
             return arr.set(idx, val);
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr.getIn([idx1, idx2]);
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            return arr.setIn([idx1, idx2], val);
         }
     };
 
@@ -285,14 +411,23 @@
         merge: function (obj1, obj2) {
             return obj1.merge(obj2);
         },
-        initArr: function () {
-            return Seamless(INITIAL_ARRAY);
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+            return Seamless(array);
         },
         getAt: function (arr, idx) {
             return arr[idx];
         },
         setAt: function (arr, idx, val) {
             return arr.set(idx, val);
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr[idx1][idx2];
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            return arr.setIn([idx1, idx2], val);
         }
     };
 
@@ -305,21 +440,26 @@
     };
 
     _verify = function (solution) {
-        var arr, arr2, get, getAt, getIn, init, initArr, merge, obj, obj2, results, set, setAt, setDeep, setIn;
+        var arr, arr2, get, getAt, getAtDeep, getIn, init, initArr, merge, obj, obj2, results, set, setAt, setDeep, setIn, setAtDeep;
         results = [];
-        init = solution.init, get = solution.get, set = solution.set, setDeep = solution.setDeep, getIn = solution.getIn, setIn = solution.setIn, merge = solution.merge, initArr = solution.initArr, getAt = solution.getAt, setAt = solution.setAt;
+        init = solution.init, get = solution.get, set = solution.set, setDeep = solution.setDeep, getIn = solution.getIn,
+            setIn = solution.setIn, merge = solution.merge, initArr = solution.initArr, getAt = solution.getAt, setAt = solution.setAt
+        getAtDeep = solution.getAtDeep, setAtDeep = solution.setAtDeep;
         obj = init();
         _addResult(results, get(obj, 'toggle') === false);
+
         results.push('-');  // 1
         obj2 = set(obj, 'toggle', true);
         _addResult(results, get(obj, 'toggle') === false);
         _addResult(results, get(obj2, 'toggle') === true);
         _addResult(results, obj2 !== obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
+
         results.push('-');  // 2
         obj2 = set(obj, 'str', 'foo');
         _addResult(results, obj2 === obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
+
         results.push('-');  // 3
         obj2 = setDeep(obj, 'd', 'd1', 3);
         _addResult(results, solution.getDeep(obj, 'd', 'd1') === 6);
@@ -327,10 +467,12 @@
         _addResult(results, obj2 !== obj);
         _addResult(results, get(obj2, 'd') !== get(obj, 'd'));
         _addResult(results, get(obj2, 'e') === get(obj, 'e'));
+
         results.push('-');  // 4
         obj2 = set(obj, 'b', get(obj, 'b'));
         _addResult(results, obj2 === obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
+
         results.push('-');  // 5
         obj2 = set(obj, 'str', 'bar');
         _addResult(results, obj2 !== obj);
@@ -341,6 +483,7 @@
         _addResult(results, solution.getDeep(obj2, 'd', 'd1') === 6);
         _addResult(results, obj2 === obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
+
         results.push('-');  // 6
         obj2 = setIn(obj, DEEP_PATH, 3);
         _addResult(results, obj2 !== obj);
@@ -348,6 +491,7 @@
         _addResult(results, get(obj2, 'e') === get(obj, 'e'));
         _addResult(results, getIn(obj, DEEP_PATH) === 1);
         _addResult(results, getIn(obj2, DEEP_PATH) === 3);
+
         results.push('-');  // 7
         obj2 = merge(obj, {
             c: 5,
@@ -357,6 +501,7 @@
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
         _addResult(results, get(obj2, 'c') === 5);
         _addResult(results, get(obj2, 'f') === null);
+
         results.push('-');  // 8
         arr = initArr();
         arr2 = setAt(arr, 1, {
@@ -367,6 +512,18 @@
         _addResult(results, getAt(arr2, 1).b === 3);
         arr2 = setAt(arr, 1, getAt(arr, 1));
         _addResult(results, arr2 === arr);
+
+        results.push('-');  // 9
+        arr = initArr(INITIAL_DEEP_ARRAY);
+        arr2 = setAtDeep(arr, 3, 0, {
+            b: 3
+        });
+        _addResult(results, arr2 !== arr);
+        _addResult(results, get(getAtDeep(arr, 3, 0), "b") === 2);
+        _addResult(results, getAtDeep(arr2, 3, 0).b === 3);
+        arr2 = setAtDeep(arr, 3, 1, getAtDeep(arr, 3, 1));
+        _addResult(results, arr2 === arr);
+
         return console.log("  Verification: " + (results.join('')));
     };
 
@@ -382,7 +539,7 @@
 
     _allTests = function (desc, solution) {
         var MERGE_OBJ, arr, obj;
-        console.log(chalk.bold(desc));
+        console.log("\n" + chalk.bold(desc));
         _verify(solution);
         obj = solution.init();
         var totalRead = 0;
@@ -454,18 +611,35 @@
             }
         });
 
+        arr = solution.initArr(INITIAL_DEEP_ARRAY);
+        totalRead += _test("Array: deep read (x" + R + ")", function () {
+            var j, ref1, val;
+            for (n = j = 0, ref1 = R; 0 <= ref1 ? j < ref1 : j > ref1; n = 0 <= ref1 ? ++j : --j) {
+                val = solution.getAtDeep(arr, 3, 0);
+            }
+        });
+        arr = solution.initArr(INITIAL_DEEP_ARRAY);
+        totalWrite += _test("Array: deep write (x" + W + ")", function () {
+            var arr2, j, ref1;
+            for (n = j = 0, ref1 = W; 0 <= ref1 ? j < ref1 : j > ref1; n = 0 <= ref1 ? ++j : --j) {
+                arr2 = solution.setAtDeep(arr, 3, 0, n);
+            }
+        });
+
         var totalElapsed = totalRead + totalWrite;
-        console.log("Total elapsed = " + totalElapsed + " ms = " + totalRead + " (read) + " + totalWrite + " (write).");
+        console.log("Total elapsed = " + totalElapsed + " ms = " + totalRead + " ms (read) + " + totalWrite + " ms (write).");
         return totalElapsed;
     };
 
     _allTests("Mutable", _solMutable);
 
-    _allTests("Immutable (iassign)", _solIassign);
+    _allTests("Immutable (Object.assign)", _solObjectAssign);
 
-    _allTests("Immutable (ImmutableJS)", _solImmutableJs);
+    _allTests("Immutable (immutable-assign)", _solIassign);
 
-    _allTests("Immutable (timm)", _solImmutableTimm);
+    _allTests("Immutable (immutable.js)", _solImmutableJs);
+
+    // _allTests("Immutable (timm)", _solImmutableTimm);
 
     _allTests("Immutable (seamless-immutable)", _solImmutableSeamless);
 

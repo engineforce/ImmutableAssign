@@ -33,11 +33,9 @@ npm run benchmarks
 
 <p>
     <a href="benchmarks.png?raw=true" target="_blank">
-        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" style="width:60%;">
+        <img src="benchmarks.png?raw=true" alt="benchmarks" title="benchmarks" style="width:70%;">
     </a>
 </p>
-
-[//]![benchmarks](benchmarks.png?raw=true "benchmarks")
 
 ##Install with npm
 

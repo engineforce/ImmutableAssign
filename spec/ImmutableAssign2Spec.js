@@ -30,7 +30,15 @@
 })(this, function (require, exports) {
         
     var iassign = require("../src/iassign");
-    var deepFreeze = require("deep-freeze");
+    var noDeepFreeze = false;
+    try {
+        var deepFreeze = require("deep-freeze");
+    }
+    catch(ex) {
+        deepFreeze = function() {};
+        noDeepFreeze = true;
+        console.warn("Cannot load deep-freeze module.");
+    }
     var _ = require("lodash");
 
     if (typeof(global) !== "undefined") {
@@ -306,6 +314,9 @@
 
         // Will cause error but not the close brack error.
         xit("extra '[' should throw exception", function () {
+            if (noDeepFreeze)
+                return;
+            
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 

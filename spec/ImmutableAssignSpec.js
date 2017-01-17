@@ -26,7 +26,15 @@
     }
 })(this, function (require, exports) {
     var iassign = require("../src/iassign");
-    var deepFreeze = require("deep-freeze");
+    var noDeepFreeze = false;
+    try {
+        var deepFreeze = require("deep-freeze");
+    }
+    catch (ex) {
+        deepFreeze = function () { };
+        noDeepFreeze = true;
+        console.warn("Cannot load deep-freeze module.");
+    }
     var _ = require("lodash");
     describe("Test", function () {
         beforeEach(function () {
@@ -231,6 +239,8 @@
             expect(o2.a.b.c[0][0].d).toBe(12);
         });
         it("Try to modify freezed object should throw error.", function () {
+            if (noDeepFreeze)
+                return;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
             expect(function () {
@@ -356,6 +366,8 @@
             expect(o2.a2).toBe(o1.a2);
         });
         it("Use built-in deep freeze to protect input", function () {
+            if (noDeepFreeze)
+                return;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             iassign.freezeInput = true;
             expect(function () {
@@ -373,6 +385,8 @@
             iassign.freezeInput = undefined;
         });
         it("Use built-in deep freeze to protect output", function () {
+            if (noDeepFreeze)
+                return;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } } };
             iassign.freezeOutput = true;
             var o2 = iassign(o1, function (o) { return o.a.b.c[0]; }, function (c) {
@@ -417,6 +431,8 @@
             expect(map2).not.toBe(map1);
         });
         it("Example 1b: update object with option", function () {
+            if (noDeepFreeze)
+                return;
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change. 
             iassign.freeze = true;
@@ -445,6 +461,8 @@
             expect(map2).not.toBe(map1);
         });
         it("Example 1d: update object with option that pass undefined to getProp()", function () {
+            if (noDeepFreeze)
+                return;
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change. 
             iassign.freeze = true;

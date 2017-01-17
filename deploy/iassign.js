@@ -1,32 +1,32 @@
 "use strict";
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports);
+        try {
+            var deepFreeze = require("deep-freeze");
+        }
+        catch (ex) {
+            console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
+        }
+        var v = factory(deepFreeze, exports);
         if (v !== undefined)
             module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
+        define(["deep-freeze", "exports"], factory);
     }
     else {
         // Browser globals (root is window)
-        var browserRequire = function (name) {
-            if (name == "deep-freeze" && root.deepFreeze) {
-                return root.deepFreeze;
-            }
-            throw new Error("Unable to require: " + name);
-        };
-        root.iassign = factory(browserRequire, {});
+        root.iassign = factory(root.deepFreeze, {});
     }
-})(this, function (require, exports) {
+})(this, function (deepFreeze, exports) {
     //import deepFreeze = require("deep-freeze");
-    try {
-        var deepFreeze = require("deep-freeze");
-    }
-    catch (ex) {
-        console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
-    }
+    // try {
+    //     var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+    // } catch (ex) {
+    //     console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
+    // }
     var iassign = _iassign;
+    iassign.maxGetPropCacheSize = 100;
     // Immutable Assign
     function _iassign(obj, // Object to set property, it will not be modified.
         getPropOrSetProp, // Function to get property to be updated. Must be pure function.
@@ -43,12 +43,7 @@
             context = undefined;
             option = setPropOrOption;
         }
-        if (option) {
-            option = extend({}, iassign, option);
-        }
-        else {
-            option = iassign;
-        }
+        option = copyOption(option);
         if (deepFreeze && (option.freeze || option.freezeInput)) {
             deepFreeze(obj);
         }
@@ -60,94 +55,72 @@
             // Check if getProp() is valid
             var value = getProp(obj, context);
             var getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
-            var accessorText = getPropFuncInfo.accessorText;
-            var propIndex = 0;
-            var propValue = undefined;
-            while (accessorText) {
-                var openBracketIndex = accessorText.indexOf("[");
-                var closeBracketIndex = accessorText.indexOf("]");
-                var dotIndex = accessorText.indexOf(".");
-                var propName = "";
-                var propNameSource = ePropNameSource.none;
-                // if (dotIndex == 0) {
-                //     accessorText = accessorText.substr(dotIndex + 1);
-                //     continue;
-                // }
-                if (openBracketIndex > -1 && closeBracketIndex <= -1) {
-                    throw new Error("Found open bracket but not close bracket.");
-                }
-                if (openBracketIndex <= -1 && closeBracketIndex > -1) {
-                    throw new Error("Found close bracket but not open bracket.");
-                }
-                if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
-                    propName = accessorText.substr(0, dotIndex);
-                    accessorText = accessorText.substr(dotIndex + 1);
-                    propNameSource = ePropNameSource.beforeDot;
-                }
-                else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
-                    if (openBracketIndex > 0) {
-                        propName = accessorText.substr(0, openBracketIndex);
-                        accessorText = accessorText.substr(openBracketIndex);
-                        propNameSource = ePropNameSource.beforeBracket;
-                    }
-                    else {
-                        propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
-                        accessorText = accessorText.substr(closeBracketIndex + 1);
-                        propNameSource = ePropNameSource.inBracket;
-                    }
-                }
-                else {
-                    propName = accessorText;
-                    accessorText = "";
-                    propNameSource = ePropNameSource.last;
-                }
-                propName = propName.trim();
-                if (propName == "") {
-                    continue;
-                }
-                //console.log(propName);
-                if (propIndex <= 0) {
-                    propValue = quickCopy(obj);
-                    if (!accessorText) {
-                        propValue = setProp(propValue);
-                    }
-                    obj = propValue;
-                }
-                else {
-                    var prevPropValue = propValue;
-                    if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
-                        if (propName[0] == "#") {
-                            var quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
-                            if (!quotedPropName) {
-                                throw new Error("Cannot find quoted text for " + quotedPropName);
-                            }
-                            propName = eval(quotedPropName);
-                        }
-                        else {
-                            var statement = "'use strict';\n";
-                            if (getPropFuncInfo.objParameterName) {
-                                statement += "var " + getPropFuncInfo.objParameterName + " = arguments[1];\n";
-                            }
-                            if (getPropFuncInfo.cxtParameterName) {
-                                statement += "var " + getPropFuncInfo.cxtParameterName + " = arguments[2];\n";
-                            }
-                            statement += "" + propName;
-                            propName = evalStatement(statement, obj, context);
-                        }
-                    }
-                    propValue = propValue[propName];
-                    propValue = quickCopy(propValue);
-                    if (!accessorText) {
-                        propValue = setProp(propValue);
-                    }
-                    prevPropValue[propName] = propValue;
-                }
-                //console.log(propValue);
-                propIndex++;
-            }
+            obj = updateProperty(obj, setProp, context, getPropFuncInfo);
         }
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
             deepFreeze(obj);
+        }
+        return obj;
+    }
+    // For performance
+    function copyOption(option) {
+        var newOption = {};
+        newOption.freeze = iassign.freeze;
+        newOption.freezeInput = iassign.freezeInput;
+        newOption.freezeOutput = iassign.freezeOutput;
+        newOption.disableAllCheck = iassign.disableAllCheck;
+        newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
+        newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
+        newOption.maxGetPropCacheSize = iassign.maxGetPropCacheSize;
+        if (option) {
+            if (option.freeze != undefined) {
+                newOption.freeze = option.freeze;
+            }
+            if (option.freezeInput != undefined) {
+                newOption.freezeInput = option.freezeInput;
+            }
+            if (option.freezeOutput != undefined) {
+                newOption.freezeOutput = option.freezeOutput;
+            }
+            if (option.disableAllCheck != undefined) {
+                newOption.disableAllCheck = option.disableAllCheck;
+            }
+            if (option.disableHasReturnCheck != undefined) {
+                newOption.disableHasReturnCheck = option.disableHasReturnCheck;
+            }
+            if (option.disableExtraStatementCheck != undefined) {
+                newOption.disableExtraStatementCheck = option.disableExtraStatementCheck;
+            }
+            if (option.maxGetPropCacheSize != undefined) {
+                newOption.maxGetPropCacheSize = option.maxGetPropCacheSize;
+            }
+        }
+        return newOption;
+    }
+    function updateProperty(obj, setProp, context, getPropFuncInfo) {
+        var propValue = undefined;
+        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
+            var _a = getPropFuncInfo.funcTokens[propIndex], propName = _a.propName, propNameSource = _a.propNameSource, subAccessorText = _a.subAccessorText, getPropName = _a.getPropName;
+            //console.log(propName);
+            if (propIndex <= 0) {
+                propValue = quickCopy(obj);
+                if (!subAccessorText) {
+                    propValue = setProp(propValue);
+                }
+                obj = propValue;
+            }
+            else {
+                var prevPropValue = propValue;
+                if (propName == undefined) {
+                    propName = getPropName(obj, context);
+                }
+                propValue = propValue[propName];
+                propValue = quickCopy(propValue);
+                if (!subAccessorText) {
+                    propValue = setProp(propValue);
+                }
+                prevPropValue[propName] = propValue;
+            }
         }
         return obj;
     }
@@ -159,8 +132,15 @@
         ePropNameSource[ePropNameSource["inBracket"] = 3] = "inBracket";
         ePropNameSource[ePropNameSource["last"] = 4] = "last";
     })(ePropNameSource || (ePropNameSource = {}));
+    var getPropCaches = {};
+    var getPropCacheKeys = [];
     function parseGetPropFuncInfo(func, option) {
         var funcText = func.toString();
+        var cacheKey = funcText + JSON.stringify(option);
+        var info = getPropCaches[cacheKey];
+        if (getPropCaches[cacheKey]) {
+            return info;
+        }
         var matches = /\(([^\)]*)\)/.exec(funcText);
         var objParameterName = undefined;
         var cxtParameterName = undefined;
@@ -178,13 +158,111 @@
         }
         var bodyText = funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
         var accessorTextInfo = getAccessorTextInfo(bodyText, option);
-        return {
+        info = {
             objParameterName: objParameterName,
             cxtParameterName: cxtParameterName,
             bodyText: bodyText,
             accessorText: accessorTextInfo.accessorText,
             quotedTextInfos: accessorTextInfo.quotedTextInfos,
+            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText),
         };
+        postProcessTokens(info);
+        if (option.maxGetPropCacheSize > 0) {
+            getPropCaches[cacheKey] = info;
+            getPropCacheKeys.push(cacheKey);
+            if (getPropCacheKeys.length > option.maxGetPropCacheSize) {
+                debugger;
+                var cacheKeyToRemove = getPropCacheKeys.shift();
+                delete getPropCaches[cacheKeyToRemove];
+            }
+        }
+        return info;
+    }
+    function parseGetPropFuncTokens(accessorText) {
+        var tokens = [];
+        while (accessorText) {
+            var openBracketIndex = accessorText.indexOf("[");
+            var closeBracketIndex = accessorText.indexOf("]");
+            var dotIndex = accessorText.indexOf(".");
+            var propName = "";
+            var propNameSource = ePropNameSource.none;
+            // if (dotIndex == 0) {
+            //     accessorText = accessorText.substr(dotIndex + 1);
+            //     continue;
+            // }
+            if (openBracketIndex > -1 && closeBracketIndex <= -1) {
+                throw new Error("Found open bracket but not close bracket.");
+            }
+            if (openBracketIndex <= -1 && closeBracketIndex > -1) {
+                throw new Error("Found close bracket but not open bracket.");
+            }
+            if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
+                propName = accessorText.substr(0, dotIndex);
+                accessorText = accessorText.substr(dotIndex + 1);
+                propNameSource = ePropNameSource.beforeDot;
+            }
+            else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
+                if (openBracketIndex > 0) {
+                    propName = accessorText.substr(0, openBracketIndex);
+                    accessorText = accessorText.substr(openBracketIndex);
+                    propNameSource = ePropNameSource.beforeBracket;
+                }
+                else {
+                    propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
+                    accessorText = accessorText.substr(closeBracketIndex + 1);
+                    propNameSource = ePropNameSource.inBracket;
+                }
+            }
+            else {
+                propName = accessorText;
+                accessorText = "";
+                propNameSource = ePropNameSource.last;
+            }
+            propName = propName.trim();
+            if (propName == "") {
+                continue;
+            }
+            //console.log(propName);
+            tokens.push({
+                propName: propName,
+                propNameSource: propNameSource,
+                subAccessorText: accessorText,
+            });
+        }
+        return tokens;
+    }
+    function postProcessTokens(getPropFuncInfo) {
+        var _loop_1 = function() {
+            var token = getPropFuncInfo.funcTokens[propIndex];
+            var propName = token.propName, propNameSource = token.propNameSource, subAccessorText = token.subAccessorText;
+            if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
+                if (propName[0] == "#") {
+                    var quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
+                    if (!quotedPropName) {
+                        throw new Error("Cannot find quoted text for " + quotedPropName);
+                    }
+                    propName = eval(quotedPropName);
+                    token.propName = propName;
+                }
+                else {
+                    var statement_1 = "'use strict';\n";
+                    if (getPropFuncInfo.objParameterName) {
+                        statement_1 += "var " + getPropFuncInfo.objParameterName + " = arguments[1];\n";
+                    }
+                    if (getPropFuncInfo.cxtParameterName) {
+                        statement_1 += "var " + getPropFuncInfo.cxtParameterName + " = arguments[2];\n";
+                    }
+                    statement_1 += "" + propName;
+                    token.propName = undefined;
+                    token.getPropName = function (obj, context) {
+                        return evalStatement(statement_1, obj, context);
+                    };
+                }
+            }
+        };
+        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
+            _loop_1();
+        }
     }
     function getAccessorTextInfo(bodyText, option) {
         var returnIndex = bodyText.indexOf("return ");

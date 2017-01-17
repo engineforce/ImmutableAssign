@@ -361,6 +361,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ##History
 
+* 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)
 * 1.0.23 - Greatly improved performance.
 * 1.0.21 - Added new function overload to skip getProp() if you trying to update the root object, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)
 * 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)

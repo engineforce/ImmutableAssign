@@ -29,7 +29,15 @@
 })(this, function (require, exports) {
 
     var iassign: IIassign = require("../src/iassign");
-    var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+    var noDeepFreeze = false;
+    try {
+        var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+    } catch (ex) {
+        deepFreeze = function () { };
+        noDeepFreeze = true;
+        console.warn("Cannot load deep-freeze module.");
+    }
+
     var _: _.LoDashStatic = require("lodash");
 
     describe("Test", function () {
@@ -289,6 +297,9 @@
         });
 
         it("Try to modify freezed object should throw error.", function () {
+            if (noDeepFreeze)
+                return;
+
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
@@ -472,6 +483,9 @@
         });
 
         it("Use built-in deep freeze to protect input", function () {
+            if (noDeepFreeze)
+                return;
+
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             iassign.freezeInput = true;
 
@@ -495,6 +509,9 @@
         });
 
         it("Use built-in deep freeze to protect output", function () {
+            if (noDeepFreeze)
+                return;
+
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } } };
             iassign.freezeOutput = true;
 
@@ -561,6 +578,9 @@
         });
 
         it("Example 1b: update object with option", function () {
+            if (noDeepFreeze)
+                return;
+
             //var iassign = require("immutable-assign");
 
             // Deep freeze both input and output, can be used in development to make sure they don't change. 
@@ -616,6 +636,9 @@
         });
 
         it("Example 1d: update object with option that pass undefined to getProp()", function () {
+            if (noDeepFreeze)
+                return;
+
             //var iassign = require("immutable-assign");
 
             // Deep freeze both input and output, can be used in development to make sure they don't change. 
@@ -624,7 +647,7 @@
             var map1 = { a: 1, b: 2, c: 3 };
 
             // 1: Calling iassign() to update map1.b 
-            var map2 = iassign<any, {b: number}, any>(
+            var map2 = iassign<any, { b: number }, any>(
                 map1,
                 undefined,
                 (m) => { m.b = 50; return m; }
@@ -636,7 +659,7 @@
 
             expect(() => { map2.a = 3; }).toThrow();
 
-            var map3 = iassign<any, {c: number}, any>(
+            var map3 = iassign<any, { c: number }, any>(
                 map2,
                 undefined,
                 (m) => { m.c = 60; return m; },

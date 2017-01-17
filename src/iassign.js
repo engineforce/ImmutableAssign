@@ -1,31 +1,30 @@
 "use strict";
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
-        var v = factory(require, exports);
+        try {
+            var deepFreeze = require("deep-freeze");
+        }
+        catch (ex) {
+            console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
+        }
+        var v = factory(deepFreeze, exports);
         if (v !== undefined)
             module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["require", "exports"], factory);
+        define(["deep-freeze", "exports"], factory);
     }
     else {
         // Browser globals (root is window)
-        var browserRequire = function (name) {
-            if (name == "deep-freeze" && root.deepFreeze) {
-                return root.deepFreeze;
-            }
-            throw new Error("Unable to require: " + name);
-        };
-        root.iassign = factory(browserRequire, {});
+        root.iassign = factory(root.deepFreeze, {});
     }
-})(this, function (require, exports) {
+})(this, function (deepFreeze, exports) {
     //import deepFreeze = require("deep-freeze");
-    try {
-        var deepFreeze = require("deep-freeze");
-    }
-    catch (ex) {
-        console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
-    }
+    // try {
+    //     var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+    // } catch (ex) {
+    //     console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
+    // }
     var iassign = _iassign;
     iassign.maxGetPropCacheSize = 100;
     // Immutable Assign
@@ -233,7 +232,7 @@
         return tokens;
     }
     function postProcessTokens(getPropFuncInfo) {
-        var _loop_1 = function () {
+        var _loop_1 = function() {
             var token = getPropFuncInfo.funcTokens[propIndex];
             var propName = token.propName, propNameSource = token.propNameSource, subAccessorText = token.subAccessorText;
             if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {

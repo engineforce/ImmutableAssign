@@ -39,7 +39,7 @@ declare namespace ImmutableAssign {
             setProp: setPropFunc<TObj>,
             option?: IIassignOption): TObj;
 
-        // functional programming friendly style, moved obj to the last parameters and supports currying
+        // functional programming friendly style, moved obj to the last parameter and supports currying
         fp<TObj, TProp, TContext>(
             getProp: getPropFunc<TObj, TProp, TContext>,
             setProp: setPropFunc<TProp>,

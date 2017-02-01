@@ -61,8 +61,7 @@ iassign = function<TObj>(
     setProp: setPropFunc<TObj>,                         // Function to set the property.
     option?: IIassignOption): TObj;                     // (Optional) Options
 
-// functional programming friendly style, moved obj to the last parameters
-// and supports currying, refer to example 8
+// functional programming friendly style, moved obj to the last parameter and supports currying, refer to example 8
 iassign.fp = function <TObj, TProp, TContext>(
     getProp: getPropFunc<TObj, TProp, TContext>,
     setProp: setPropFunc<TProp>,
@@ -420,7 +419,7 @@ var nested5 = iassignFp(nested4);
 
 ##History
 
-* 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested)
+* 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)
 * 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)
 * 1.0.23 - Greatly improved performance.
 * 1.0.21 - Added new function overload to skip getProp() if you trying to update the root object, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)

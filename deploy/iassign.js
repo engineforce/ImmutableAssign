@@ -25,7 +25,32 @@
     // } catch (ex) {
     //     console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
     // }
+    var autoCurry = (function () {
+        var toArray = function toArray(arr, from) {
+            return Array.prototype.slice.call(arr, from || 0);
+        };
+        var curry = function curry(fn /* variadic number of args */) {
+            var args = toArray(arguments, 1);
+            return function curried() {
+                return fn.apply(this, args.concat(toArray(arguments)));
+            };
+        };
+        return function autoCurry(fn, numArgs) {
+            numArgs = numArgs || fn.length;
+            return function autoCurried() {
+                if (arguments.length < numArgs) {
+                    return numArgs - arguments.length > 0 ?
+                        autoCurry(curry.apply(this, [fn].concat(toArray(arguments))), numArgs - arguments.length) :
+                        curry.apply(this, [fn].concat(toArray(arguments)));
+                }
+                else {
+                    return fn.apply(this, arguments);
+                }
+            };
+        };
+    }());
     var iassign = _iassign;
+    iassign.fp = autoCurry(_iassignFp);
     iassign.maxGetPropCacheSize = 100;
     // Immutable Assign
     function _iassign(obj, // Object to set property, it will not be modified.
@@ -61,6 +86,9 @@
             deepFreeze(obj);
         }
         return obj;
+    }
+    function _iassignFp(getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined, obj) {
+        return _iassign(obj, getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined);
     }
     // For performance
     function copyOption(option) {

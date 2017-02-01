@@ -835,6 +835,74 @@
 
         });
 
+        it("Issue 3: nicer api", function () {
+
+            iassign.freeze = true;
+
+            const mutate = (getter, setter, context?) => (state) => iassign(state, getter, setter, context, { freeze: true });
+
+            var nested1 = { a: { b: { c: [3, 4, 5] } } };
+
+            // 3.1: Calling iassign() to assign d to nested1.a.b 
+
+            let nested2 = mutate(n => n.a.b, b => { b.d = 6; return b; })(nested1);
+
+            expect(nested1).toEqual({ a: { b: { c: [3, 4, 5] } } });
+            expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: 6 } } });
+            expect(nested2).not.toBe(nested1);
+
+        });
+
+        it("iassign.fp", function () {
+
+            //var iassign = require("immutable-assign");
+
+            // Deep freeze both input and output, can be used in development to make sure they don't change. 
+            iassign.freeze = true;
+
+            var nested1 = { a: { b: { c: [3, 4, 5] } } };
+
+
+            // 3.1: Calling iassign() to assign d to nested1.a.b 
+            var nested2 = iassign.fp(
+                function (n) { return n.a.b; },
+                function (b: any) { b.d = 6; return b; },
+                undefined,
+                undefined,
+                nested1
+            );
+
+            expect(nested1).toEqual({ a: { b: { c: [3, 4, 5] } } });
+            expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: 6 } } });
+            expect(nested2).not.toBe(nested1);
+
+            // 3.2: Calling iassign() to increment nested2.a.b.d 
+            var nested3 = iassign.fp(
+                function (n) { return (<any>n.a.b).d; },
+                function (d) { return d + 1; },
+                undefined,
+                undefined,
+                nested2
+            );
+
+            expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: 6 } } });
+            expect(nested3).toEqual({ a: { b: { c: [3, 4, 5], d: 7 } } });
+            expect(nested3).not.toBe(nested2);
+
+            // 3.3: Calling iassign() to push item to nested3.a.b.c 
+            var nested4 = iassign.fp(
+                function (n) { return n.a.b.c; },
+                function (c) { c.push(6); return c; },
+                undefined,
+                undefined,
+                nested3
+            );
+
+            expect(nested3).toEqual({ a: { b: { c: [3, 4, 5], d: 7 } } });
+            expect(nested4).toEqual({ a: { b: { c: [3, 4, 5, 6], d: 7 } } });
+            expect(nested4).not.toBe(nested3);
+
+        });
 
     });
 

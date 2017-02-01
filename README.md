@@ -48,7 +48,7 @@ npm run benchmarks
 // Return a new POJO object with property updated.
 
 // function overload 1: 
-function iassign<TObj, TProp, TContext>(
+iassign = function<TObj, TProp, TContext>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
     setProp: (prop: TProp) => TProp,                    // Function to set the property.
@@ -56,11 +56,19 @@ function iassign<TObj, TProp, TContext>(
     option?: IIassignOption): TObj;                     // (Optional) Options
 
 // function overload 2: you can skip getProp() if you trying to update the root object, refer to example 1 and 2
-function iassign<TObj>(
+iassign = function<TObj>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     setProp: setPropFunc<TObj>,                         // Function to set the property.
     option?: IIassignOption): TObj;                     // (Optional) Options
 
+// functional programming friendly style, moved obj to the last parameters
+// and supports currying, refer to example 8
+iassign.fp = function <TObj, TProp, TContext>(
+    getProp: getPropFunc<TObj, TProp, TContext>,
+    setProp: setPropFunc<TProp>,
+    context?: TContext,
+    option?: IIassignOption,
+    obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
 
 // Options, can be applied globally or individually
 interface IIassignOption {
@@ -352,6 +360,57 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ```
 
+####Example 8: Update nested structures using iassign.fp() and currying
+
+```javascript
+var iassign = require("immutable-assign");
+
+var nested1 = { a: { b: { c: [3, 4, 5] } } };
+
+
+// 8.1: Calling iassign() to assign d to nested1.a.b 
+var iassignFp = iassign.fp(function (n) { return n.a.b; })
+    (function (b) { b.d = 6; return b; })
+    (undefined)
+    (undefined);
+
+var nested2 = iassignFp(nested1);
+
+// nested2 = { a: { b: { c: [3, 4, 5], d: 6 } } };
+// nested2 !== nested1
+
+// 8.2: Calling iassign() to increment nested2.a.b.d 
+iassignFp = iassign.fp(function (n) { return n.a.b.d; })
+    (function (d) { return d + 1; })
+    (undefined)
+    (undefined);
+var nested3 = iassignFp(nested2);
+
+// nested3 = { a: { b: { c: [3, 4, 5], d: 7 } } };
+// nested3 !== nested2
+
+// 8.3: Calling iassign() to push item to nested3.a.b.c 
+iassignFp = iassign.fp(function (n) { return n.a.b.c; })
+    (function (c) { c.push(6); return c; })
+    (undefined)
+    (undefined);
+var nested4 = iassignFp(nested3);
+
+// nested4 = { a: { b: { c: [3, 4, 5, 6], d: 7 } } };
+// nested4 !== nested3
+
+// 8.4: Calling iassign() to push item to nested3.a.b.c[1]
+iassignFp = iassign.fp(function (n, ctx) { return n.a.b.c[ctx.i]; })
+    (function (ci) { return ci + 100; })
+    ({i: 1})
+    (undefined);
+var nested5 = iassignFp(nested4);
+
+// nested5 = { a: { b: { c: [3, 104, 5, 6], d: 7 } } };
+// nested5 !== nested4
+
+```
+
 
 ##Constraints
 
@@ -361,6 +420,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ##History
 
+* 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested)
 * 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)
 * 1.0.23 - Greatly improved performance.
 * 1.0.21 - Added new function overload to skip getProp() if you trying to update the root object, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)

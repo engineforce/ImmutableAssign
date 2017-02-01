@@ -44,6 +44,14 @@ interface IIassign extends IIassignOption {
         obj: TObj,
         setProp: setPropFunc<TObj>,
         option?: IIassignOption): TObj;
+
+    // functional programming friendly style, moved obj to the last parameters and supports currying
+    fp<TObj, TProp, TContext>(
+        getProp: getPropFunc<TObj, TProp, TContext>,
+        setProp: setPropFunc<TProp>,
+        context?: TContext,
+        option?: IIassignOption,
+        obj?: TObj): TObj;
 }
 
 (function (root, factory) {
@@ -72,7 +80,38 @@ interface IIassign extends IIassignOption {
     //     console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
     // }
 
+    var autoCurry = (function () {
+
+        var toArray = function toArray(arr, from?) {
+            return Array.prototype.slice.call(arr, from || 0);
+        }
+
+        var curry = function curry(fn /* variadic number of args */) {
+            var args = toArray(arguments, 1);
+            return function curried() {
+                return fn.apply(this, args.concat(toArray(arguments)));
+            };
+        };
+
+        return function autoCurry(fn, numArgs?) {
+            numArgs = numArgs || fn.length;
+            return function autoCurried() {
+                if (arguments.length < numArgs) {
+                    return numArgs - arguments.length > 0 ?
+                        autoCurry(curry.apply(this, [fn].concat(toArray(arguments))),
+                            numArgs - arguments.length) :
+                        curry.apply(this, [fn].concat(toArray(arguments)));
+                }
+                else {
+                    return fn.apply(this, arguments);
+                }
+            };
+        };
+
+    }());
+
     var iassign: IIassign = <any>_iassign;
+    iassign.fp = autoCurry(_iassignFp);
     iassign.maxGetPropCacheSize = 100;
 
     // Immutable Assign
@@ -119,6 +158,17 @@ interface IIassign extends IIassignOption {
         }
 
         return obj;
+    }
+
+    function _iassignFp<TObj, TProp, TContext>(
+        getPropOrSetProp: getPropFunc<TObj, TProp, TContext> | setPropFunc<TProp>,
+        setPropOrOption: setPropFunc<TProp> | IIassignOption,
+        contextOrUndefined?: TContext,
+        optionOrUndefined?: IIassignOption,
+        obj?: TObj
+    ): TObj {
+
+        return _iassign<TObj, TProp, TContext>(obj, getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined);
     }
 
     // For performance

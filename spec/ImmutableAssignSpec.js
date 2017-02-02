@@ -245,7 +245,7 @@
             deepFreeze(o1);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
@@ -372,7 +372,7 @@
             iassign.freezeInput = true;
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
@@ -407,7 +407,7 @@
             expect(o2.a.b.c[0][2]).not.toBe(o1.a.b.c[0][2]);
             expect(function () {
                 o2.a.b.c[0].push(3);
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
             expect(function () {
                 o2.a.b.c[0][0].d++;
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);

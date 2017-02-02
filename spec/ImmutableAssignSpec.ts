@@ -305,7 +305,7 @@
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
@@ -491,7 +491,7 @@
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
@@ -540,7 +540,7 @@
 
             expect(() => {
                 o2.a.b.c[0].push(<any>3);
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
 
             expect(() => {
                 o2.a.b.c[0][0].d++;

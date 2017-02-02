@@ -297,7 +297,23 @@ interface IIassign extends IIassignOption {
             cxtParameterName = cxtParameterName.trim();
         }
 
-        let bodyText = funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+        let bodyStartIndex = funcText.indexOf("{");
+        let bodyEndIndex = funcText.lastIndexOf("}");
+        let bodyText = "";
+        if (bodyStartIndex > -1 && bodyEndIndex > -1) {
+            bodyText = funcText.substring(bodyStartIndex + 1, bodyEndIndex);
+        }
+        else {
+            let arrowIndex = funcText.indexOf("=>");
+            if (arrowIndex > -1) {
+                //console.log("Handle arrow function.");
+                bodyText = "return " + funcText.substring(arrowIndex + 3);
+            }
+            else {
+                throw new Error(`Cannot parse function: ${funcText}`);
+            }
+        }
+
         let accessorTextInfo = getAccessorTextInfo(bodyText, option);
 
         info = {

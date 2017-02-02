@@ -6,13 +6,14 @@
 
     var ARRAY_LENGTH, DEEP_PATH, INITIAL_ARRAY, INITIAL_OBJECT, Immutable, R, Seamless, _, _addResult, _allTests, _getIn, _solImmutableJs, _solImmutableSeamless, _solImmutableTimm, _solMutable, _test, _toggle, _verify, chalk, i, n, ref, timm;
 
-    process.env.NODE_ENV = 'production';
+    process.env.NODE_ENV = 'production'; // seamless-immutable will use this
 
     _ = require('lodash');
 
     chalk = require('chalk');
 
-    Seamless = require('seamless-immutable');
+    Seamless = require('../node_modules/seamless-immutable/seamless-immutable.production.min');
+    //Seamless = require('seamless-immutable'); // This will also be production, because process.env.NODE_ENV = "production"
 
     Immutable = require('immutable');
 
@@ -659,7 +660,7 @@
     _allTests("Immutable (immutable-assign)", _solIassign);
     _allTests("Immutable (immutable.js)", _solImmutableJs);
     // _allTests("Immutable (timm)", _solImmutableTimm);
-    _allTests("Immutable (seamless-immutable)", _solImmutableSeamless);
+    _allTests("Immutable (seamless-immutable production)", _solImmutableSeamless);
 
     // Deep freeze initial object/array
     _isDevel = true;

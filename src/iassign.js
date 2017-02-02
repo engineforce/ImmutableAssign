@@ -184,7 +184,22 @@
         if (cxtParameterName) {
             cxtParameterName = cxtParameterName.trim();
         }
-        var bodyText = funcText.substring(funcText.indexOf("{") + 1, funcText.lastIndexOf("}"));
+        var bodyStartIndex = funcText.indexOf("{");
+        var bodyEndIndex = funcText.lastIndexOf("}");
+        var bodyText = "";
+        if (bodyStartIndex > -1 && bodyEndIndex > -1) {
+            bodyText = funcText.substring(bodyStartIndex + 1, bodyEndIndex);
+        }
+        else {
+            var arrowIndex = funcText.indexOf("=>");
+            if (arrowIndex > -1) {
+                //console.log("Handle arrow function.");
+                bodyText = "return " + funcText.substring(arrowIndex + 3);
+            }
+            else {
+                throw new Error("Cannot parse function: " + funcText);
+            }
+        }
         var accessorTextInfo = getAccessorTextInfo(bodyText, option);
         info = {
             objParameterName: objParameterName,

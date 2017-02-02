@@ -368,9 +368,9 @@ var nested1 = { a: { b: { c: [3, 4, 5] } } };
 
 
 // 8.1: Calling iassign() to assign d to nested1.a.b 
-var iassignFp = iassign.fp(function (n) { return n.a.b; })
+var iassignFp = iassign.fp(undefined)
+    (function (n) { return n.a.b; })
     (function (b) { b.d = 6; return b; })
-    (undefined)
     (undefined);
 
 var nested2 = iassignFp(nested1);
@@ -379,9 +379,9 @@ var nested2 = iassignFp(nested1);
 // nested2 !== nested1
 
 // 8.2: Calling iassign() to increment nested2.a.b.d 
-iassignFp = iassign.fp(function (n) { return n.a.b.d; })
+iassignFp = iassign.fp(undefined)
+    (function (n) { return n.a.b.d; })
     (function (d) { return d + 1; })
-    (undefined)
     (undefined);
 var nested3 = iassignFp(nested2);
 
@@ -389,9 +389,9 @@ var nested3 = iassignFp(nested2);
 // nested3 !== nested2
 
 // 8.3: Calling iassign() to push item to nested3.a.b.c 
-iassignFp = iassign.fp(function (n) { return n.a.b.c; })
+iassignFp = iassign.fp(undefined)
+    (function (n) { return n.a.b.c; })
     (function (c) { c.push(6); return c; })
-    (undefined)
     (undefined);
 var nested4 = iassignFp(nested3);
 
@@ -399,10 +399,10 @@ var nested4 = iassignFp(nested3);
 // nested4 !== nested3
 
 // 8.4: Calling iassign() to push item to nested3.a.b.c[1]
-iassignFp = iassign.fp(function (n, ctx) { return n.a.b.c[ctx.i]; })
+iassignFp = iassign.fp(undefined)
+    (function (n, ctx) { return n.a.b.c[ctx.i]; })
     (function (ci) { return ci + 100; })
-    ({i: 1})
-    (undefined);
+    ({i: 1});
 var nested5 = iassignFp(nested4);
 
 // nested5 = { a: { b: { c: [3, 104, 5, 6], d: 7 } } };

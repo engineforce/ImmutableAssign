@@ -63,10 +63,10 @@ iassign = function<TObj>(
 
 // functional programming friendly style, moved obj to the last parameter and supports currying, refer to example 8
 iassign.fp = function <TObj, TProp, TContext>(
+    option: IIassignOption,
     getProp: getPropFunc<TObj, TProp, TContext>,
     setProp: setPropFunc<TProp>,
     context?: TContext,
-    option?: IIassignOption,
     obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
 
 // Options, can be applied globally or individually

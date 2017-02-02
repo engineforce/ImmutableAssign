@@ -47,10 +47,10 @@ interface IIassign extends IIassignOption {
 
     // functional programming friendly style, moved obj to the last parameter and supports currying
     fp<TObj, TProp, TContext>(
+        option: IIassignOption,
         getProp: getPropFunc<TObj, TProp, TContext>,
         setProp: setPropFunc<TProp>,
         context?: TContext,
-        option?: IIassignOption,
         obj?: TObj): TObj;
 }
 
@@ -161,14 +161,14 @@ interface IIassign extends IIassignOption {
     }
 
     function _iassignFp<TObj, TProp, TContext>(
-        getPropOrSetProp: getPropFunc<TObj, TProp, TContext> | setPropFunc<TProp>,
-        setPropOrOption: setPropFunc<TProp> | IIassignOption,
-        contextOrUndefined?: TContext,
-        optionOrUndefined?: IIassignOption,
+        option: IIassignOption,
+        getProp: getPropFunc<TObj, TProp, TContext>,
+        setProp: setPropFunc<TProp>,
+        context?: TContext,
         obj?: TObj
     ): TObj {
 
-        return _iassign<TObj, TProp, TContext>(obj, getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined);
+        return _iassign<TObj, TProp, TContext>(obj, getProp, setProp, context, option);
     }
 
     // For performance

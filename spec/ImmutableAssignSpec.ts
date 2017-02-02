@@ -865,9 +865,9 @@
 
             // 3.1: Calling iassign() to assign d to nested1.a.b 
             var nested2 = iassign.fp(
+                undefined,
                 function (n) { return n.a.b; },
                 function (b: any) { b.d = 6; return b; },
-                undefined,
                 undefined,
                 nested1
             );
@@ -878,9 +878,9 @@
 
             // 3.2: Calling iassign() to increment nested2.a.b.d 
             var nested3 = iassign.fp(
+                undefined,
                 function (n) { return (<any>n.a.b).d; },
                 function (d) { return d + 1; },
-                undefined,
                 undefined,
                 nested2
             );
@@ -891,9 +891,9 @@
 
             // 3.3: Calling iassign() to push item to nested3.a.b.c 
             var nested4 = iassign.fp(
+                undefined,
                 function (n) { return n.a.b.c; },
                 function (c) { c.push(6); return c; },
-                undefined,
                 undefined,
                 nested3
             );

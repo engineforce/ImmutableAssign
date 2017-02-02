@@ -87,8 +87,8 @@
         }
         return obj;
     }
-    function _iassignFp(getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined, obj) {
-        return _iassign(obj, getPropOrSetProp, setPropOrOption, contextOrUndefined, optionOrUndefined);
+    function _iassignFp(option, getProp, setProp, context, obj) {
+        return _iassign(obj, getProp, setProp, context, option);
     }
     // For performance
     function copyOption(option) {

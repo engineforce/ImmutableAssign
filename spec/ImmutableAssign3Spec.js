@@ -74,7 +74,7 @@
             deepFreeze(o1);
 
             var o2;
-            eval("o2 = iassign(o1, (o) => { return o.a.b.c[0][0] }, function (ci) { ci.d++; return ci; });")
+            eval("o2 = iassign(o1, (o) => { return o.a.b.c[0][0] }, (ci) => { ci.d++; return ci; });")
 
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);
@@ -92,7 +92,7 @@
             deepFreeze(o1);
 
             var o2;
-            eval("o2 = iassign(o1, (o) => o.a.b.c[0][0], function (ci) { ci.d++; return ci; });");
+            eval("o2 = iassign(o1, (o) => o.a.b.c[0][0], ci => { ci.d++; return ci; });");
 
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);
@@ -114,7 +114,7 @@
             //
             var p1 = { a: 0 };
             var o2;
-            eval("o2 = iassign(o1, (o, ctx) => o.a.b.c[ctx.p1.a][0], function (ci) { ci.d++; return ci; }, { p1: p1 });");
+            eval("o2 = iassign(o1, (o, ctx) => o.a.b.c[ctx.p1.a][0], (ci) => { ci.d++; return ci; }, { p1: p1 });");
 
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);
@@ -131,7 +131,25 @@
             deepFreeze(o1);
 
             var o2;
-            eval("o2 = iassign(o1, o => o.a.b.c[0][0], function (ci) { ci.d++; return ci; });");
+            eval("o2 = iassign(o1, o => o.a.b.c[0][0], (ci) => { ci.d++; return ci; });");
+
+            expect(o2).not.toBe(o1);
+            expect(o2.a).not.toBe(o1.a);
+            expect(o2.a.b).not.toBe(o1.a.b);
+            expect(o2.a.b.c).not.toBe(o1.a.b.c);
+            expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+            expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+            expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+
+            expect(o2.a.b.c[0][0].d).toBe(12);
+        });
+
+        it("Arrow function 5: arrow function for set without ()), {} and return", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
+            deepFreeze(o1);
+
+            var o2;
+            eval("o2 = iassign(o1, o => o.a.b.c[0][0].d, d => d+1);");
 
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);

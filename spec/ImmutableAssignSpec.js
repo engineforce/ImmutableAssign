@@ -570,6 +570,20 @@
             expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: 6 } } });
             expect(nested2).not.toBe(nested1);
         });
+        it("Issue 4: Support classes", function () {
+            console.log("Issue 4: Support classes");
+            iassign.freeze = true;
+            var prototype = {
+                f: function () { return ("result"); },
+                v: "value"
+            };
+            var source = Object.create(prototype);
+            expect(source.v === "value");
+            expect(source.f() === "result");
+            var target = iassign(source, function (s) { return s.v; }, function () { return "newValue"; });
+            expect(target.v === "newValue");
+            expect(target.f() === "result");
+        });
         it("iassign.fp", function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change. 

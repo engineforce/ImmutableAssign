@@ -853,6 +853,26 @@
 
         });
 
+        it("Issue 4: Support classes", function () {
+
+            iassign.freeze = true;
+
+            const klass = {
+                f: () => ("result"),
+                v: "value"
+            }
+            const source = Object.create(klass);
+            expect(source.v === "value");
+            expect(source.f() === "result");
+
+            const target = iassign(source, (s) => s.v, () => "newValue");
+            expect(target !== source);
+            expect(target.prototype === klass);
+            expect(target.v === "newValue");
+            expect(target.f() === "result");
+
+        });
+
         it("iassign.fp", function () {
 
             //var iassign = require("immutable-assign");

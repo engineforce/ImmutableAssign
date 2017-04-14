@@ -370,7 +370,8 @@
                 return value.slice();
             }
             else if (typeof (value) === "object") {
-                return extend({}, value);
+                var target = Object.create(Object.getPrototypeOf(value));
+                return extend(target, value);
             }
         }
         return value;

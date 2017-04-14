@@ -571,16 +571,17 @@
             expect(nested2).not.toBe(nested1);
         });
         it("Issue 4: Support classes", function () {
-            console.log("Issue 4: Support classes");
             iassign.freeze = true;
-            var prototype = {
+            var klass = {
                 f: function () { return ("result"); },
                 v: "value"
             };
-            var source = Object.create(prototype);
+            var source = Object.create(klass);
             expect(source.v === "value");
             expect(source.f() === "result");
             var target = iassign(source, function (s) { return s.v; }, function () { return "newValue"; });
+            expect(target !== source);
+            expect(target.prototype === source.prototype);
             expect(target.v === "newValue");
             expect(target.f() === "result");
         });

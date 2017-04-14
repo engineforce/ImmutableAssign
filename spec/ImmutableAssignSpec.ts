@@ -866,8 +866,9 @@
             expect(source.f() === "result");
 
             const target = iassign(source, (s) => s.v, () => "newValue");
+            
             expect(target !== source);
-            expect(target.prototype === klass);
+            expect(target.prototype === source.prototype);
             expect(target.v === "newValue");
             expect(target.f() === "result");
 

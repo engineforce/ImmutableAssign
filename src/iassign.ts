@@ -514,7 +514,7 @@ interface IIassign extends IIassignOption {
                 return (<any>value).slice();
             }
             else if (typeof (value) === "object") {
-                const target = Object.create(Object.getPrototypeOf(value));
+                const target = new (value as any).constructor();
                 return extend(target, value);
             }
         }

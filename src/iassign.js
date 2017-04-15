@@ -149,6 +149,7 @@
                 }
                 prevPropValue[propName] = propValue;
             }
+            //console.log(propValue);
         }
         return obj;
     }
@@ -275,7 +276,7 @@
         return tokens;
     }
     function postProcessTokens(getPropFuncInfo) {
-        var _loop_1 = function() {
+        var _loop_1 = function () {
             var token = getPropFuncInfo.funcTokens[propIndex];
             var propName = token.propName, propNameSource = token.propNameSource, subAccessorText = token.subAccessorText;
             if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
@@ -370,11 +371,16 @@
                 return value.slice();
             }
             else if (typeof (value) === "object") {
-                var target = Object.create(Object.getPrototypeOf(value));
+                var target = createInstanceAs(value);
                 return extend(target, value);
             }
         }
         return value;
+    }
+    function createInstanceAs(obj) {
+        if (obj == undefined)
+            throw Error("obj is null or undefined.");
+        return new obj.constructor();
     }
     function extend(destination) {
         var sources = [];

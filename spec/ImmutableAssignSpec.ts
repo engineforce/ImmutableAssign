@@ -857,21 +857,30 @@
 
             iassign.freeze = true;
 
-            const klass = {
-                f: () => ("result"),
-                v: "value"
+            class Klass {
+                prop: number = 1;
+                func() {return "Result";}
             }
-            const source = Object.create(klass);
-            expect(source.v === "value");
-            expect(source.f() === "result");
 
-            const target = iassign(source, (s) => s.v, () => "newValue");
-            
-            expect(target !== source);
-            expect(target.prototype === source.prototype);
-            expect(target.v === "newValue");
-            expect(target.f() === "result");
+            const s = {
+                arr: [1],
+                obj: {prop: 1, func: () => "Result"},
+                inst: new Klass(),
+            }
 
+            const t1 = iassign(s, (x) => x.arr, (arr) => {arr.push(2); return arr;});
+            expect(s.arr.length).toEqual(1);
+            expect(t1.arr.length).toEqual(2);
+
+            const t2 = iassign(s, (x) => x.obj.prop, (y) => 2);
+            expect(s.obj.prop).toEqual(1);
+            expect(t2.obj.prop).toEqual(2);
+            expect(t2.obj.func()).toEqual("Result");
+
+            const t3 = iassign(s, (x) => x.inst.prop, (v) => 2);
+            expect(s.inst.prop).toEqual(1);
+            expect(t3.inst.prop).toEqual(2);
+            expect(t3.inst.func()).toEqual("Result");
         });
 
         it("iassign.fp", function () {

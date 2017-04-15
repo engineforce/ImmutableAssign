@@ -572,18 +572,23 @@
         });
         it("Issue 4: Support classes", function () {
             iassign.freeze = true;
-            var klass = {
-                f: function () { return ("result"); },
-                v: "value"
+            var Klass = (function () {
+                function Klass() {
+                }
+                Klass.prototype.func = function () { return "Result"; };
+                return Klass;
+            }());
+            var s = {
+                arr: [1],
+                obj: { prop: 1, func: function () { return "Result"; } },
+                inst: new Klass(),
             };
-            var source = Object.create(klass);
-            expect(source.v === "value");
-            expect(source.f() === "result");
-            var target = iassign(source, function (s) { return s.v; }, function () { return "newValue"; });
-            expect(target !== source);
-            expect(target.prototype === source.prototype);
-            expect(target.v === "newValue");
-            expect(target.f() === "result");
+            var t1 = iassign(s, function (x) { return x.arr; }, function (arr) { arr.push(2); return arr; });
+            expect(s.arr.length).toEqual(1);
+            expect(t1.arr.length).toEqual(2);
+            var t2 = iassign(s, function (x) { return x.obj; }, function (y) { y.prop = 2; return y; });
+            expect(s.obj.prop).toEqual(1);
+            expect(t2.obj.prop).toEqual(2);
         });
         it("iassign.fp", function () {
             //var iassign = require("immutable-assign");

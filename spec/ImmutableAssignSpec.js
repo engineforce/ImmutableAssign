@@ -574,6 +574,7 @@
             iassign.freeze = true;
             var Klass = (function () {
                 function Klass() {
+                    this.prop = 1;
                 }
                 Klass.prototype.func = function () { return "Result"; };
                 return Klass;
@@ -586,9 +587,14 @@
             var t1 = iassign(s, function (x) { return x.arr; }, function (arr) { arr.push(2); return arr; });
             expect(s.arr.length).toEqual(1);
             expect(t1.arr.length).toEqual(2);
-            var t2 = iassign(s, function (x) { return x.obj; }, function (y) { y.prop = 2; return y; });
+            var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return 2; });
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
+            expect(t2.obj.func()).toEqual("Result");
+            var t3 = iassign(s, function (x) { return x.inst.prop; }, function (v) { return 2; });
+            expect(s.inst.prop).toEqual(1);
+            expect(t3.inst.prop).toEqual(2);
+            expect(t3.inst.func()).toEqual("Result");
         });
         it("iassign.fp", function () {
             //var iassign = require("immutable-assign");

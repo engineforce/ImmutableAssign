@@ -370,16 +370,11 @@
                 return value.slice();
             }
             else if (typeof (value) === "object") {
-                var target = createInstanceAs(value);
+                var target = new value.constructor();
                 return extend(target, value);
             }
         }
         return value;
-    }
-    function createInstanceAs(obj) {
-        if (obj == undefined)
-            throw Error("obj is null or undefined.");
-        return new obj.constructor();
     }
     function extend(destination) {
         var sources = [];

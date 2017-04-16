@@ -8,6 +8,7 @@ interface IIassignOption {
     freeze?: boolean;                        // Deep freeze both input and output
     freezeInput?: boolean;                   // Deep freeze input
     freezeOutput?: boolean;                  // Deep freeze output
+    useConstructor?: boolean;                // Uses the constructor to create new instances
     disableAllCheck?: boolean;
     disableHasReturnCheck?: boolean;
     // Disable validation for extra statements in the getProp() function, 
@@ -141,7 +142,7 @@ interface IIassign extends IIassignOption {
         }
 
         if (!getProp) {
-            obj = quickCopy(obj);
+            obj = quickCopy(obj, option.useConstructor);
             obj = <any>setProp(<any>obj);
         }
         else {
@@ -150,7 +151,7 @@ interface IIassign extends IIassignOption {
 
             let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
 
-            obj = updateProperty(obj, setProp, context, getPropFuncInfo);
+            obj = updateProperty(obj, setProp, context, getPropFuncInfo, option);
         }
 
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
@@ -178,6 +179,7 @@ interface IIassign extends IIassignOption {
         newOption.freeze = iassign.freeze;
         newOption.freezeInput = iassign.freezeInput;
         newOption.freezeOutput = iassign.freezeOutput;
+        newOption.useConstructor = iassign.useConstructor;
         newOption.disableAllCheck = iassign.disableAllCheck;
         newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
         newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
@@ -187,6 +189,7 @@ interface IIassign extends IIassignOption {
             if (option.freeze != undefined) { newOption.freeze = option.freeze; }
             if (option.freezeInput != undefined) { newOption.freezeInput = option.freezeInput; }
             if (option.freezeOutput != undefined) { newOption.freezeOutput = option.freezeOutput; }
+            if (option.useConstructor != undefined) { newOption.useConstructor = option.useConstructor; }
             if (option.disableAllCheck != undefined) { newOption.disableAllCheck = option.disableAllCheck; }
             if (option.disableHasReturnCheck != undefined) { newOption.disableHasReturnCheck = option.disableHasReturnCheck; }
             if (option.disableExtraStatementCheck != undefined) { newOption.disableExtraStatementCheck = option.disableExtraStatementCheck; }
@@ -200,7 +203,8 @@ interface IIassign extends IIassignOption {
         obj: TObj,
         setProp: setPropFunc<TProp>,
         context: TContext,
-        getPropFuncInfo: IGetPropFuncInfo): TObj {
+        getPropFuncInfo: IGetPropFuncInfo, 
+        option: IIassignOption): TObj {
 
         let propValue = undefined;
 
@@ -210,7 +214,7 @@ interface IIassign extends IIassignOption {
             //console.log(propName);
 
             if (propIndex <= 0) {
-                propValue = quickCopy(obj);
+                propValue = quickCopy(obj, option.useConstructor);
 
                 if (!subAccessorText) {
                     propValue = setProp(propValue);
@@ -225,7 +229,7 @@ interface IIassign extends IIassignOption {
                 }
 
                 propValue = propValue[propName];
-                propValue = quickCopy(propValue)
+                propValue = quickCopy(propValue, option.useConstructor);
 
                 if (!subAccessorText) {
                     propValue = setProp(propValue);
@@ -507,15 +511,19 @@ interface IIassign extends IIassignOption {
         };
     }
 
-    function quickCopy<T>(value: T): T {
+    function quickCopy<T>(value: T, useConstructor: boolean): T {
 
         if (value != undefined && !(value instanceof Date)) {
             if (value instanceof Array) {
                 return (<any>value).slice();
             }
             else if (typeof (value) === "object") {
-                const target = new (value as any).constructor();
-                return extend(target, value);
+                if (useConstructor)
+                {
+                    const target = new (value as any).constructor();
+                    return extend(target, value);
+                }
+                return extend({}, value);
             }
         }
 

@@ -73,14 +73,14 @@
             deepFreeze(obj);
         }
         if (!getProp) {
-            obj = quickCopy(obj);
+            obj = quickCopy(obj, option.useConstructor);
             obj = setProp(obj);
         }
         else {
             // Check if getProp() is valid
             var value = getProp(obj, context);
             var getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
-            obj = updateProperty(obj, setProp, context, getPropFuncInfo);
+            obj = updateProperty(obj, setProp, context, getPropFuncInfo, option);
         }
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
             deepFreeze(obj);
@@ -96,6 +96,7 @@
         newOption.freeze = iassign.freeze;
         newOption.freezeInput = iassign.freezeInput;
         newOption.freezeOutput = iassign.freezeOutput;
+        newOption.useConstructor = iassign.useConstructor;
         newOption.disableAllCheck = iassign.disableAllCheck;
         newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
         newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
@@ -109,6 +110,9 @@
             }
             if (option.freezeOutput != undefined) {
                 newOption.freezeOutput = option.freezeOutput;
+            }
+            if (option.useConstructor != undefined) {
+                newOption.useConstructor = option.useConstructor;
             }
             if (option.disableAllCheck != undefined) {
                 newOption.disableAllCheck = option.disableAllCheck;
@@ -125,13 +129,13 @@
         }
         return newOption;
     }
-    function updateProperty(obj, setProp, context, getPropFuncInfo) {
+    function updateProperty(obj, setProp, context, getPropFuncInfo, option) {
         var propValue = undefined;
         for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
             var _a = getPropFuncInfo.funcTokens[propIndex], propName = _a.propName, propNameSource = _a.propNameSource, subAccessorText = _a.subAccessorText, getPropName = _a.getPropName;
             //console.log(propName);
             if (propIndex <= 0) {
-                propValue = quickCopy(obj);
+                propValue = quickCopy(obj, option.useConstructor);
                 if (!subAccessorText) {
                     propValue = setProp(propValue);
                 }
@@ -143,7 +147,7 @@
                     propName = getPropName(obj, context);
                 }
                 propValue = propValue[propName];
-                propValue = quickCopy(propValue);
+                propValue = quickCopy(propValue, option.useConstructor);
                 if (!subAccessorText) {
                     propValue = setProp(propValue);
                 }
@@ -364,14 +368,17 @@
             quotedTextInfos: quotedTextInfos,
         };
     }
-    function quickCopy(value) {
+    function quickCopy(value, useConstructor) {
         if (value != undefined && !(value instanceof Date)) {
             if (value instanceof Array) {
                 return value.slice();
             }
             else if (typeof (value) === "object") {
-                var target = new value.constructor();
-                return extend(target, value);
+                if (useConstructor) {
+                    var target = new value.constructor();
+                    return extend(target, value);
+                }
+                return extend({}, value);
             }
         }
         return value;

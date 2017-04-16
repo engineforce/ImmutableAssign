@@ -857,6 +857,10 @@
 
             iassign.freeze = true;
 
+            const option: IIassignOption = {
+                useConstructor: true
+            };
+
             class Klass {
                 prop: number = 1;
                 func() {return "Result";}
@@ -866,21 +870,22 @@
                 arr: [1],
                 obj: {prop: 1, func: () => "Result"},
                 inst: new Klass(),
-            }
+            };
 
-            const t1 = iassign(s, (x) => x.arr, (arr) => {arr.push(2); return arr;});
+            const t1 = iassign(s, (x) => x.arr, (arr) => {arr.push(2); return arr;}, null, option);
             expect(s.arr.length).toEqual(1);
             expect(t1.arr.length).toEqual(2);
 
-            const t2 = iassign(s, (x) => x.obj.prop, (y) => 2);
+            const t2 = iassign(s, (x) => x.obj.prop, (y) => 2, null, option);
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
             expect(t2.obj.func()).toEqual("Result");
 
-            const t3 = iassign(s, (x) => x.inst.prop, (v) => 2);
+            const t3 = iassign(s, (x) => x.inst.prop, (v) => 2, null, option);
             expect(s.inst.prop).toEqual(1);
             expect(t3.inst.prop).toEqual(2);
             expect(t3.inst.func()).toEqual("Result");
+
         });
 
         it("iassign.fp", function () {

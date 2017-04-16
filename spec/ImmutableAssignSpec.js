@@ -572,6 +572,9 @@
         });
         it("Issue 4: Support classes", function () {
             iassign.freeze = true;
+            var option = {
+                useConstructor: true
+            };
             var Klass = (function () {
                 function Klass() {
                     this.prop = 1;
@@ -584,14 +587,14 @@
                 obj: { prop: 1, func: function () { return "Result"; } },
                 inst: new Klass(),
             };
-            var t1 = iassign(s, function (x) { return x.arr; }, function (arr) { arr.push(2); return arr; });
+            var t1 = iassign(s, function (x) { return x.arr; }, function (arr) { arr.push(2); return arr; }, null, option);
             expect(s.arr.length).toEqual(1);
             expect(t1.arr.length).toEqual(2);
-            var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return 2; });
+            var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return 2; }, null, option);
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
             expect(t2.obj.func()).toEqual("Result");
-            var t3 = iassign(s, function (x) { return x.inst.prop; }, function (v) { return 2; });
+            var t3 = iassign(s, function (x) { return x.inst.prop; }, function (v) { return 2; }, null, option);
             expect(s.inst.prop).toEqual(1);
             expect(t3.inst.prop).toEqual(2);
             expect(t3.inst.func()).toEqual("Result");

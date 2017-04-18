@@ -74,6 +74,7 @@ interface IIassignOption {
     freeze?: boolean;              // Deep freeze both input and output
     freezeInput?: boolean;         // Deep freeze input
     freezeOutput?: boolean;        // Deep freeze output
+    useConstructor?: boolean;      // Uses the constructor to create new instances
 
     // Disable validation for extra statements in the getProp() function, 
     // which is needed when running the coverage, e.g., istanbul.js does add 

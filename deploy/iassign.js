@@ -2,29 +2,23 @@
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         try {
-            var deepFreeze = require("deep-freeze");
+            var deepFreeze = require("deep-freeze-strict");
         }
         catch (ex) {
-            console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
+            console.warn("Cannot load deep-freeze-strict module, however you can still use iassign() function.");
         }
         var v = factory(deepFreeze, exports);
         if (v !== undefined)
             module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["deep-freeze", "exports"], factory);
+        define(["deep-freeze-strict", "exports"], factory);
     }
     else {
         // Browser globals (root is window)
         root.iassign = factory(root.deepFreeze, {});
     }
 })(this, function (deepFreeze, exports) {
-    //import deepFreeze = require("deep-freeze");
-    // try {
-    //     var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
-    // } catch (ex) {
-    //     console.warn("Cannot load deep-freeze module, however you can still use iassign() function.");
-    // }
     var autoCurry = (function () {
         var toArray = function toArray(arr, from) {
             return Array.prototype.slice.call(arr, from || 0);

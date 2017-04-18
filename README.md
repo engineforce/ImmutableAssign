@@ -419,6 +419,7 @@ var nested5 = iassignFp(nested4);
 
 ##History
 
+* 1.0.30 - [Support classes](https://github.com/engineforce/ImmutableAssign/issues/4)
 * 1.0.29 - Supported ES6 [Arrow Functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
 * 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)
 * 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)

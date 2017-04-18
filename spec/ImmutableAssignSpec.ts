@@ -862,30 +862,44 @@
             };
 
             class Klass {
-                prop: number = 1;
-                func() {return "Result";}
+                prop: number = 11;
+                func() { return "Klass" + this.prop; }
+            }
+
+            class ChildKlass extends Klass {
+                prop: number = 101;
+                func2() { return "ChildKlass" + this.prop; }
             }
 
             const s = {
                 arr: [1],
-                obj: {prop: 1, func: () => "Result"},
+                obj: { prop: 1, func: function() { return "Klass" + this.prop; } },
                 inst: new Klass(),
+                inst2: new ChildKlass(),
             };
 
-            const t1 = iassign(s, (x) => x.arr, (arr) => {arr.push(2); return arr;}, null, option);
+            const t1 = iassign(s, (x) => x.arr, (arr) => { arr.push(2); return arr; }, null, option);
             expect(s.arr.length).toEqual(1);
             expect(t1.arr.length).toEqual(2);
 
-            const t2 = iassign(s, (x) => x.obj.prop, (y) => 2, null, option);
+            const t2 = iassign(s, (x) => x.obj.prop, (y) => y + 1, null, option);
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
-            expect(t2.obj.func()).toEqual("Result");
+            expect(t2.obj.func()).toEqual("Klass2");
 
-            const t3 = iassign(s, (x) => x.inst.prop, (v) => 2, null, option);
-            expect(s.inst.prop).toEqual(1);
-            expect(t3.inst.prop).toEqual(2);
-            expect(t3.inst.func()).toEqual("Result");
+            const t3 = iassign(s, (x) => x.inst.prop, (v) => v + 1, null, option);
+            expect(s.inst.prop).toEqual(11);
+            expect(t3.inst.prop).toEqual(12);
+            expect(t3.inst.func()).toEqual("Klass12");
 
+            const t4 = iassign(s, (x) => x.inst2.prop, (v) => v + 1, null, option);
+            expect(s.inst2.prop).toEqual(101);
+            expect(t4.inst2.prop).toEqual(102);
+            expect(t4.inst2.func()).toEqual("Klass102");
+            expect(t4.inst2.func2()).toEqual("ChildKlass102");
+            expect(t4.inst2 instanceof Klass).toEqual(true);
+            expect(t4.inst2 instanceof ChildKlass).toEqual(true);
+            expect((<any>t4.inst2.constructor).name == undefined || (<any>t4.inst2.constructor).name == "ChildKlass").toEqual(true);
         });
 
         it("iassign.fp", function () {

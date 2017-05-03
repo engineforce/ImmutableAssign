@@ -18,6 +18,8 @@ interface IIassignOption {
 
     // Default: 100
     maxGetPropCacheSize?: number;
+
+    ignoreIfNoChange?: boolean;
 }
 
 type getPropFunc<TObj, TProp, TContext> = (obj: TObj, context: TContext) => TProp;
@@ -134,16 +136,33 @@ interface IIassign extends IIassignOption {
         }
 
         if (!getProp) {
+
+            let newValue = undefined;
+            if (option.ignoreIfNoChange) {
+                newValue = setProp(<any>obj);
+                if (<any>newValue === <any>obj) {
+                    return obj;
+                }
+            }
+
             obj = quickCopy(obj, option.useConstructor);
-            obj = <any>setProp(<any>obj);
+            obj = option.ignoreIfNoChange ? newValue : <any>setProp(<any>obj);
         }
         else {
             // Check if getProp() is valid
             let value = getProp(obj, context);
 
+            let newValue = undefined;
+            if (option.ignoreIfNoChange) {
+                newValue = setProp(value);
+                if (newValue === value) {
+                    return obj;
+                }
+            }
+
             let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
 
-            obj = updateProperty(obj, setProp, context, getPropFuncInfo, option);
+            obj = updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option);
         }
 
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
@@ -165,7 +184,7 @@ interface IIassign extends IIassignOption {
     }
 
     // For performance
-    function copyOption(option) {
+    function copyOption(option: IIassignOption) {
         let newOption: IIassign = <any>{};
 
         newOption.freeze = iassign.freeze;
@@ -176,6 +195,7 @@ interface IIassign extends IIassignOption {
         newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
         newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
         newOption.maxGetPropCacheSize = iassign.maxGetPropCacheSize;
+        newOption.ignoreIfNoChange = iassign.ignoreIfNoChange;
 
         if (option) {
             if (option.freeze != undefined) { newOption.freeze = option.freeze; }
@@ -186,6 +206,7 @@ interface IIassign extends IIassignOption {
             if (option.disableHasReturnCheck != undefined) { newOption.disableHasReturnCheck = option.disableHasReturnCheck; }
             if (option.disableExtraStatementCheck != undefined) { newOption.disableExtraStatementCheck = option.disableExtraStatementCheck; }
             if (option.maxGetPropCacheSize != undefined) { newOption.maxGetPropCacheSize = option.maxGetPropCacheSize; }
+            if (option.ignoreIfNoChange != undefined) { newOption.ignoreIfNoChange = option.ignoreIfNoChange; }
         }
 
         return newOption;
@@ -194,14 +215,15 @@ interface IIassign extends IIassignOption {
     function updateProperty<TObj, TProp, TContext>(
         obj: TObj,
         setProp: setPropFunc<TProp>,
+        newValue: TProp,
         context: TContext,
-        getPropFuncInfo: IGetPropFuncInfo, 
+        getPropFuncInfo: IGetPropFuncInfo,
         option: IIassignOption): TObj {
 
         let propValue = undefined;
 
         for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
-            let {propName, propNameSource, subAccessorText, getPropName} = getPropFuncInfo.funcTokens[propIndex];
+            let { propName, propNameSource, subAccessorText, getPropName } = getPropFuncInfo.funcTokens[propIndex];
 
             //console.log(propName);
 
@@ -209,7 +231,7 @@ interface IIassign extends IIassignOption {
                 propValue = quickCopy(obj, option.useConstructor);
 
                 if (!subAccessorText) {
-                    propValue = setProp(propValue);
+                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
 
                 obj = propValue;
@@ -224,7 +246,7 @@ interface IIassign extends IIassignOption {
                 propValue = quickCopy(propValue, option.useConstructor);
 
                 if (!subAccessorText) {
-                    propValue = setProp(propValue);
+                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
 
                 prevPropValue[propName] = propValue;
@@ -403,7 +425,7 @@ interface IIassign extends IIassignOption {
     function postProcessTokens(getPropFuncInfo: IGetPropFuncInfo) {
         for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
             let token = getPropFuncInfo.funcTokens[propIndex];
-            let {propName, propNameSource, subAccessorText} = token;
+            let { propName, propNameSource, subAccessorText } = token;
 
             if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
 
@@ -510,8 +532,7 @@ interface IIassign extends IIassignOption {
                 return (<any>value).slice();
             }
             else if (typeof (value) === "object") {
-                if (useConstructor)
-                {
+                if (useConstructor) {
                     const target = new (value as any).constructor();
                     return extend(target, value);
                 }

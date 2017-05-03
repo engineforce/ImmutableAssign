@@ -67,14 +67,28 @@
             deepFreeze(obj);
         }
         if (!getProp) {
+            var newValue = undefined;
+            if (option.ignoreIfNoChange) {
+                newValue = setProp(obj);
+                if (newValue === obj) {
+                    return obj;
+                }
+            }
             obj = quickCopy(obj, option.useConstructor);
-            obj = setProp(obj);
+            obj = option.ignoreIfNoChange ? newValue : setProp(obj);
         }
         else {
             // Check if getProp() is valid
             var value = getProp(obj, context);
+            var newValue = undefined;
+            if (option.ignoreIfNoChange) {
+                newValue = setProp(value);
+                if (newValue === value) {
+                    return obj;
+                }
+            }
             var getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
-            obj = updateProperty(obj, setProp, context, getPropFuncInfo, option);
+            obj = updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option);
         }
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
             deepFreeze(obj);
@@ -95,6 +109,7 @@
         newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
         newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
         newOption.maxGetPropCacheSize = iassign.maxGetPropCacheSize;
+        newOption.ignoreIfNoChange = iassign.ignoreIfNoChange;
         if (option) {
             if (option.freeze != undefined) {
                 newOption.freeze = option.freeze;
@@ -120,10 +135,13 @@
             if (option.maxGetPropCacheSize != undefined) {
                 newOption.maxGetPropCacheSize = option.maxGetPropCacheSize;
             }
+            if (option.ignoreIfNoChange != undefined) {
+                newOption.ignoreIfNoChange = option.ignoreIfNoChange;
+            }
         }
         return newOption;
     }
-    function updateProperty(obj, setProp, context, getPropFuncInfo, option) {
+    function updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option) {
         var propValue = undefined;
         for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
             var _a = getPropFuncInfo.funcTokens[propIndex], propName = _a.propName, propNameSource = _a.propNameSource, subAccessorText = _a.subAccessorText, getPropName = _a.getPropName;
@@ -131,7 +149,7 @@
             if (propIndex <= 0) {
                 propValue = quickCopy(obj, option.useConstructor);
                 if (!subAccessorText) {
-                    propValue = setProp(propValue);
+                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
                 obj = propValue;
             }
@@ -143,7 +161,7 @@
                 propValue = propValue[propName];
                 propValue = quickCopy(propValue, option.useConstructor);
                 if (!subAccessorText) {
-                    propValue = setProp(propValue);
+                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
                 prevPropValue[propName] = propValue;
             }

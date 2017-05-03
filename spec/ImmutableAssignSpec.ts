@@ -83,6 +83,148 @@
             expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
         });
 
+        it("Access array item, need to detect change but the setProp is setting the inner property.", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+
+            expect(() => {
+                var o2 = iassign(
+                    o1,
+                    (o) => o.a.b.c[0][0],
+                    (ci) => { ci.d++; return ci; },
+                    undefined,
+                    {
+                        ignoreIfNoChange: true,
+                        freeze: true,
+                    }
+                );
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+        });
+
+        it("Access array item, need to detect change and no change", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+            deepFreeze(o1);
+
+            var o2 = iassign(
+                o1,
+                (o) => o.a.b.c[0][0],
+                (ci) => { return ci; },
+                undefined,
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+
+            // expect o1 has not been changed
+            expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} })
+
+            // expect o2 === o1, because no change in the setProp().
+            expect(o2).toBe(o1);
+        });
+
+        it("Access array item, need to detect change and ensure setProp() is called once", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+
+            // No change to the root object
+            var count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => { count++; return o; },
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+
+            // Has change to the root object
+            var count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => { count++; return <any>{}; },
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
+
+            // No change to the object properties
+            count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => o.a.b.c[0][0],
+                (ci) => { count++; return ci; },
+                undefined,
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+
+            // Has change to the object properties
+            count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => o.a.b.c[0][0],
+                (ci) => { count++; return <any>{}; },
+                undefined,
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
+            
+        });
+
+        it("Access array item, need to detect change and has change", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+            deepFreeze(o1);
+
+            var o2 = iassign(
+                o1,
+                (o) => o.a.b.c[0][0],
+                (ci) => { ci.d++; return ci; },
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+
+            //
+            // Jasmine Tests
+            //
+
+            // expect o1 has not been changed
+            expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} })
+
+            // expect o2 inner property has been updated.
+            expect(o2.a.b.c[0][0].d).toBe(12);
+
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2.a).not.toBe(o1.a);
+            expect(o2.a.b).not.toBe(o1.a.b);
+            expect(o2.a.b.c).not.toBe(o1.a.b.c);
+            expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+            expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+            expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+
+            // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2.a2).toBe(o1.a2);
+            expect(o2.a.b2).toBe(o1.a.b2);
+            expect(o2.a.b.c2).toBe(o1.a.b.c2);
+            expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
+            expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
+            expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
+        });
+
         it("Access array 1", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
             deepFreeze(o1);
@@ -873,7 +1015,7 @@
 
             const s = {
                 arr: [1],
-                obj: { prop: 1, func: function() { return "Klass" + this.prop; } },
+                obj: { prop: 1, func: function () { return "Klass" + this.prop; } },
                 inst: new Klass(),
                 inst2: new ChildKlass(),
             };

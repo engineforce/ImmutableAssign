@@ -19,6 +19,7 @@ interface IIassignOption {
     // Default: 100
     maxGetPropCacheSize?: number;
 
+    // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
     ignoreIfNoChange?: boolean;
 }
 

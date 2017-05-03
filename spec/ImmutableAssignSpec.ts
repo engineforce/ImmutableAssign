@@ -166,6 +166,7 @@
             expect(count).toBe(1);
             expect(o2).toBe(o1);
 
+
             // Has change to the object properties
             count = 0;
             var o2 = iassign(
@@ -180,7 +181,36 @@
             );
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
-            
+
+            // No change to the root object, used getProp()
+            count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => o,
+                (o) => { count++; return o; },
+                undefined,
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+
+            // Has change to the root object, used getProp()
+            count = 0;
+            var o2 = iassign(
+                o1,
+                (o) => o,
+                (o) => { count++; return <any>{}; },
+                undefined,
+                {
+                    ignoreIfNoChange: true,
+                    freeze: true,
+                }
+            );
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
         });
 
         it("Access array item, need to detect change and has change", function () {

@@ -126,6 +126,22 @@ var __extends = (this && this.__extends) || function (d, b) {
             });
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
+            // No change to the root object, used getProp()
+            count = 0;
+            var o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return o; }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true,
+            });
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+            // Has change to the root object, used getProp()
+            count = 0;
+            var o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return {}; }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true,
+            });
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
         });
         it("Access array item, need to detect change and has change", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };

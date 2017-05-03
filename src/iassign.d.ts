@@ -13,7 +13,7 @@ declare namespace ImmutableAssign {
         // instrument statements in our getProp() function, which can be safely ignored. 
         disableExtraStatementCheck?: boolean;
 
-        // Return the same object if setProp() did not change anything.
+        // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
         ignoreIfNoChange?: boolean;
     }
 

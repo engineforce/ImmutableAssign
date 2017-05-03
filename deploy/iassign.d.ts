@@ -12,6 +12,9 @@ declare namespace ImmutableAssign {
         // which is needed when running the coverage, e.g., istanbul.js does add 
         // instrument statements in our getProp() function, which can be safely ignored. 
         disableExtraStatementCheck?: boolean;
+
+        // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+        ignoreIfNoChange?: boolean;
     }
 
     type getPropFunc<TObj, TProp, TContext> = (obj: TObj, context: TContext) => TProp;

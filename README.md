@@ -41,7 +41,7 @@ npm run benchmarks
 
     npm install immutable-assign --save
 
-#### Function Signature (TypeScript syntax)
+### Function Signature (TypeScript syntax)
 
 ```javascript
 
@@ -91,7 +91,7 @@ interface IIassignOption {
 ```
 
 <br />
-#### Example 1: Update object
+### Example 1: Update object
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -113,7 +113,7 @@ var map2 = iassign(
 ```
 
 <br />
-#### Example 2: Update list/array
+### Example 2: Update list/array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -163,7 +163,7 @@ var list5 = iassign(
 ```
 
 <br />
-#### Example 3: Update nested structures
+### Example 3: Update nested structures
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -206,7 +206,7 @@ var nested4 = iassign(
 ```
 
 <br />
-#### Example 4: Work with 3rd party libraries, e.g., lodash
+### Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -244,7 +244,7 @@ var nested3 = iassign(
 
 
 <br />
-#### Advanced example 5: Update nested property
+### Advanced example 5: Update nested property
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -287,7 +287,7 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
 <br />
-#### Advanced example 6: Update array
+### Advanced example 6: Update array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -330,7 +330,7 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 
 
 <br />
-#### Advanced example 7: Update nested property, referring to external context.
+### Advanced example 7: Update nested property, referring to external context.
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -375,7 +375,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 ```
 
 <br />
-#### Example 8: Update nested structures using iassign.fp() and currying
+### Example 8: Update nested structures using iassign.fp() and currying
 
 ```javascript
 var iassign = require("immutable-assign");

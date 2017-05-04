@@ -43,7 +43,7 @@
     "edge-launcher": "*",
     "gulp": "^3.9.1",
     "gulp-less": "^3.1.0",
-    "gulp-typescript": "^2.14.1",
+    "gulp-typescript": "^3.1.6",
     "immutable": "^3.8.1",
     "istanbul": "^0.4.3",
     "jasmine": "^2.4.1",
@@ -59,6 +59,7 @@
     "merge2": "^1.0.2",
     "seamless-immutable": "^7.0.1",
     "timm": "^1.2.3",
+    "typescript": "^2.3.2",
     "vinyl-source-stream": "^1.1.0"
   }
 }

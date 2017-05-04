@@ -6,15 +6,20 @@ var merge = require('merge2');
 
 gulp.task('typescript', function () {
 
-    var clientTsProject = ts.createProject('tsconfig.json');
+    var projectPaths = ["tsconfig.json"];
 
-    var clientTsResult = clientTsProject.src()
-        .pipe(ts(clientTsProject));
+    projectPaths.forEach((projectPath) => {
+        var clientTsProject = ts.createProject(projectPath);
 
-    return merge([
-        clientTsResult.pipe(gulp.dest('./')),
-        clientTsResult.dts.pipe(gulp.dest('./'))
-    ]);
+        var clientTsResult = clientTsProject.src()
+            .pipe(clientTsProject());
+
+        return merge([
+            clientTsResult.pipe(gulp.dest('./')),
+            clientTsResult.dts.pipe(gulp.dest('./'))
+        ]);
+    });
+
 });
 
 gulp.task('clientCopy', ['typescript'], function () {

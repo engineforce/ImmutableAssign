@@ -165,6 +165,7 @@
                 }
                 prevPropValue[propName] = propValue;
             }
+            //console.log(propValue);
         }
         return obj;
     }
@@ -291,7 +292,7 @@
         return tokens;
     }
     function postProcessTokens(getPropFuncInfo) {
-        var _loop_1 = function() {
+        var _loop_1 = function () {
             var token = getPropFuncInfo.funcTokens[propIndex];
             var propName = token.propName, propNameSource = token.propNameSource, subAccessorText = token.subAccessorText;
             if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
@@ -441,5 +442,3 @@
     // }
     return iassign;
 });
-//declare var iassign: IIassign;
-//export = iassign;

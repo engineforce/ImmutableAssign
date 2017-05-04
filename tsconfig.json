@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
+        "removeComments": false,
         "jsx": "preserve" /*,
         "declaration": true */
     },

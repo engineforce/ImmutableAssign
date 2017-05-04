@@ -97,7 +97,7 @@
                         freeze: true,
                     }
                 );
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
         });
 
         it("Access array item, need to detect change and no change", function () {
@@ -137,7 +137,7 @@
                     (o) => o.a.b.c[0][0],
                     (ci) => { ci.d++; return ci; }
                 );
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
 
             iassign.setOption({
                 ignoreIfNoChange: false,

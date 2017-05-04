@@ -83,7 +83,7 @@ var __extends = (this && this.__extends) || (function () {
                     ignoreIfNoChange: true,
                     freeze: true,
                 });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
         });
         it("Access array item, need to detect change and no change", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
@@ -105,7 +105,7 @@ var __extends = (this && this.__extends) || (function () {
             });
             expect(function () {
                 var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { ci.d++; return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
             iassign.setOption({
                 ignoreIfNoChange: false,
                 freeze: false,

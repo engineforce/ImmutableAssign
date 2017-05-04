@@ -91,6 +91,7 @@ interface IIassignOption {
 ```
 
 <br />
+
 ### Example 1: Update object
 
 ```javascript
@@ -113,6 +114,7 @@ var map2 = iassign(
 ```
 
 <br />
+
 ### Example 2: Update list/array
 
 ```javascript
@@ -163,6 +165,7 @@ var list5 = iassign(
 ```
 
 <br />
+
 ### Example 3: Update nested structures
 
 ```javascript
@@ -206,6 +209,7 @@ var nested4 = iassign(
 ```
 
 <br />
+
 ### Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
@@ -242,8 +246,8 @@ var nested3 = iassign(
 
 ```
 
-
 <br />
+
 ### Advanced example 5: Update nested property
 
 ```javascript
@@ -287,6 +291,7 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
 <br />
+
 ### Advanced example 6: Update array
 
 ```javascript
@@ -328,8 +333,8 @@ expect(o2.a.b.c[0][0]).toBe(o1.a.b.c[0][0]);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
-
 <br />
+
 ### Advanced example 7: Update nested property, referring to external context.
 
 ```javascript
@@ -375,6 +380,7 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 ```
 
 <br />
+
 ### Example 8: Update nested structures using iassign.fp() and currying
 
 ```javascript

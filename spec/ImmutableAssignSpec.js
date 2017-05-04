@@ -97,6 +97,36 @@ var __extends = (this && this.__extends) || (function () {
             // expect o2 === o1, because no change in the setProp().
             expect(o2).toBe(o1);
         });
+        it("Access array item, need to detect change but the setProp is setting the inner property, use setOption()", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+            iassign.setOption({
+                ignoreIfNoChange: true,
+                freeze: true,
+            });
+            expect(function () {
+                var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { ci.d++; return ci; });
+            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            iassign.setOption({
+                ignoreIfNoChange: false,
+                freeze: false,
+            });
+        });
+        it("Access array item, need to detect change and no change, use setOption()", function () {
+            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
+            iassign.setOption({
+                ignoreIfNoChange: true,
+                freeze: true,
+            });
+            var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { return ci; });
+            // expect o1 has not been changed
+            expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} });
+            // expect o2 === o1, because no change in the setProp().
+            expect(o2).toBe(o1);
+            iassign.setOption({
+                ignoreIfNoChange: false,
+                freeze: false,
+            });
+        });
         it("Access array item, need to detect change and ensure setProp() is called once", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
             // No change to the root object

@@ -37,7 +37,7 @@ npm run benchmarks
     </a>
 </p>
 
-##Install with npm
+## Install with npm
 
     npm install immutable-assign --save
 
@@ -69,6 +69,10 @@ iassign.fp = function <TObj, TProp, TContext>(
     context?: TContext,
     obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
 
+// In ES6, you cannot set property on imported module directly, because they are default
+// to readonly, in this case you need to use this method.
+iassign.setOption(option: IIassignOption): void;
+
 // Options, can be applied globally or individually
 interface IIassignOption {
     freeze?: boolean;              // Deep freeze both input and output
@@ -86,7 +90,8 @@ interface IIassignOption {
 }
 ```
 
-####Example 1: Update object
+<br />
+#### Example 1: Update object
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -107,7 +112,8 @@ var map2 = iassign(
 
 ```
 
-####Example 2: Update list/array
+<br />
+#### Example 2: Update list/array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -156,7 +162,8 @@ var list5 = iassign(
 
 ```
 
-####Example 3: Update nested structures
+<br />
+#### Example 3: Update nested structures
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -198,7 +205,8 @@ var nested4 = iassign(
 
 ```
 
-####Example 4: Work with 3rd party libraries, e.g., lodash
+<br />
+#### Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -235,7 +243,8 @@ var nested3 = iassign(
 ```
 
 
-####Advanced example 5: Update nested property
+<br />
+#### Advanced example 5: Update nested property
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -277,7 +286,8 @@ expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
 expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
-####Advanced example 6: Update array
+<br />
+#### Advanced example 6: Update array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -319,7 +329,8 @@ expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
 ```
 
 
-####Advanced example 7: Update nested property, referring to external context.
+<br />
+#### Advanced example 7: Update nested property, referring to external context.
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -363,7 +374,8 @@ expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
 
 ```
 
-####Example 8: Update nested structures using iassign.fp() and currying
+<br />
+#### Example 8: Update nested structures using iassign.fp() and currying
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -415,15 +427,18 @@ var nested5 = iassignFp(nested4);
 ```
 
 
-##Constraints
+## Constraints
 
 * getProp() must be a pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
 * getProp() currently does not support comments in the function body, you can work around this by putting comments outside of the function body.
 
 
-##History
+## History
 
-* 1.0.31 - Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+* 1.0.31 - 
+    * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+    * Added setOption() function to allow you set the iassign options globally in ES6
+
 * 1.0.30 - [Support classes](https://github.com/engineforce/ImmutableAssign/issues/4)
 * 1.0.29 - Supported ES6 [Arrow Functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
 * 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)

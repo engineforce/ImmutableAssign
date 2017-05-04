@@ -56,6 +56,10 @@ interface IIassign extends IIassignOption {
         setProp: setPropFunc<TProp>,
         context?: TContext,
         obj?: TObj): TObj;
+    
+    // In ES6, you cannot set property on imported module directly, because they are default
+    // to readonly, in this case you need to use this method.
+    setOption(option: IIassignOption);
 }
 
 (function (root, factory) {
@@ -110,6 +114,10 @@ interface IIassign extends IIassignOption {
     iassign.fp = autoCurry(_iassignFp);
     iassign.maxGetPropCacheSize = 100;
 
+    iassign.setOption = function (option) {
+        copyOption(iassign, option);
+    }
+
     // Immutable Assign
     function _iassign<TObj, TProp, TContext>(
         obj: TObj,                                                                   // Object to set property, it will not be modified.
@@ -130,7 +138,7 @@ interface IIassign extends IIassignOption {
             option = <IIassignOption>setPropOrOption;
         }
 
-        option = copyOption(option);
+        option = copyOption(undefined, option, iassign);
 
         if (deepFreeze && (option.freeze || option.freezeInput)) {
             deepFreeze(obj);
@@ -185,32 +193,33 @@ interface IIassign extends IIassignOption {
     }
 
     // For performance
-    function copyOption(option: IIassignOption) {
-        let newOption: IIassign = <any>{};
+    function copyOption(target: IIassignOption = {}, option: IIassignOption, defaultOption?: IIassignOption) {
 
-        newOption.freeze = iassign.freeze;
-        newOption.freezeInput = iassign.freezeInput;
-        newOption.freezeOutput = iassign.freezeOutput;
-        newOption.useConstructor = iassign.useConstructor;
-        newOption.disableAllCheck = iassign.disableAllCheck;
-        newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
-        newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
-        newOption.maxGetPropCacheSize = iassign.maxGetPropCacheSize;
-        newOption.ignoreIfNoChange = iassign.ignoreIfNoChange;
-
-        if (option) {
-            if (option.freeze != undefined) { newOption.freeze = option.freeze; }
-            if (option.freezeInput != undefined) { newOption.freezeInput = option.freezeInput; }
-            if (option.freezeOutput != undefined) { newOption.freezeOutput = option.freezeOutput; }
-            if (option.useConstructor != undefined) { newOption.useConstructor = option.useConstructor; }
-            if (option.disableAllCheck != undefined) { newOption.disableAllCheck = option.disableAllCheck; }
-            if (option.disableHasReturnCheck != undefined) { newOption.disableHasReturnCheck = option.disableHasReturnCheck; }
-            if (option.disableExtraStatementCheck != undefined) { newOption.disableExtraStatementCheck = option.disableExtraStatementCheck; }
-            if (option.maxGetPropCacheSize != undefined) { newOption.maxGetPropCacheSize = option.maxGetPropCacheSize; }
-            if (option.ignoreIfNoChange != undefined) { newOption.ignoreIfNoChange = option.ignoreIfNoChange; }
+        if (defaultOption) {
+            target.freeze = defaultOption.freeze;
+            target.freezeInput = defaultOption.freezeInput;
+            target.freezeOutput = defaultOption.freezeOutput;
+            target.useConstructor = defaultOption.useConstructor;
+            target.disableAllCheck = defaultOption.disableAllCheck;
+            target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
+            target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
+            target.maxGetPropCacheSize = defaultOption.maxGetPropCacheSize;
+            target.ignoreIfNoChange = defaultOption.ignoreIfNoChange;
         }
 
-        return newOption;
+        if (option) {
+            if (option.freeze != undefined) { target.freeze = option.freeze; }
+            if (option.freezeInput != undefined) { target.freezeInput = option.freezeInput; }
+            if (option.freezeOutput != undefined) { target.freezeOutput = option.freezeOutput; }
+            if (option.useConstructor != undefined) { target.useConstructor = option.useConstructor; }
+            if (option.disableAllCheck != undefined) { target.disableAllCheck = option.disableAllCheck; }
+            if (option.disableHasReturnCheck != undefined) { target.disableHasReturnCheck = option.disableHasReturnCheck; }
+            if (option.disableExtraStatementCheck != undefined) { target.disableExtraStatementCheck = option.disableExtraStatementCheck; }
+            if (option.maxGetPropCacheSize != undefined) { target.maxGetPropCacheSize = option.maxGetPropCacheSize; }
+            if (option.ignoreIfNoChange != undefined) { target.ignoreIfNoChange = option.ignoreIfNoChange; }
+        }
+
+        return target;
     }
 
     function updateProperty<TObj, TProp, TContext>(

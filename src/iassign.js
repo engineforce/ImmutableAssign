@@ -46,6 +46,9 @@
     var iassign = _iassign;
     iassign.fp = autoCurry(_iassignFp);
     iassign.maxGetPropCacheSize = 100;
+    iassign.setOption = function (option) {
+        copyOption(iassign, option);
+    };
     // Immutable Assign
     function _iassign(obj, // Object to set property, it will not be modified.
         getPropOrSetProp, // Function to get property to be updated. Must be pure function.
@@ -62,7 +65,7 @@
             context = undefined;
             option = setPropOrOption;
         }
-        option = copyOption(option);
+        option = copyOption(undefined, option, iassign);
         if (deepFreeze && (option.freeze || option.freezeInput)) {
             deepFreeze(obj);
         }
@@ -99,47 +102,49 @@
         return _iassign(obj, getProp, setProp, context, option);
     }
     // For performance
-    function copyOption(option) {
-        var newOption = {};
-        newOption.freeze = iassign.freeze;
-        newOption.freezeInput = iassign.freezeInput;
-        newOption.freezeOutput = iassign.freezeOutput;
-        newOption.useConstructor = iassign.useConstructor;
-        newOption.disableAllCheck = iassign.disableAllCheck;
-        newOption.disableHasReturnCheck = iassign.disableHasReturnCheck;
-        newOption.disableExtraStatementCheck = iassign.disableExtraStatementCheck;
-        newOption.maxGetPropCacheSize = iassign.maxGetPropCacheSize;
-        newOption.ignoreIfNoChange = iassign.ignoreIfNoChange;
+    function copyOption(target, option, defaultOption) {
+        if (target === void 0) { target = {}; }
+        if (defaultOption) {
+            target.freeze = defaultOption.freeze;
+            target.freezeInput = defaultOption.freezeInput;
+            target.freezeOutput = defaultOption.freezeOutput;
+            target.useConstructor = defaultOption.useConstructor;
+            target.disableAllCheck = defaultOption.disableAllCheck;
+            target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
+            target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
+            target.maxGetPropCacheSize = defaultOption.maxGetPropCacheSize;
+            target.ignoreIfNoChange = defaultOption.ignoreIfNoChange;
+        }
         if (option) {
             if (option.freeze != undefined) {
-                newOption.freeze = option.freeze;
+                target.freeze = option.freeze;
             }
             if (option.freezeInput != undefined) {
-                newOption.freezeInput = option.freezeInput;
+                target.freezeInput = option.freezeInput;
             }
             if (option.freezeOutput != undefined) {
-                newOption.freezeOutput = option.freezeOutput;
+                target.freezeOutput = option.freezeOutput;
             }
             if (option.useConstructor != undefined) {
-                newOption.useConstructor = option.useConstructor;
+                target.useConstructor = option.useConstructor;
             }
             if (option.disableAllCheck != undefined) {
-                newOption.disableAllCheck = option.disableAllCheck;
+                target.disableAllCheck = option.disableAllCheck;
             }
             if (option.disableHasReturnCheck != undefined) {
-                newOption.disableHasReturnCheck = option.disableHasReturnCheck;
+                target.disableHasReturnCheck = option.disableHasReturnCheck;
             }
             if (option.disableExtraStatementCheck != undefined) {
-                newOption.disableExtraStatementCheck = option.disableExtraStatementCheck;
+                target.disableExtraStatementCheck = option.disableExtraStatementCheck;
             }
             if (option.maxGetPropCacheSize != undefined) {
-                newOption.maxGetPropCacheSize = option.maxGetPropCacheSize;
+                target.maxGetPropCacheSize = option.maxGetPropCacheSize;
             }
             if (option.ignoreIfNoChange != undefined) {
-                newOption.ignoreIfNoChange = option.ignoreIfNoChange;
+                target.ignoreIfNoChange = option.ignoreIfNoChange;
             }
         }
-        return newOption;
+        return target;
     }
     function updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option) {
         var propValue = undefined;

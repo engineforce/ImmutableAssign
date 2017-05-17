@@ -53,7 +53,7 @@ declare namespace ImmutableAssign {
 
         // In ES6, you cannot set property on imported module directly, because they are default
         // to readonly, in this case you need to use this method.
-        setOption(option: IIassignOption);
+        setOption(option: IIassignOption): void;
     }
 }
 

@@ -1,6 +1,6 @@
 # immutable-assign (iassign.js)
 
-Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking.
+Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking for nested objects.
 
 [![NPM version][3]][4] [![Build Status][1]][2] [![coverage status][5]][6]
 
@@ -444,7 +444,7 @@ var nested5 = iassignFp(nested4);
 * 1.0.31 - 
     * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
     * Added setOption() function to allow you set the iassign options globally in ES6
-
+<br />
 * 1.0.30 - [Support classes](https://github.com/engineforce/ImmutableAssign/issues/4)
 * 1.0.29 - Supported ES6 [Arrow Functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
 * 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)

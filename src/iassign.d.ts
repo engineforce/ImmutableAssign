@@ -57,12 +57,6 @@ declare namespace ImmutableAssign {
     }
 }
 
-//declare function iassign<TObj, TProp, TContext>(obj: TObj, getProp: (obj: TObj, context: TContext) => TProp, setProp: (prop: TProp) => TProp, context?: TContext): TObj;
-//export = iassign;
-
-declare module "immutable-assign" {
-    let iassign: ImmutableAssign.IIassign;
-    export = iassign;
-}
-
-declare var iassign: ImmutableAssign.IIassign;
+declare const iassign: ImmutableAssign.IIassign;
+export as namespace iassign;
+export = iassign;

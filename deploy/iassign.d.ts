@@ -53,16 +53,10 @@ declare namespace ImmutableAssign {
 
         // In ES6, you cannot set property on imported module directly, because they are default
         // to readonly, in this case you need to use this method.
-        setOption(option: IIassignOption);
+        setOption(option: IIassignOption): void;
     }
 }
 
-//declare function iassign<TObj, TProp, TContext>(obj: TObj, getProp: (obj: TObj, context: TContext) => TProp, setProp: (prop: TProp) => TProp, context?: TContext): TObj;
-//export = iassign;
-
-declare module "immutable-assign" {
-    let iassign: ImmutableAssign.IIassign;
-    export = iassign;
-}
-
 declare var iassign: ImmutableAssign.IIassign;
+export as namespace iassign;
+export = iassign;

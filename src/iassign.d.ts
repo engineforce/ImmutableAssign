@@ -57,6 +57,6 @@ declare namespace ImmutableAssign {
     }
 }
 
-declare const iassign: ImmutableAssign.IIassign;
+declare var iassign: ImmutableAssign.IIassign;
 export as namespace iassign;
 export = iassign;

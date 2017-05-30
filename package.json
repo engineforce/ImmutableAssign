@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
   "main": "deploy/iassign.js",
   "types": "deploy/iassign.d.ts",

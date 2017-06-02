@@ -60,6 +60,9 @@ interface IIassign extends IIassignOption {
     // In ES6, you cannot set property on imported module directly, because they are default
     // to readonly, in this case you need to use this method.
     setOption(option: IIassignOption);
+
+    // ES6 default export
+    default: IIassign;
 }
 
 (function (root, factory) {
@@ -600,6 +603,7 @@ interface IIassign extends IIassignOption {
     //     return undefined;
     // }
 
+    iassign.default = iassign;
     return iassign;
 });
 

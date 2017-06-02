@@ -445,5 +445,6 @@
     //     }
     //     return undefined;
     // }
+    iassign.default = iassign;
     return iassign;
 });

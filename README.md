@@ -441,6 +441,7 @@ var nested5 = iassignFp(nested4);
 
 ## History
 
+* 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
     * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
     * Added setOption() function to allow you set the iassign options globally in ES6.

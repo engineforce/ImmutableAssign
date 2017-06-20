@@ -80,7 +80,7 @@ interface IIassignOption {
     freezeOutput?: boolean;        // Deep freeze output
     useConstructor?: boolean;      // Uses the constructor to create new instances
 
-    // Custom copy function, can be used to handle special types, e.g., Map, Set
+    // Custom copy function, can be used to handle special types, e.g., Map, Set; refer to example 9
     copyFunc?: <T>(value: T, propName: string): T;
 
     // Disable validation for extra statements in the getProp() function, 
@@ -471,7 +471,7 @@ var map2 = iassign(
 
 ## History
 
-* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12).
+* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](https://github.com/engineforce/ImmutableAssign#example-9-support-es6-map)
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
     * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).

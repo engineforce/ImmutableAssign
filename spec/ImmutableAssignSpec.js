@@ -27,6 +27,9 @@ var __extends = (this && this.__extends) || (function () {
             if (name == "lodash" && root._) {
                 return root._;
             }
+            if (name == "immutable" && root.immutable) {
+                return root.immutable;
+            }
             if (name.indexOf("iassign") > -1 && root.iassign) {
                 return root.iassign;
             }
@@ -46,6 +49,7 @@ var __extends = (this && this.__extends) || (function () {
         console.warn("Cannot load deep-freeze module.");
     }
     var _ = require("lodash");
+    var immutable = require("immutable");
     describe("Test", function () {
         beforeEach(function () {
         });

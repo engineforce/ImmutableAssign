@@ -1,11 +1,16 @@
 
 declare namespace ImmutableAssign {
 
+    interface ICopyFunc {
+        <T>(value: T, propName: string): T;
+    }
+
     interface IIassignOption {
         freeze?: boolean;                        // Deep freeze both input and output
         freezeInput?: boolean;                   // Deep freeze input
         freezeOutput?: boolean;                  // Deep freeze output
         useConstructor?: boolean;                // Uses the constructor to create new instances
+        copyFunc?: ICopyFunc;                    // Custom copy function, can be used to handle special types, e.g., Map, Set
         disableAllCheck?: boolean;
         disableHasReturnCheck?: boolean;
         // Disable validation for extra statements in the getProp() function, 

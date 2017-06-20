@@ -1,5 +1,7 @@
 "use strict";
 
+// Test working with ES6 arrow function
+
 (function (root, factory) {
 
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -16,6 +18,10 @@
 
             if (name == "lodash" && root._) {
                 return root._;
+            }
+
+            if (name == "immutable" && root.immutable) {
+                return root.immutable;
             }
 
             if (name.indexOf("iassign") > -1 && root.iassign) {
@@ -40,6 +46,7 @@
         console.warn("Cannot load deep-freeze module.");
     }
     var _ = require("lodash");
+    var immutable = require("immutable");
 
     if (typeof (global) !== "undefined") {
         console.log("In node");

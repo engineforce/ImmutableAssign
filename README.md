@@ -80,6 +80,9 @@ interface IIassignOption {
     freezeOutput?: boolean;        // Deep freeze output
     useConstructor?: boolean;      // Uses the constructor to create new instances
 
+    // Custom copy function, can be used to handle special types, e.g., Map, Set
+    copyFunc?: <T>(value: T, propName: string): T;
+
     // Disable validation for extra statements in the getProp() function, 
     // which is needed when running the coverage, e.g., istanbul.js does add 
     // instrument statements in our getProp() function, which can be safely ignored. 
@@ -432,6 +435,33 @@ var nested5 = iassignFp(nested4);
 
 ```
 
+### Example 9: Support ES6 Map
+
+```javascript
+var iassign = require("immutable-assign");
+
+var map1 = new Map();
+map1.set("a", "value a");
+
+iassign.setOption({
+    copyFunc: function (value, propName) {
+        if (value instanceof Map) {
+            return new Map(value);
+        }
+    }
+});
+
+var map2 = iassign(
+    map1,
+    m => { m.set(1, 'first'); return m; }
+);
+
+// map2 !== map1
+// map1 = Map({ "a": "value a" })
+// map1 = Map({ "a": "value a", 1: "first" })
+
+```
+
 
 ## Constraints
 
@@ -441,6 +471,7 @@ var nested5 = iassignFp(nested4);
 
 ## History
 
+* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12).
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
     * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).

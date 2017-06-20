@@ -77,7 +77,7 @@
                     return obj;
                 }
             }
-            obj = quickCopy(obj, option.useConstructor);
+            obj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
             obj = option.ignoreIfNoChange ? newValue : setProp(obj);
         }
         else {
@@ -109,6 +109,7 @@
             target.freezeInput = defaultOption.freezeInput;
             target.freezeOutput = defaultOption.freezeOutput;
             target.useConstructor = defaultOption.useConstructor;
+            target.copyFunc = defaultOption.copyFunc;
             target.disableAllCheck = defaultOption.disableAllCheck;
             target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
             target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
@@ -127,6 +128,9 @@
             }
             if (option.useConstructor != undefined) {
                 target.useConstructor = option.useConstructor;
+            }
+            if (option.copyFunc != undefined) {
+                target.copyFunc = option.copyFunc;
             }
             if (option.disableAllCheck != undefined) {
                 target.disableAllCheck = option.disableAllCheck;
@@ -152,7 +156,7 @@
             var _a = getPropFuncInfo.funcTokens[propIndex], propName = _a.propName, propNameSource = _a.propNameSource, subAccessorText = _a.subAccessorText, getPropName = _a.getPropName;
             //console.log(propName);
             if (propIndex <= 0) {
-                propValue = quickCopy(obj, option.useConstructor);
+                propValue = quickCopy(obj, propName, option.useConstructor, option.copyFunc);
                 if (!subAccessorText) {
                     propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
@@ -164,7 +168,7 @@
                     propName = getPropName(obj, context);
                 }
                 propValue = propValue[propName];
-                propValue = quickCopy(propValue, option.useConstructor);
+                propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
                 if (!subAccessorText) {
                     propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
@@ -386,7 +390,7 @@
             quotedTextInfos: quotedTextInfos,
         };
     }
-    function quickCopy(value, useConstructor) {
+    function quickCopy(value, propName, useConstructor, copyFunc) {
         if (value != undefined && !(value instanceof Date)) {
             if (value instanceof Array) {
                 return value.slice();
@@ -395,6 +399,11 @@
                 if (useConstructor) {
                     var target = new value.constructor();
                     return extend(target, value);
+                }
+                else if (copyFunc) {
+                    var newValue = copyFunc(value, propName);
+                    if (newValue != undefined)
+                        return newValue;
                 }
                 return extend({}, value);
             }

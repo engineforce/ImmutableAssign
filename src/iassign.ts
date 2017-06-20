@@ -4,11 +4,16 @@
 
 declare var define;
 
+interface ICopyFunc {
+    <T>(value: T, propName: string): T
+}
+
 interface IIassignOption {
     freeze?: boolean;                        // Deep freeze both input and output
     freezeInput?: boolean;                   // Deep freeze input
     freezeOutput?: boolean;                  // Deep freeze output
     useConstructor?: boolean;                // Uses the constructor to create new instances
+    copyFunc?: ICopyFunc;                    // Custom copy function, can be used to handle special types, e.g., Map, Set
     disableAllCheck?: boolean;
     disableHasReturnCheck?: boolean;
     // Disable validation for extra statements in the getProp() function, 
@@ -56,7 +61,7 @@ interface IIassign extends IIassignOption {
         setProp: setPropFunc<TProp>,
         context?: TContext,
         obj?: TObj): TObj;
-    
+
     // In ES6, you cannot set property on imported module directly, because they are default
     // to readonly, in this case you need to use this method.
     setOption(option: IIassignOption);
@@ -157,7 +162,7 @@ interface IIassign extends IIassignOption {
                 }
             }
 
-            obj = quickCopy(obj, option.useConstructor);
+            obj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
             obj = option.ignoreIfNoChange ? newValue : <any>setProp(<any>obj);
         }
         else {
@@ -203,6 +208,7 @@ interface IIassign extends IIassignOption {
             target.freezeInput = defaultOption.freezeInput;
             target.freezeOutput = defaultOption.freezeOutput;
             target.useConstructor = defaultOption.useConstructor;
+            target.copyFunc = defaultOption.copyFunc;
             target.disableAllCheck = defaultOption.disableAllCheck;
             target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
             target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
@@ -215,6 +221,7 @@ interface IIassign extends IIassignOption {
             if (option.freezeInput != undefined) { target.freezeInput = option.freezeInput; }
             if (option.freezeOutput != undefined) { target.freezeOutput = option.freezeOutput; }
             if (option.useConstructor != undefined) { target.useConstructor = option.useConstructor; }
+            if (option.copyFunc != undefined) { target.copyFunc = option.copyFunc; }
             if (option.disableAllCheck != undefined) { target.disableAllCheck = option.disableAllCheck; }
             if (option.disableHasReturnCheck != undefined) { target.disableHasReturnCheck = option.disableHasReturnCheck; }
             if (option.disableExtraStatementCheck != undefined) { target.disableExtraStatementCheck = option.disableExtraStatementCheck; }
@@ -241,7 +248,7 @@ interface IIassign extends IIassignOption {
             //console.log(propName);
 
             if (propIndex <= 0) {
-                propValue = quickCopy(obj, option.useConstructor);
+                propValue = quickCopy(obj, propName, option.useConstructor, option.copyFunc);
 
                 if (!subAccessorText) {
                     propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
@@ -256,7 +263,7 @@ interface IIassign extends IIassignOption {
                 }
 
                 propValue = propValue[propName];
-                propValue = quickCopy(propValue, option.useConstructor);
+                propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
 
                 if (!subAccessorText) {
                     propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
@@ -538,7 +545,7 @@ interface IIassign extends IIassignOption {
         };
     }
 
-    function quickCopy<T>(value: T, useConstructor: boolean): T {
+    function quickCopy<T>(value: T, propName: string, useConstructor: boolean, copyFunc: ICopyFunc): T {
 
         if (value != undefined && !(value instanceof Date)) {
             if (value instanceof Array) {
@@ -549,6 +556,12 @@ interface IIassign extends IIassignOption {
                     const target = new (value as any).constructor();
                     return extend(target, value);
                 }
+                else if (copyFunc) {
+                    let newValue = copyFunc(value, propName);
+                    if (newValue != undefined)
+                        return newValue;
+                }
+
                 return extend({}, value);
             }
         }

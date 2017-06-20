@@ -18,6 +18,10 @@
                 return root._;
             }
 
+            if (name == "immutable" && root.immutable) {
+                return root.immutable;
+            }
+
             if (name.indexOf("iassign") > -1 && root.iassign) {
                 return root.iassign;
             }
@@ -39,6 +43,7 @@
     }
 
     var _: _.LoDashStatic = require("lodash");
+    var immutable = require("immutable");
 
     describe("Test", function () {
 

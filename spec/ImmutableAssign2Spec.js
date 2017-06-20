@@ -18,6 +18,10 @@
                 return root._;
             }
 
+            if (name == "immutable" && root.immutable) {
+                return root.immutable;
+            }
+
             if (name.indexOf("iassign") > -1 && root.iassign) {
                 return root.iassign;
             }
@@ -40,6 +44,7 @@
         console.warn("Cannot load deep-freeze module.");
     }
     var _ = require("lodash");
+    var immutable = require("immutable");
 
     if (typeof(global) !== "undefined") {
         console.log("In node");

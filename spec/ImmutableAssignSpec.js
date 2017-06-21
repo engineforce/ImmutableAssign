@@ -27,8 +27,8 @@ var __extends = (this && this.__extends) || (function () {
             if (name == "lodash" && root._) {
                 return root._;
             }
-            if (name == "immutable" && root.immutable) {
-                return root.immutable;
+            if (name == "immutable" && root.Immutable) {
+                return root.Immutable;
             }
             if (name.indexOf("iassign") > -1 && root.iassign) {
                 return root.iassign;

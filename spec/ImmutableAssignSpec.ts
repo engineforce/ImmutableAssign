@@ -18,8 +18,8 @@
                 return root._;
             }
 
-            if (name == "immutable" && root.immutable) {
-                return root.immutable;
+            if (name == "immutable" && root.Immutable) {
+                return root.Immutable;
             }
 
             if (name.indexOf("iassign") > -1 && root.iassign) {

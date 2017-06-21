@@ -113,6 +113,7 @@ module.exports = function (config) {
         files: [
             'src/Libs/*.js',
             'node_modules/lodash/lodash.js',
+            'node_modules/immutable/dist/immutable.js',
             'src/*.js',
             'spec/**/*.js'
         ],

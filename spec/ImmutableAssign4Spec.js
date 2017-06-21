@@ -88,9 +88,7 @@
 
             var map2 = iassign(
                 map1,
-                m => {
-                    m.set(1, 'first'); return m;
-                }
+                function (m) { m.set(1, 'first'); return m; }
             );
 
             expect(map2).not.toBe(map1);
@@ -104,7 +102,7 @@
 
             var map3 = iassign(
                 map2,
-                m => { m.set(2, 'second'); return m; }
+                function (m) { m.set(2, 'second'); return m; }
             );
 
             expect(map3).not.toBe(map2);
@@ -197,9 +195,7 @@
 
             var set2 = iassign(
                 set1,
-                m => {
-                    m.add(1); return m;
-                }
+                function (m) { m.add(1); return m; }
             );
 
             expect(set2).not.toBe(set1);
@@ -214,7 +210,7 @@
 
             var set3 = iassign(
                 set2,
-                m => { m.add(2); return m; }
+                function(m) { m.add(2); return m; }
             );
 
             expect(set3).not.toBe(set2);

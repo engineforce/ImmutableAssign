@@ -446,6 +446,8 @@ map1.set("a", "value a");
 iassign.setOption({
     copyFunc: function (value, propName) {
         if (value instanceof Map) {
+            // In IE11, Map constructor arguments are not supported,
+            // you need to provide ES6 shim, e.g., use core-js
             return new Map(value);
         }
     }

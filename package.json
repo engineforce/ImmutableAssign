@@ -48,7 +48,7 @@
     "immutable": "^3.8.1",
     "istanbul": "^0.4.3",
     "jasmine": "^2.4.1",
-    "karma": "^1.7.0",
+    "karma": "^1.1.2",
     "karma-chrome-launcher": "^1.0.1",
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",

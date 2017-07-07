@@ -154,8 +154,6 @@ module.exports = function (config) {
 
         sauceLabs: {
             testName: 'Immutable Assign Unit Tests',
-            username: 'engineforce',
-            accessKey: '61e43f6c-d263-4843-8561-a8ca4c482b70',
             startConnect: false,
             build: new Date().getTime() //Math.random().toString()
         },

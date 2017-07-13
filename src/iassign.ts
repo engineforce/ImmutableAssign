@@ -1,7 +1,5 @@
 "use strict";
 
-// TODO: handle comments in getProp() function.
-
 declare var define;
 
 interface ICopyFunc {
@@ -14,15 +12,6 @@ interface IIassignOption {
     freezeOutput?: boolean;                  // Deep freeze output
     useConstructor?: boolean;                // Uses the constructor to create new instances
     copyFunc?: ICopyFunc;                    // Custom copy function, can be used to handle special types, e.g., Map, Set
-    disableAllCheck?: boolean;
-    disableHasReturnCheck?: boolean;
-    // Disable validation for extra statements in the getProp() function, 
-    // which is needed when running the coverage, e.g., istanbul.js does add 
-    // instrument statements in our getProp() function, which can be safely ignored. 
-    disableExtraStatementCheck?: boolean;
-
-    // Default: 100
-    maxGetPropCacheSize?: number;
 
     // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
     ignoreIfNoChange?: boolean;
@@ -120,7 +109,6 @@ interface IIassign extends IIassignOption {
 
     var iassign: IIassign = <any>_iassign;
     iassign.fp = autoCurry(_iassignFp);
-    iassign.maxGetPropCacheSize = 100;
 
     iassign.setOption = function (option) {
         copyOption(iassign, option);
@@ -177,9 +165,12 @@ interface IIassign extends IIassignOption {
                 }
             }
 
-            let getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
+            const propPath = getPropPath(getProp, obj, context, option);
+            if (!propPath) {
+                throw new Error('getProp() function does not return a part of obj');
+            }
 
-            obj = updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option);
+            obj = updateProperty(obj, setProp, newValue, context, propPath, option);
         }
 
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
@@ -200,6 +191,47 @@ interface IIassign extends IIassignOption {
         return _iassign<TObj, TProp, TContext>(obj, getProp, setProp, context, option);
     }
 
+    function getPropPath<TObj, TProp, TContext>(getProp: getPropFunc<TObj, TProp, TContext>, obj: TObj, context: TContext, option: IIassignOption): string[] {
+        // will be a double map, both original values and proxied objects will have the path indexed
+        const pathMap = new Map<any, string[]>();
+        const handlers = {
+            get: (target: any, prop: string) => {
+                switch (prop) {
+                    // Allows this object be used as a primitive for self-referential access (e.g. obj.a[obj.b])
+                    // See http://www.adequatelygood.com/Object-to-Primitive-Conversions-in-JavaScript.html
+                    case 'valueOf':
+                        return () => target.valueOf();
+                    case 'toString':
+                        return () => target.toString();
+                }
+                const nextValue = target[prop];
+                if (nextValue === undefined || nextValue === null) {
+                    return nextValue;
+                }
+                let nextObj;
+                if (typeof nextValue !== 'object') {
+                    nextObj = {
+                        valueOf: () => nextValue,
+                        toString: () => nextValue.toString(),
+                    };
+                } else {
+                    nextObj = quickCopy(nextValue, prop, option.useConstructor, option.copyFunc);
+                }
+                const prevPath = pathMap.get(target) || [];
+                const nextPath = prevPath.concat(prop);
+                const proxied = new Proxy(nextObj, handlers);
+                pathMap.set(nextObj, nextPath);
+                pathMap.set(proxied, nextPath);
+                return proxied;
+            },
+        };
+        let coreObj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+        coreObj = new Proxy(coreObj, handlers);
+        pathMap.set(coreObj, []);
+        pathMap.set(obj, []);
+        return pathMap.get(getProp(coreObj, context));
+    }
+
     // For performance
     function copyOption(target: IIassignOption = {}, option: IIassignOption, defaultOption?: IIassignOption) {
 
@@ -209,10 +241,6 @@ interface IIassign extends IIassignOption {
             target.freezeOutput = defaultOption.freezeOutput;
             target.useConstructor = defaultOption.useConstructor;
             target.copyFunc = defaultOption.copyFunc;
-            target.disableAllCheck = defaultOption.disableAllCheck;
-            target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
-            target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
-            target.maxGetPropCacheSize = defaultOption.maxGetPropCacheSize;
             target.ignoreIfNoChange = defaultOption.ignoreIfNoChange;
         }
 
@@ -222,10 +250,6 @@ interface IIassign extends IIassignOption {
             if (option.freezeOutput != undefined) { target.freezeOutput = option.freezeOutput; }
             if (option.useConstructor != undefined) { target.useConstructor = option.useConstructor; }
             if (option.copyFunc != undefined) { target.copyFunc = option.copyFunc; }
-            if (option.disableAllCheck != undefined) { target.disableAllCheck = option.disableAllCheck; }
-            if (option.disableHasReturnCheck != undefined) { target.disableHasReturnCheck = option.disableHasReturnCheck; }
-            if (option.disableExtraStatementCheck != undefined) { target.disableExtraStatementCheck = option.disableExtraStatementCheck; }
-            if (option.maxGetPropCacheSize != undefined) { target.maxGetPropCacheSize = option.maxGetPropCacheSize; }
             if (option.ignoreIfNoChange != undefined) { target.ignoreIfNoChange = option.ignoreIfNoChange; }
         }
 
@@ -237,312 +261,32 @@ interface IIassign extends IIassignOption {
         setProp: setPropFunc<TProp>,
         newValue: TProp,
         context: TContext,
-        getPropFuncInfo: IGetPropFuncInfo,
+        propPath: string[],
         option: IIassignOption): TObj {
 
-        let propValue = undefined;
-
-        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
-            let { propName, propNameSource, subAccessorText, getPropName } = getPropFuncInfo.funcTokens[propIndex];
-
-            //console.log(propName);
-
-            if (propIndex <= 0) {
-                propValue = quickCopy(obj, propName, option.useConstructor, option.copyFunc);
-
-                if (!subAccessorText) {
-                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
-                }
-
-                obj = propValue;
+            let propValue: any = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+            obj = propValue;
+            if (!propPath.length) {
+                return option.ignoreIfNoChange ? newValue : setProp(propValue) as any;
             }
-            else {
-                let prevPropValue = propValue;
-                if (propName == undefined) {
-                    propName = getPropName(obj, context);
-                }
+
+            for (var propIndex = 0; propIndex < propPath.length; ++propIndex) {
+                const propName = propPath[propIndex];
+                const isLast = propIndex + 1 === propPath.length;
+
+                const prevPropValue = propValue;
 
                 propValue = propValue[propName];
                 propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
 
-                if (!subAccessorText) {
+                if (isLast) {
                     propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
                 }
 
                 prevPropValue[propName] = propValue;
             }
 
-            //console.log(propValue);
-        }
-
         return obj;
-    }
-
-    interface IGetPropFuncToken {
-        propName: string;
-        propNameSource: ePropNameSource;
-        subAccessorText: string;
-        getPropName?: (obj, context) => string;
-    }
-
-    enum ePropNameSource {
-        none,
-        beforeDot,
-        beforeBracket,
-        inBracket,
-        last,
-    }
-
-    interface IGetPropFuncInfo extends IParsedTextInQuotes {
-        objParameterName: string;
-        cxtParameterName: string;
-        bodyText: string;
-        funcTokens: IGetPropFuncToken[];
-    }
-
-    interface IParsedTextInQuotes {
-        accessorText: string;
-        quotedTextInfos: { [key: string]: string };
-    }
-
-    let getPropCaches: { [key: string]: IGetPropFuncInfo } = {};
-    let getPropCacheKeys: string[] = [];
-
-    function parseGetPropFuncInfo(func: Function, option: IIassignOption): IGetPropFuncInfo {
-        let funcText = func.toString();
-
-        let cacheKey = funcText + JSON.stringify(option);
-        let info = getPropCaches[cacheKey];
-        if (getPropCaches[cacheKey]) {
-            return info;
-        }
-
-        let matches = /\(([^\)]*)\)/.exec(funcText);
-        var objParameterName = undefined;
-        let cxtParameterName = undefined;
-        if (matches) {
-            let parametersText = matches[1];
-            let parameters = parametersText.split(",");
-            objParameterName = parameters[0];
-            cxtParameterName = parameters[1];
-        }
-
-        if (objParameterName) {
-            objParameterName = objParameterName.trim();
-        }
-
-        if (cxtParameterName) {
-            cxtParameterName = cxtParameterName.trim();
-        }
-
-        let bodyStartIndex = funcText.indexOf("{");
-        let bodyEndIndex = funcText.lastIndexOf("}");
-        let bodyText = "";
-        if (bodyStartIndex > -1 && bodyEndIndex > -1) {
-            bodyText = funcText.substring(bodyStartIndex + 1, bodyEndIndex);
-        }
-        else {
-            let arrowIndex = funcText.indexOf("=>");
-            if (arrowIndex > -1) {
-                //console.log("Handle arrow function.");
-                bodyText = "return " + funcText.substring(arrowIndex + 3);
-            }
-            else {
-                throw new Error(`Cannot parse function: ${funcText}`);
-            }
-        }
-
-        let accessorTextInfo = getAccessorTextInfo(bodyText, option);
-
-        info = {
-            objParameterName: objParameterName,
-            cxtParameterName: cxtParameterName,
-            bodyText: bodyText,
-            accessorText: accessorTextInfo.accessorText,
-            quotedTextInfos: accessorTextInfo.quotedTextInfos,
-            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText),
-        }
-
-        postProcessTokens(info);
-
-        if (option.maxGetPropCacheSize > 0) {
-            getPropCaches[cacheKey] = info;
-            getPropCacheKeys.push(cacheKey);
-
-            if (getPropCacheKeys.length > option.maxGetPropCacheSize) {
-                debugger;
-                let cacheKeyToRemove = getPropCacheKeys.shift();
-                delete getPropCaches[cacheKeyToRemove];
-            }
-        }
-
-        return info;
-    }
-
-    function parseGetPropFuncTokens(accessorText: string): IGetPropFuncToken[] {
-        let tokens: IGetPropFuncToken[] = [];
-
-        while (accessorText) {
-            let openBracketIndex = accessorText.indexOf("[");
-            let closeBracketIndex = accessorText.indexOf("]");
-            let dotIndex = accessorText.indexOf(".");
-            let propName = "";
-            let propNameSource = ePropNameSource.none;
-
-            // if (dotIndex == 0) {
-            //     accessorText = accessorText.substr(dotIndex + 1);
-            //     continue;
-            // }
-
-            if (openBracketIndex > -1 && closeBracketIndex <= -1) {
-                throw new Error("Found open bracket but not close bracket.");
-            }
-
-            if (openBracketIndex <= -1 && closeBracketIndex > -1) {
-                throw new Error("Found close bracket but not open bracket.");
-            }
-
-            if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
-                propName = accessorText.substr(0, dotIndex);
-                accessorText = accessorText.substr(dotIndex + 1);
-                propNameSource = ePropNameSource.beforeDot;
-            }
-            else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
-
-                if (openBracketIndex > 0) {
-                    propName = accessorText.substr(0, openBracketIndex);
-                    accessorText = accessorText.substr(openBracketIndex);
-                    propNameSource = ePropNameSource.beforeBracket;
-                }
-                else {
-                    propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
-                    accessorText = accessorText.substr(closeBracketIndex + 1);
-                    propNameSource = ePropNameSource.inBracket;
-                }
-            }
-            else {
-                propName = accessorText;
-                accessorText = "";
-                propNameSource = ePropNameSource.last;
-            }
-
-            propName = propName.trim();
-            if (propName == "") {
-                continue;
-            }
-
-            //console.log(propName);
-            tokens.push({
-                propName,
-                propNameSource,
-                subAccessorText: accessorText,
-            });
-        }
-
-        return tokens;
-    }
-
-    function postProcessTokens(getPropFuncInfo: IGetPropFuncInfo) {
-        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
-            let token = getPropFuncInfo.funcTokens[propIndex];
-            let { propName, propNameSource, subAccessorText } = token;
-
-            if (propNameSource == ePropNameSource.inBracket && isNaN(<any>propName)) {
-
-                if (propName[0] == "#") {
-                    let quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
-                    if (!quotedPropName) {
-                        throw new Error("Cannot find quoted text for " + quotedPropName);
-                    }
-                    propName = eval(quotedPropName);
-                    token.propName = propName;
-                }
-                else {
-                    let statement = `'use strict';\n`;
-                    if (getPropFuncInfo.objParameterName) {
-                        statement += `var ${getPropFuncInfo.objParameterName} = arguments[1];\n`
-                    }
-                    if (getPropFuncInfo.cxtParameterName) {
-                        statement += `var ${getPropFuncInfo.cxtParameterName} = arguments[2];\n`
-                    }
-                    statement += `${propName}`;
-                    token.propName = undefined;
-                    token.getPropName = (obj, context) => {
-                        return (<any>evalStatement)(statement, obj, context);
-                    }
-                }
-            }
-        }
-    }
-
-    function getAccessorTextInfo(bodyText: string, option: IIassignOption) {
-
-        let returnIndex = bodyText.indexOf("return ");
-
-        if (!option.disableAllCheck && !option.disableHasReturnCheck) {
-            if (returnIndex <= -1) {
-                throw new Error("getProp() function has no 'return' keyword.");
-            }
-        }
-
-        if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
-            let otherBodyText = bodyText.substr(0, returnIndex);
-            otherBodyText = otherBodyText.replace(/['"]use strict['"];*/g, "");
-            otherBodyText = otherBodyText.trim();
-            if (otherBodyText != "") {
-                throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
-            }
-        }
-
-        let accessorText = bodyText.substr(returnIndex + 7).trim();
-        if (accessorText[accessorText.length - 1] == ";") {
-            accessorText = accessorText.substring(0, accessorText.length - 1);
-        }
-        accessorText = accessorText.trim();
-
-        return parseTextInQuotes(accessorText, option);
-    }
-
-    function parseTextInQuotes(accessorText, option: IIassignOption): IParsedTextInQuotes {
-        let quotedTextInfos: { [key: string]: string } = {}
-
-        let index = 0;
-        while (true) {
-            let singleQuoteIndex = accessorText.indexOf("'");
-            let doubleQuoteIndex = accessorText.indexOf('"');
-            let varName = "#" + index++;
-
-            if (singleQuoteIndex <= -1 && doubleQuoteIndex <= -1)
-                break;
-
-            let matches: RegExpExecArray = undefined;
-            let quoteIndex: number;
-
-            if (doubleQuoteIndex > -1 && (doubleQuoteIndex < singleQuoteIndex || singleQuoteIndex <= -1)) {
-                matches = /("[^"\\]*(?:\\.[^"\\]*)*")/.exec(accessorText);
-                quoteIndex = doubleQuoteIndex;
-            }
-            else if (singleQuoteIndex > -1 && (singleQuoteIndex < doubleQuoteIndex || doubleQuoteIndex <= -1)) {
-                matches = /('[^'\\]*(?:\\.[^'\\]*)*')/.exec(accessorText);
-                quoteIndex = singleQuoteIndex;
-            }
-
-            if (matches) {
-                quotedTextInfos[varName] = matches[1];
-                accessorText =
-                    accessorText.substr(0, quoteIndex) +
-                    varName +
-                    accessorText.substr(matches.index + matches[1].length);
-            }
-            else {
-                throw new Error("Invalid text in quotes: " + accessorText);
-            }
-        }
-
-        return {
-            accessorText,
-            quotedTextInfos,
-        };
     }
 
     function quickCopy<T>(value: T, propName: string, useConstructor: boolean, copyFunc: ICopyFunc): T {
@@ -584,43 +328,6 @@ interface IIassign extends IIassignOption {
         return destination;
     }
 
-    function evalStatement() {
-        return eval(arguments[0]);
-    }
-
-    // function isTextInQuote(text: string): boolean {
-    //     let quoteMarks = ["'", '"'];
-
-    //     for (let mark of quoteMarks) {
-    //         if (text[0] == mark && text[text.length-1] == mark) {
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
-    // function extractTextInQuote(text: string): string {
-    //     let quoteMarks = ["'", '"'];
-
-    //     for (let mark of quoteMarks) {
-    //         if (text[0] == mark) {
-    //             let regex = new RegExp(`^[${mark}]([^${mark}]*)[${mark}]$`);
-    //             let match = regex.exec(text);
-    //             if (match) {
-    //                 return match[1];
-    //             }
-    //         }
-    //     }
-
-    //     return undefined;
-    // }
-
     iassign.default = iassign;
     return iassign;
 });
-
-//declare var iassign: IIassign;
-//export = iassign;
-
-

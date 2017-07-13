@@ -45,7 +45,6 @@
     }());
     var iassign = _iassign;
     iassign.fp = autoCurry(_iassignFp);
-    iassign.maxGetPropCacheSize = 100;
     iassign.setOption = function (option) {
         copyOption(iassign, option);
     };
@@ -90,8 +89,11 @@
                     return obj;
                 }
             }
-            var getPropFuncInfo = parseGetPropFuncInfo(getProp, option);
-            obj = updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option);
+            var propPath = getPropPath(getProp, obj, context, option);
+            if (!propPath) {
+                throw new Error('getProp() function does not return a part of obj');
+            }
+            obj = updateProperty(obj, setProp, newValue, context, propPath, option);
         }
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
             deepFreeze(obj);
@@ -100,6 +102,47 @@
     }
     function _iassignFp(option, getProp, setProp, context, obj) {
         return _iassign(obj, getProp, setProp, context, option);
+    }
+    function getPropPath(getProp, obj, context, option) {
+        // will be a double map, both original values and proxied objects will have the path indexed
+        var pathMap = new Map();
+        var handlers = {
+            get: function (target, prop) {
+                switch (prop) {
+                    // Allows this object be used as a primitive for self-referential access (e.g. obj.a[obj.b])
+                    // See http://www.adequatelygood.com/Object-to-Primitive-Conversions-in-JavaScript.html
+                    case 'valueOf':
+                        return function () { return target.valueOf(); };
+                    case 'toString':
+                        return function () { return target.toString(); };
+                }
+                var nextValue = target[prop];
+                if (nextValue === undefined || nextValue === null) {
+                    return nextValue;
+                }
+                var nextObj;
+                if (typeof nextValue !== 'object') {
+                    nextObj = {
+                        valueOf: function () { return nextValue; },
+                        toString: function () { return nextValue.toString(); },
+                    };
+                }
+                else {
+                    nextObj = quickCopy(nextValue, prop, option.useConstructor, option.copyFunc);
+                }
+                var prevPath = pathMap.get(target) || [];
+                var nextPath = prevPath.concat(prop);
+                var proxied = new Proxy(nextObj, handlers);
+                pathMap.set(nextObj, nextPath);
+                pathMap.set(proxied, nextPath);
+                return proxied;
+            },
+        };
+        var coreObj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+        coreObj = new Proxy(coreObj, handlers);
+        pathMap.set(coreObj, []);
+        pathMap.set(obj, []);
+        return pathMap.get(getProp(coreObj, context));
     }
     // For performance
     function copyOption(target, option, defaultOption) {
@@ -110,10 +153,6 @@
             target.freezeOutput = defaultOption.freezeOutput;
             target.useConstructor = defaultOption.useConstructor;
             target.copyFunc = defaultOption.copyFunc;
-            target.disableAllCheck = defaultOption.disableAllCheck;
-            target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
-            target.disableExtraStatementCheck = defaultOption.disableExtraStatementCheck;
-            target.maxGetPropCacheSize = defaultOption.maxGetPropCacheSize;
             target.ignoreIfNoChange = defaultOption.ignoreIfNoChange;
         }
         if (option) {
@@ -132,263 +171,33 @@
             if (option.copyFunc != undefined) {
                 target.copyFunc = option.copyFunc;
             }
-            if (option.disableAllCheck != undefined) {
-                target.disableAllCheck = option.disableAllCheck;
-            }
-            if (option.disableHasReturnCheck != undefined) {
-                target.disableHasReturnCheck = option.disableHasReturnCheck;
-            }
-            if (option.disableExtraStatementCheck != undefined) {
-                target.disableExtraStatementCheck = option.disableExtraStatementCheck;
-            }
-            if (option.maxGetPropCacheSize != undefined) {
-                target.maxGetPropCacheSize = option.maxGetPropCacheSize;
-            }
             if (option.ignoreIfNoChange != undefined) {
                 target.ignoreIfNoChange = option.ignoreIfNoChange;
             }
         }
         return target;
     }
-    function updateProperty(obj, setProp, newValue, context, getPropFuncInfo, option) {
-        var propValue = undefined;
-        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
-            var _a = getPropFuncInfo.funcTokens[propIndex], propName = _a.propName, propNameSource = _a.propNameSource, subAccessorText = _a.subAccessorText, getPropName = _a.getPropName;
-            //console.log(propName);
-            if (propIndex <= 0) {
-                propValue = quickCopy(obj, propName, option.useConstructor, option.copyFunc);
-                if (!subAccessorText) {
-                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
-                }
-                obj = propValue;
+    function updateProperty(obj, setProp, newValue, context, propPath, option) {
+        var propValue = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+        obj = propValue;
+        if (!option.ignoreIfNoChange) {
+            newValue = setProp(propValue);
+        }
+        if (!propPath.length) {
+            return newValue;
+        }
+        for (var propIndex = 0; propIndex < propPath.length; ++propIndex) {
+            var propName = propPath[propIndex];
+            var isLast = propIndex + 1 === propPath.length;
+            var prevPropValue = propValue;
+            propValue = propValue[propName];
+            propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
+            if (isLast) {
+                propValue = newValue;
             }
-            else {
-                var prevPropValue = propValue;
-                if (propName == undefined) {
-                    propName = getPropName(obj, context);
-                }
-                propValue = propValue[propName];
-                propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
-                if (!subAccessorText) {
-                    propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
-                }
-                prevPropValue[propName] = propValue;
-            }
-            //console.log(propValue);
+            prevPropValue[propName] = propValue;
         }
         return obj;
-    }
-    var ePropNameSource;
-    (function (ePropNameSource) {
-        ePropNameSource[ePropNameSource["none"] = 0] = "none";
-        ePropNameSource[ePropNameSource["beforeDot"] = 1] = "beforeDot";
-        ePropNameSource[ePropNameSource["beforeBracket"] = 2] = "beforeBracket";
-        ePropNameSource[ePropNameSource["inBracket"] = 3] = "inBracket";
-        ePropNameSource[ePropNameSource["last"] = 4] = "last";
-    })(ePropNameSource || (ePropNameSource = {}));
-    var getPropCaches = {};
-    var getPropCacheKeys = [];
-    function parseGetPropFuncInfo(func, option) {
-        var funcText = func.toString();
-        var cacheKey = funcText + JSON.stringify(option);
-        var info = getPropCaches[cacheKey];
-        if (getPropCaches[cacheKey]) {
-            return info;
-        }
-        var matches = /\(([^\)]*)\)/.exec(funcText);
-        var objParameterName = undefined;
-        var cxtParameterName = undefined;
-        if (matches) {
-            var parametersText = matches[1];
-            var parameters = parametersText.split(",");
-            objParameterName = parameters[0];
-            cxtParameterName = parameters[1];
-        }
-        if (objParameterName) {
-            objParameterName = objParameterName.trim();
-        }
-        if (cxtParameterName) {
-            cxtParameterName = cxtParameterName.trim();
-        }
-        var bodyStartIndex = funcText.indexOf("{");
-        var bodyEndIndex = funcText.lastIndexOf("}");
-        var bodyText = "";
-        if (bodyStartIndex > -1 && bodyEndIndex > -1) {
-            bodyText = funcText.substring(bodyStartIndex + 1, bodyEndIndex);
-        }
-        else {
-            var arrowIndex = funcText.indexOf("=>");
-            if (arrowIndex > -1) {
-                //console.log("Handle arrow function.");
-                bodyText = "return " + funcText.substring(arrowIndex + 3);
-            }
-            else {
-                throw new Error("Cannot parse function: " + funcText);
-            }
-        }
-        var accessorTextInfo = getAccessorTextInfo(bodyText, option);
-        info = {
-            objParameterName: objParameterName,
-            cxtParameterName: cxtParameterName,
-            bodyText: bodyText,
-            accessorText: accessorTextInfo.accessorText,
-            quotedTextInfos: accessorTextInfo.quotedTextInfos,
-            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText),
-        };
-        postProcessTokens(info);
-        if (option.maxGetPropCacheSize > 0) {
-            getPropCaches[cacheKey] = info;
-            getPropCacheKeys.push(cacheKey);
-            if (getPropCacheKeys.length > option.maxGetPropCacheSize) {
-                debugger;
-                var cacheKeyToRemove = getPropCacheKeys.shift();
-                delete getPropCaches[cacheKeyToRemove];
-            }
-        }
-        return info;
-    }
-    function parseGetPropFuncTokens(accessorText) {
-        var tokens = [];
-        while (accessorText) {
-            var openBracketIndex = accessorText.indexOf("[");
-            var closeBracketIndex = accessorText.indexOf("]");
-            var dotIndex = accessorText.indexOf(".");
-            var propName = "";
-            var propNameSource = ePropNameSource.none;
-            // if (dotIndex == 0) {
-            //     accessorText = accessorText.substr(dotIndex + 1);
-            //     continue;
-            // }
-            if (openBracketIndex > -1 && closeBracketIndex <= -1) {
-                throw new Error("Found open bracket but not close bracket.");
-            }
-            if (openBracketIndex <= -1 && closeBracketIndex > -1) {
-                throw new Error("Found close bracket but not open bracket.");
-            }
-            if (dotIndex > -1 && (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
-                propName = accessorText.substr(0, dotIndex);
-                accessorText = accessorText.substr(dotIndex + 1);
-                propNameSource = ePropNameSource.beforeDot;
-            }
-            else if (openBracketIndex > -1 && (openBracketIndex < dotIndex || dotIndex <= -1)) {
-                if (openBracketIndex > 0) {
-                    propName = accessorText.substr(0, openBracketIndex);
-                    accessorText = accessorText.substr(openBracketIndex);
-                    propNameSource = ePropNameSource.beforeBracket;
-                }
-                else {
-                    propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
-                    accessorText = accessorText.substr(closeBracketIndex + 1);
-                    propNameSource = ePropNameSource.inBracket;
-                }
-            }
-            else {
-                propName = accessorText;
-                accessorText = "";
-                propNameSource = ePropNameSource.last;
-            }
-            propName = propName.trim();
-            if (propName == "") {
-                continue;
-            }
-            //console.log(propName);
-            tokens.push({
-                propName: propName,
-                propNameSource: propNameSource,
-                subAccessorText: accessorText,
-            });
-        }
-        return tokens;
-    }
-    function postProcessTokens(getPropFuncInfo) {
-        var _loop_1 = function () {
-            var token = getPropFuncInfo.funcTokens[propIndex];
-            var propName = token.propName, propNameSource = token.propNameSource, subAccessorText = token.subAccessorText;
-            if (propNameSource == ePropNameSource.inBracket && isNaN(propName)) {
-                if (propName[0] == "#") {
-                    var quotedPropName = getPropFuncInfo.quotedTextInfos[propName];
-                    if (!quotedPropName) {
-                        throw new Error("Cannot find quoted text for " + quotedPropName);
-                    }
-                    propName = eval(quotedPropName);
-                    token.propName = propName;
-                }
-                else {
-                    var statement_1 = "'use strict';\n";
-                    if (getPropFuncInfo.objParameterName) {
-                        statement_1 += "var " + getPropFuncInfo.objParameterName + " = arguments[1];\n";
-                    }
-                    if (getPropFuncInfo.cxtParameterName) {
-                        statement_1 += "var " + getPropFuncInfo.cxtParameterName + " = arguments[2];\n";
-                    }
-                    statement_1 += "" + propName;
-                    token.propName = undefined;
-                    token.getPropName = function (obj, context) {
-                        return evalStatement(statement_1, obj, context);
-                    };
-                }
-            }
-        };
-        for (var propIndex = 0; propIndex < getPropFuncInfo.funcTokens.length; ++propIndex) {
-            _loop_1();
-        }
-    }
-    function getAccessorTextInfo(bodyText, option) {
-        var returnIndex = bodyText.indexOf("return ");
-        if (!option.disableAllCheck && !option.disableHasReturnCheck) {
-            if (returnIndex <= -1) {
-                throw new Error("getProp() function has no 'return' keyword.");
-            }
-        }
-        if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
-            var otherBodyText = bodyText.substr(0, returnIndex);
-            otherBodyText = otherBodyText.replace(/['"]use strict['"];*/g, "");
-            otherBodyText = otherBodyText.trim();
-            if (otherBodyText != "") {
-                throw new Error("getProp() function has statements other than 'return': " + otherBodyText);
-            }
-        }
-        var accessorText = bodyText.substr(returnIndex + 7).trim();
-        if (accessorText[accessorText.length - 1] == ";") {
-            accessorText = accessorText.substring(0, accessorText.length - 1);
-        }
-        accessorText = accessorText.trim();
-        return parseTextInQuotes(accessorText, option);
-    }
-    function parseTextInQuotes(accessorText, option) {
-        var quotedTextInfos = {};
-        var index = 0;
-        while (true) {
-            var singleQuoteIndex = accessorText.indexOf("'");
-            var doubleQuoteIndex = accessorText.indexOf('"');
-            var varName = "#" + index++;
-            if (singleQuoteIndex <= -1 && doubleQuoteIndex <= -1)
-                break;
-            var matches = undefined;
-            var quoteIndex = void 0;
-            if (doubleQuoteIndex > -1 && (doubleQuoteIndex < singleQuoteIndex || singleQuoteIndex <= -1)) {
-                matches = /("[^"\\]*(?:\\.[^"\\]*)*")/.exec(accessorText);
-                quoteIndex = doubleQuoteIndex;
-            }
-            else if (singleQuoteIndex > -1 && (singleQuoteIndex < doubleQuoteIndex || doubleQuoteIndex <= -1)) {
-                matches = /('[^'\\]*(?:\\.[^'\\]*)*')/.exec(accessorText);
-                quoteIndex = singleQuoteIndex;
-            }
-            if (matches) {
-                quotedTextInfos[varName] = matches[1];
-                accessorText =
-                    accessorText.substr(0, quoteIndex) +
-                        varName +
-                        accessorText.substr(matches.index + matches[1].length);
-            }
-            else {
-                throw new Error("Invalid text in quotes: " + accessorText);
-            }
-        }
-        return {
-            accessorText: accessorText,
-            quotedTextInfos: quotedTextInfos,
-        };
     }
     function quickCopy(value, propName, useConstructor, copyFunc) {
         if (value != undefined && !(value instanceof Date)) {
@@ -429,31 +238,6 @@
         }
         return destination;
     }
-    function evalStatement() {
-        return eval(arguments[0]);
-    }
-    // function isTextInQuote(text: string): boolean {
-    //     let quoteMarks = ["'", '"'];
-    //     for (let mark of quoteMarks) {
-    //         if (text[0] == mark && text[text.length-1] == mark) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-    // function extractTextInQuote(text: string): string {
-    //     let quoteMarks = ["'", '"'];
-    //     for (let mark of quoteMarks) {
-    //         if (text[0] == mark) {
-    //             let regex = new RegExp(`^[${mark}]([^${mark}]*)[${mark}]$`);
-    //             let match = regex.exec(text);
-    //             if (match) {
-    //                 return match[1];
-    //             }
-    //         }
-    //     }
-    //     return undefined;
-    // }
     iassign.default = iassign;
     return iassign;
 });

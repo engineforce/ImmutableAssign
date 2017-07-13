@@ -355,10 +355,10 @@
                 var o2 = iassign(o1, function (o) {
                     o.a.b.c[0][0]
                 }, function (ci) { ci.d++; return ci; });
-            }).toThrowError(/has no 'return' keyword/);
+            }).toThrowError(/does not return a part of obj/);
         });
 
-        it("getProp() function has other statements should throw exception", function () {            
+        xit("getProp() function has other statements should throw exception", function () {            
             if (iassign.disableExtraStatementCheck) {
                 return;
             }

@@ -468,7 +468,6 @@ var map2 = iassign(
 ## Constraints
 
 * getProp() must be a pure function; I.e., it cannot access anything other than the input parameters. e.g., it must not access "this" or "window" objects. In addition, it must not modify the input parameters. It should only return a property that needs to be updated.
-* getProp() currently does not support comments in the function body, you can work around this by putting comments outside of the function body.
 
 
 ## History

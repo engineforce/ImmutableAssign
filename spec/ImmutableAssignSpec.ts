@@ -37,7 +37,7 @@
     try {
         var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
     } catch (ex) {
-        deepFreeze = function () { };
+        deepFreeze = <any>function () { };
         noDeepFreeze = true;
         console.warn("Cannot load deep-freeze module.");
     }
@@ -181,7 +181,7 @@
 
             // No change to the root object
             var count = 0;
-            var o2 = iassign(
+            var o2: any = iassign(
                 o1,
                 (o) => { count++; return o; },
                 {
@@ -194,7 +194,7 @@
 
             // Has change to the root object
             var count = 0;
-            var o2 = iassign(
+            o2 = iassign(
                 o1,
                 (o) => { count++; return <any>{}; },
                 {
@@ -207,7 +207,7 @@
 
             // No change to the object properties
             count = 0;
-            var o2 = iassign(
+            o2 = iassign(
                 o1,
                 (o) => o.a.b.c[0][0],
                 (ci) => { count++; return ci; },
@@ -223,7 +223,7 @@
 
             // Has change to the object properties
             count = 0;
-            var o2 = iassign(
+            o2 = iassign(
                 o1,
                 (o) => o.a.b.c[0][0],
                 (ci) => { count++; return <any>{}; },
@@ -238,7 +238,7 @@
 
             // No change to the root object, used getProp()
             count = 0;
-            var o2 = iassign(
+            o2 = iassign(
                 o1,
                 (o) => o,
                 (o) => { count++; return o; },
@@ -253,7 +253,7 @@
 
             // Has change to the root object, used getProp()
             count = 0;
-            var o2 = iassign(
+            o2 = iassign(
                 o1,
                 (o) => o,
                 (o) => { count++; return <any>{}; },

@@ -180,11 +180,8 @@
     function updateProperty(obj, setProp, newValue, context, propPath, option) {
         var propValue = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         obj = propValue;
-        if (!option.ignoreIfNoChange) {
-            newValue = setProp(propValue);
-        }
         if (!propPath.length) {
-            return newValue;
+            return option.ignoreIfNoChange ? newValue : setProp(propValue);
         }
         for (var propIndex = 0; propIndex < propPath.length; ++propIndex) {
             var propName = propPath[propIndex];
@@ -193,7 +190,7 @@
             propValue = propValue[propName];
             propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);
             if (isLast) {
-                propValue = newValue;
+                propValue = option.ignoreIfNoChange ? newValue : setProp(propValue);
             }
             prevPropValue[propName] = propValue;
         }

@@ -143,7 +143,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2).toBe(o1);
             // Has change to the root object
             var count = 0;
-            var o2 = iassign(o1, function (o) { count++; return {}; }, {
+            o2 = iassign(o1, function (o) { count++; return {}; }, {
                 ignoreIfNoChange: true,
                 freeze: true,
             });
@@ -151,7 +151,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2).not.toBe(o1);
             // No change to the object properties
             count = 0;
-            var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { count++; return ci; }, undefined, {
+            o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { count++; return ci; }, undefined, {
                 ignoreIfNoChange: true,
                 freeze: true,
             });
@@ -159,7 +159,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2).toBe(o1);
             // Has change to the object properties
             count = 0;
-            var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { count++; return {}; }, undefined, {
+            o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) { count++; return {}; }, undefined, {
                 ignoreIfNoChange: true,
                 freeze: true,
             });
@@ -167,7 +167,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2).not.toBe(o1);
             // No change to the root object, used getProp()
             count = 0;
-            var o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return o; }, undefined, {
+            o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return o; }, undefined, {
                 ignoreIfNoChange: true,
                 freeze: true,
             });
@@ -175,7 +175,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2).toBe(o1);
             // Has change to the root object, used getProp()
             count = 0;
-            var o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return {}; }, undefined, {
+            o2 = iassign(o1, function (o) { return o; }, function (o) { count++; return {}; }, undefined, {
                 ignoreIfNoChange: true,
                 freeze: true,
             });
@@ -721,14 +721,14 @@ var __extends = (this && this.__extends) || (function () {
             var option = {
                 useConstructor: true
             };
-            var Klass = (function () {
+            var Klass = /** @class */ (function () {
                 function Klass() {
                     this.prop = 11;
                 }
                 Klass.prototype.func = function () { return "Klass" + this.prop; };
                 return Klass;
             }());
-            var ChildKlass = (function (_super) {
+            var ChildKlass = /** @class */ (function (_super) {
                 __extends(ChildKlass, _super);
                 function ChildKlass() {
                     var _this = _super !== null && _super.apply(this, arguments) || this;

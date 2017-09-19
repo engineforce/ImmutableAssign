@@ -7,9 +7,9 @@
   "scripts": {
     "test": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
     "test-backup": "node node_modules/jasmine/bin/jasmine.js",
-    "test-karma": "node_modules\\.bin\\karma start",
-    "test-karma-chrome": "node_modules\\.bin\\karma start --browsers Chrome --reporters dots",
-    "test-karma-mac": "node_modules\\.bin\\karma start --browsers Safari,Chrome",
+    "test-karma": "node_modules/.bin/karma start",
+    "test-karma-chrome": "node_modules/.bin/karma start --browsers Chrome --reporters dots",
+    "test-karma-mac": "node_modules/.bin/karma start --browsers Safari,Chrome",
     "cover": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
     "build": "gulp",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",

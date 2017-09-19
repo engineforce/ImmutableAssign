@@ -479,6 +479,7 @@ var map2 = iassign(
 
 ## History
 
+* 2.0.0  - Used ES6 Proxy instead of eval() to process getProp(). Therefore it can only be used in browsers and node that supports Proxy, but it is safer. You can still use version 1 if you need to support the old platforms such as IE 11.
 * 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](https://github.com/engineforce/ImmutableAssign#example-9-support-es6-map)
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
@@ -503,5 +504,5 @@ var map2 = iassign(
 [4]: https://badge.fury.io/js/immutable-assign
 [5]: https://coveralls.io/repos/github/engineforce/ImmutableAssign/badge.svg?branch=master
 [6]: https://coveralls.io/github/engineforce/ImmutableAssign?branch=master
-[7]: https://saucelabs.com/browser-matrix/engineforce.svg
-[8]: https://saucelabs.com/u/engineforce
+[7]: https://saucelabs.com/browser-matrix/iassign.svg
+[8]: https://saucelabs.com/u/iassign

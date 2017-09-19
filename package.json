@@ -1,6 +1,6 @@
 {
-  "name": "immutable-assign",
-  "version": "1.0.36",
+  "name": "immutable-assign-v1",
+  "version": "1.0.37",
   "description": "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
   "main": "deploy/iassign.js",
   "types": "deploy/iassign.d.ts",
@@ -21,9 +21,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/engineforce/ImmutableAssign.git"
+    "url": "https://github.com/engineforce/ImmutableAssign/tree/v1"
   },
-  "homepage": "https://github.com/engineforce/ImmutableAssign",
+  "homepage": "https://github.com/engineforce/ImmutableAssign/tree/v1",
   "license": "MIT",
   "keywords": [
     "immutable",

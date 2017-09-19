@@ -1,4 +1,4 @@
-# immutable-assign (iassign.js)
+# immutable-assign-v1 (iassign.js)
 
 Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking for nested objects.
 
@@ -498,11 +498,11 @@ var map2 = iassign(
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 
 
-[1]: https://travis-ci.org/engineforce/ImmutableAssign.svg?branch=master
+[1]: https://travis-ci.org/engineforce/ImmutableAssign.svg?branch=v1
 [2]: https://travis-ci.org/engineforce/ImmutableAssign
-[3]: https://badge.fury.io/js/immutable-assign.svg
-[4]: https://badge.fury.io/js/immutable-assign
-[5]: https://coveralls.io/repos/github/engineforce/ImmutableAssign/badge.svg?branch=master
-[6]: https://coveralls.io/github/engineforce/ImmutableAssign?branch=master
-[7]: https://saucelabs.com/browser-matrix/engineforce.svg
-[8]: https://saucelabs.com/u/engineforce
+[3]: https://badge.fury.io/js/immutable-assign-v1.svg
+[4]: https://badge.fury.io/js/immutable-assign-v1
+[5]: https://coveralls.io/repos/github/engineforce/ImmutableAssign/badge.svg?branch=v1
+[6]: https://coveralls.io/github/engineforce/ImmutableAssign?branch=v1
+[7]: https://saucelabs.com/browser-matrix/iassign-v1.svg
+[8]: https://saucelabs.com/u/iassign-v1

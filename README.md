@@ -6,6 +6,13 @@ Lightweight immutable helper that allows you to continue working with POJO (Plai
 
 [![Sauce Test Status][7]][8]
 
+
+<p>
+    <a href="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/Demo.gif" target="_blank">
+        <img src="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/Demo.gif" alt="Demo" title="Demo">
+    </a>
+</p>
+
 This library is trying to solve following problems:
 
 * Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.

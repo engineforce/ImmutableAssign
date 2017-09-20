@@ -649,7 +649,7 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-edge-launcher@*:
+edge-launcher@*, edge-launcher@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/edge-launcher/-/edge-launcher-1.2.2.tgz#eb40aafbd067a6ea76efffab0647bcd5509b37b2"
 
@@ -1715,6 +1715,12 @@ karma-chrome-launcher@^1.0.1:
     fs-access "^1.0.0"
     which "^1.2.1"
 
+karma-edge-launcher@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/karma-edge-launcher/-/karma-edge-launcher-0.4.2.tgz#3d9529b09b13c909c5f3ceee12d00e7f9a989b3d"
+  dependencies:
+    edge-launcher "1.2.2"
+
 karma-firefox-launcher@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/karma-firefox-launcher/-/karma-firefox-launcher-1.0.1.tgz#ce58f47c2013a88156d55a5d61337c099cf5bb51"
@@ -2437,6 +2443,10 @@ promise@^7.1.1:
   resolved "https://registry.yarnpkg.com/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
   dependencies:
     asap "~2.0.3"
+
+proxy-polyfill@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/proxy-polyfill/-/proxy-polyfill-0.1.7.tgz#1c06fe10b0b606e79268e14d4528952e64036d39"
 
 prr@~0.0.0:
   version "0.0.0"

@@ -479,7 +479,7 @@ var map2 = iassign(
 
 ## History
 
-* 2.0.0  - Used ES6 Proxy instead of eval() to process getProp(). Therefore it can only be used in browsers and node that supports Proxy, but it is safer. You can still use version 1 if you need to support the old platforms such as IE 11.
+* 2.0.0  - Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of eval() to process getProp(). Internally it used [proxy-polyfill](https://github.com/GoogleChrome/proxy-polyfill) to work with platforms that don't support Proxy, such as IE 10 and IE 11.
 * 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](https://github.com/engineforce/ImmutableAssign#example-9-support-es6-map)
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 

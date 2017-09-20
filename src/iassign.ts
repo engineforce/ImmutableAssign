@@ -63,15 +63,20 @@ interface IIassign extends IIassignOption {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         try {
             var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze-strict");
-            var proxyPolyfill = require('./Libs/proxy');
         } catch (ex) {
             console.warn("Cannot load deep-freeze-strict module, however you can still use iassign() function.");
+        }
+
+        try {
+            var proxyPolyfill = require('proxy-polyfill');
+        } catch (ex) {
+            console.warn("Cannot load proxy-polyfill module. iassign() will not work in IE 11 or other old browsers.");
         }
 
         var v = factory(deepFreeze, proxyPolyfill, exports); if (v !== undefined) module.exports = v;
     }
     else if (typeof define === 'function' && define.amd) {
-        define(["deep-freeze-strict", './Libs/proxy', "exports"], factory);
+        define(["deep-freeze-strict", 'proxy-polyfill', "exports"], factory);
     } else {
         // Browser globals (root is window)
         root.iassign = factory(root.deepFreeze, undefined, {});

@@ -7,10 +7,11 @@
 !function (__e, __g, undefined) {
     'use strict';
 
-    if (getIeVersion() != 11)
+    var ieVersion = getIeVersion();
+    if (ieVersion <= -1 || ieVersion > 11)
         return;
 
-
+    console.log("Added core-js");
 
 /******/ (function (modules) { // webpackBootstrap
 /******/ 	// The module cache

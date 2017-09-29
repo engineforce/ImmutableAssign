@@ -86,12 +86,55 @@ module.exports = function (config) {
             version: 'latest'
         },
 
-        sl_ios_10_iphone: {
+        sl_ios_9: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'iOS',
+            version: '9.0',
+            deviceName: 'iPhone 6s Simulator',
+        },
+        sl_ios_10: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'iOS',
+            version: '10.0',
+            deviceName: 'iPhone 6s Simulator',
+        },
+        sl_ios: {
             base: 'SauceLabs',
             browserName: 'iphone',
             platform: 'iOS 10',
         },
+
+        sl_android_4: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'Android',
+            version: '4.4',
+            deviceName: 'Android GoogleAPI Emulator',
+        },
         sl_android_5: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'Android',
+            version: '5.0',
+            deviceName: 'Android GoogleAPI Emulator',
+        },
+        sl_android_6: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'Android',
+            version: '6.0',
+            deviceName: 'Android GoogleAPI Emulator',
+        },
+        sl_android_7: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'Android',
+            version: '7.0',
+            deviceName: 'Android GoogleAPI Emulator',
+        },
+        sl_android: {
             base: 'SauceLabs',
             browserName: 'android',
             platform: 'Android 5',
@@ -112,6 +155,7 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'src/Libs/*.js',
+            //'node_modules/proxy-polyfill/proxy.js',
             'node_modules/lodash/lodash.js',
             'node_modules/immutable/dist/immutable.js',
             'src/*.js',

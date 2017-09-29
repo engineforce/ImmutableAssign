@@ -12,7 +12,7 @@
     } else {
         // Browser globals (root is window)
         var browserRequire = function (name) {
-            if (name == "deep-freeze" && root.deepFreeze) {
+            if ((name == "deep-freeze" || name == "deep-freeze-strict") && root.deepFreeze) {
                 return root.deepFreeze;
             }
 
@@ -38,12 +38,12 @@
     var iassign = require("../src/iassign");
     var noDeepFreeze = false;
     try {
-        var deepFreeze = require("deep-freeze");
+        var deepFreeze = require("deep-freeze-strict");
     }
     catch (ex) {
         deepFreeze = function () { };
         noDeepFreeze = true;
-        console.warn("Cannot load deep-freeze module.");
+        console.warn("Cannot load deep-freeze module.", ex);
     }
     var _ = require("lodash");
     var immutable = require("immutable");

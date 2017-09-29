@@ -21,7 +21,7 @@ var __extends = (this && this.__extends) || (function () {
     else {
         // Browser globals (root is window)
         var browserRequire = function (name) {
-            if (name == "deep-freeze" && root.deepFreeze) {
+            if ((name == "deep-freeze" || name == "deep-freeze-strict") && root.deepFreeze) {
                 return root.deepFreeze;
             }
             if (name == "lodash" && root._) {
@@ -41,12 +41,22 @@ var __extends = (this && this.__extends) || (function () {
     var iassign = require("../src/iassign");
     var noDeepFreeze = false;
     try {
-        var deepFreeze = require("deep-freeze");
+        var deepFreeze = require("deep-freeze-strict");
     }
     catch (ex) {
         deepFreeze = function () { };
         noDeepFreeze = true;
-        console.warn("Cannot load deep-freeze module.");
+        console.warn("Cannot load deep-freeze module.", (ex && ex.message) ? ex.message : ex);
+    }
+    var willThrowWhenUpdateFronzenArray = false;
+    try {
+        var o = { b: [] };
+        deepFreeze(o);
+        o.b.push(1);
+        console.warn("Not throw when update frozen array.");
+    }
+    catch (ex) {
+        willThrowWhenUpdateFronzenArray = true;
     }
     var _ = require("lodash");
     var immutable = require("immutable");
@@ -389,18 +399,22 @@ var __extends = (this && this.__extends) || (function () {
                 return;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
-            expect(function () {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].g = 1; return ci; });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            expect(function () {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
         });
         it("Update array using lodash", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } }, a2: {} };
@@ -516,18 +530,22 @@ var __extends = (this && this.__extends) || (function () {
                 return;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             iassign.freezeInput = true;
-            expect(function () {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(3); return ci; });
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].g = 1; return ci; });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            expect(function () {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
             iassign.freezeInput = undefined;
         });
         it("Use built-in deep freeze to protect output", function () {
@@ -551,18 +569,22 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
             expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
             expect(o2.a.b.c[0][2]).not.toBe(o1.a.b.c[0][2]);
-            expect(function () {
-                o2.a.b.c[0].push(3);
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    o2.a.b.c[0].push(3);
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
             expect(function () {
                 o2.a.b.c[0][0].d++;
             }).toThrowError(TypeError, /Invalid|Cannot|read only|read-only|extensible|readonly/i);
             expect(function () {
                 o2.a.b.c[0][0].g = 1;
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            expect(function () {
-                o2.a.b.c[0].pop();
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(function () {
+                    o2.a.b.c[0].pop();
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
             iassign.freezeOutput = undefined;
         });
         it("Example 1: update object", function () {

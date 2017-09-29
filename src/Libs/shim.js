@@ -8,7 +8,7 @@
     'use strict';
 
     var ieVersion = getIeVersion();
-    if (ieVersion <= -1 || ieVersion > 11)
+    if ((ieVersion <= -1 && typeof(Map) !== "undefined") || ieVersion > 11)
         return;
 
     console.log("Added core-js");

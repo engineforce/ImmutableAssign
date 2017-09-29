@@ -21,7 +21,7 @@
 
     var _isDevel = false;
 
-    var deepFreeze = require("deep-freeze");
+    var deepFreeze = require("deep-freeze-strict");
 
     var iassign = require("../src/iassign");
 

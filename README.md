@@ -479,8 +479,9 @@ var map2 = iassign(
 
 ## History
 
+* 2.0.1 - Minor bug fixes.
 * 2.0.0  - 
-    * Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of eval() to process getProp(). 
+    * Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of [eval()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) to process getProp(), which is more secure.
     * Also works on platforms that don't support Proxy and Map, such as IE 10 and IE 11 using the [proxy-polyfill](https://github.com/GoogleChrome/proxy-polyfill) and [ES6 Map polyfill](https://github.com/zloirock/core-js)
 
 * 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](https://github.com/engineforce/ImmutableAssign#example-9-support-es6-map)

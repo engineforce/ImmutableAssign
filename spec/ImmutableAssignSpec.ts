@@ -10,7 +10,7 @@
     } else {
         // Browser globals (root is window)
         let browserRequire = (name) => {
-            if (name == "deep-freeze" && root.deepFreeze) {
+            if ((name == "deep-freeze" || name == "deep-freeze-strict") && root.deepFreeze) {
                 return root.deepFreeze;
             }
 
@@ -35,11 +35,21 @@
     var iassign: IIassign = require("../src/iassign");
     var noDeepFreeze = false;
     try {
-        var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze");
+        var deepFreeze: DeepFreeze.DeepFreezeInterface = require("deep-freeze-strict");
     } catch (ex) {
         deepFreeze = <any>function () { };
         noDeepFreeze = true;
-        console.warn("Cannot load deep-freeze module.");
+        console.warn("Cannot load deep-freeze module.", (ex && ex.message) ? ex.message : ex);
+    }
+
+    var willThrowWhenUpdateFronzenArray = false;
+    try {
+        var o = { b: [] }
+        deepFreeze(o);
+        o.b.push(1);
+        console.warn("Not throw when update frozen array.");
+    } catch (ex) {
+        willThrowWhenUpdateFronzenArray = true;
     }
 
     var _: _.LoDashStatic = require("lodash");
@@ -152,7 +162,7 @@
 
         it("Access array item, need to detect change and no change, use setOption()", function () {
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} };
-            
+
             iassign.setOption({
                 ignoreIfNoChange: true,
                 freeze: true,
@@ -162,7 +172,7 @@
                 o1,
                 (o) => o.a.b.c[0][0],
                 (ci) => { return ci; }
-            );            
+            );
 
             // expect o1 has not been changed
             expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} }, b2: {} }, a2: {} })
@@ -529,9 +539,11 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             deepFreeze(o1);
 
-            expect(() => {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
@@ -541,9 +553,11 @@
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { (<any>ci[0]).g = 1; return ci; });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
 
-            expect(() => {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
         });
 
         it("Update array using lodash", function () {
@@ -715,9 +729,11 @@
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } } };
             iassign.freezeInput = true;
 
-            expect(() => {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].push(<any>3); return ci; });
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
 
             expect(() => {
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { ci[0].d++; return ci; });
@@ -727,9 +743,11 @@
                 iassign(o1, function (o) { return o.a.b.c[0]; }, function (ci) { (<any>ci[0]).g = 1; return ci; });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
 
-            expect(() => {
-                iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    iassign(o1, function (o) { return o.a.b.c; }, function (ci) { ci[0].pop(); return ci; });
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
 
             iassign.freezeInput = undefined;
         });
@@ -764,9 +782,11 @@
             expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
             expect(o2.a.b.c[0][2]).not.toBe(o1.a.b.c[0][2]);
 
-            expect(() => {
-                o2.a.b.c[0].push(<any>3);
-            }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    o2.a.b.c[0].push(<any>3);
+                }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
+            }
 
             expect(() => {
                 o2.a.b.c[0][0].d++;
@@ -776,9 +796,11 @@
                 (<any>o2.a.b.c[0][0]).g = 1;
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
 
-            expect(() => {
-                o2.a.b.c[0].pop();
-            }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            if (willThrowWhenUpdateFronzenArray) {
+                expect(() => {
+                    o2.a.b.c[0].pop();
+                }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
+            }
 
             iassign.freezeOutput = undefined;
         });

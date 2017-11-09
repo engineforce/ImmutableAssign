@@ -278,6 +278,7 @@
         });
 
         it("Access array using context parameter 5", function () {
+            debugger;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } }, a2: 0 };
             deepFreeze(o1);
             var p1 = { a: 0 };
@@ -307,6 +308,8 @@
                 function (ci) { ci.d++; return ci; },
                 { p1: p1 }
             );
+
+            expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } }, a2: 0 });
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);
             expect(o2.a.b).not.toBe(o1.a.b);

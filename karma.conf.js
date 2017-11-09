@@ -198,7 +198,7 @@ module.exports = function (config) {
 
         sauceLabs: {
             testName: 'Immutable Assign Unit Tests',
-            startConnect: false,
+            startConnect: true,
             build: new Date().getTime() //Math.random().toString()
         },
         customLaunchers: customLaunchers,

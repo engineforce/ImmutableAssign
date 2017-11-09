@@ -1,6 +1,6 @@
 "use strict";
 (function (root, factory) {
-    if (typeof module === 'object' && typeof module.exports === 'object') {
+    if (typeof module === "object" && typeof module.exports === "object") {
         try {
             var deepFreeze = require("deep-freeze-strict");
         }
@@ -8,7 +8,7 @@
             console.warn("Cannot load deep-freeze-strict module, however you can still use iassign() function.");
         }
         try {
-            var proxyPolyfill = require('proxy-polyfill');
+            var proxyPolyfill = require("proxy-polyfill");
         }
         catch (ex) {
             console.warn("Cannot load proxy-polyfill module. iassign() will not work in IE 11 or other old browsers.");
@@ -17,8 +17,8 @@
         if (v !== undefined)
             module.exports = v;
     }
-    else if (typeof define === 'function' && define.amd) {
-        define(["deep-freeze-strict", 'proxy-polyfill', "exports"], factory);
+    else if (typeof define === "function" && define.amd) {
+        define(["deep-freeze-strict", "proxy-polyfill", "exports"], factory);
     }
     else {
         // Browser globals (root is window)
@@ -39,16 +39,16 @@
             numArgs = numArgs || fn.length;
             return function autoCurried() {
                 if (arguments.length < numArgs) {
-                    return numArgs - arguments.length > 0 ?
-                        autoCurry(curry.apply(this, [fn].concat(toArray(arguments))), numArgs - arguments.length) :
-                        curry.apply(this, [fn].concat(toArray(arguments)));
+                    return numArgs - arguments.length > 0
+                        ? autoCurry(curry.apply(this, [fn].concat(toArray(arguments))), numArgs - arguments.length)
+                        : curry.apply(this, [fn].concat(toArray(arguments)));
                 }
                 else {
                     return fn.apply(this, arguments);
                 }
             };
         };
-    }());
+    })();
     var iassign = _iassign;
     iassign.fp = autoCurry(_iassignFp);
     iassign.setOption = function (option) {
@@ -97,7 +97,7 @@
             }
             var propPath = getPropPath(getProp, obj, context, option);
             if (!propPath) {
-                throw new Error('getProp() function does not return a part of obj');
+                throw new Error("getProp() function does not return a part of obj");
             }
             obj = updateProperty(obj, setProp, newValue, context, propPath, option);
         }
@@ -114,23 +114,28 @@
         var pathMap = new Map();
         var handlers = {
             get: function (target, prop) {
+                if (typeof prop === "symbol") {
+                    return;
+                }
                 switch (prop) {
                     // Allows this object be used as a primitive for self-referential access (e.g. obj.a[obj.b])
                     // See http://www.adequatelygood.com/Object-to-Primitive-Conversions-in-JavaScript.html
-                    case 'valueOf':
+                    case "valueOf":
                         return function () { return target.valueOf(); };
-                    case 'toString':
+                    case "toString":
                         return function () { return target.toString(); };
                 }
                 var nextValue = target[prop];
-                if (nextValue === undefined || nextValue === null) {
-                    return nextValue;
-                }
+                // if (nextValue === undefined || nextValue === null) {
+                //     return nextValue;
+                // }
                 var nextObj;
-                if (typeof nextValue !== 'object') {
+                if (typeof nextValue !== "object" ||
+                    nextValue === undefined ||
+                    nextValue === null) {
                     nextObj = {
                         valueOf: function () { return nextValue; },
-                        toString: function () { return nextValue.toString(); },
+                        toString: function () { return String(nextValue); },
                     };
                 }
                 else {
@@ -207,7 +212,7 @@
             if (value instanceof Array) {
                 return value.slice();
             }
-            else if (typeof (value) === "object") {
+            else if (typeof value === "object") {
                 if (useConstructor) {
                     var target = new value.constructor();
                     return extend(target, value);

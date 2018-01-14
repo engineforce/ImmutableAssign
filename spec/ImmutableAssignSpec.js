@@ -1167,7 +1167,6 @@ var __extends = (this && this.__extends) || (function () {
                     c: undefined,
                 },
             };
-            debugger;
             var obj2 = iassign(obj1, function (t) { return t.a; }, function (a) {
                 return "test a";
             });

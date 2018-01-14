@@ -1,6 +1,6 @@
 {
     "name": "immutable-assign",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description":
         "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
     "main": "deploy/iassign.js",
@@ -30,8 +30,7 @@
     "keywords": ["immutable", "typescript", "javascript", "data", "stateless"],
     "dependencies": {},
     "optionalDependencies": {
-        "deep-freeze-strict": "^1.1.1",
-        "proxy-polyfill": "^0.1.7"
+        "deep-freeze-strict": "^1.1.1"
     },
     "devDependencies": {
         "@types/lodash": "^4.14.74",

@@ -348,6 +348,7 @@
         });
 
         it("getProp() function without return should throw exception", function () {
+            debugger;
             if (iassign.disableHasReturnCheck)
                 return;
 

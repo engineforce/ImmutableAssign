@@ -1605,7 +1605,7 @@
                     c: undefined,
                 },
             };
-            debugger;
+
             let obj2 = iassign(
                 obj1,
                 t => t.a,

@@ -67,23 +67,15 @@ interface IIassign extends IIassignOption {
             );
         }
 
-        try {
-            var proxyPolyfill = require("proxy-polyfill");
-        } catch (ex) {
-            console.warn(
-                "Cannot load proxy-polyfill module. iassign() will not work in IE 11 or other old browsers."
-            );
-        }
-
-        var v = factory(deepFreeze, proxyPolyfill, exports);
+        var v = factory(deepFreeze, exports);
         if (v !== undefined) module.exports = v;
     } else if (typeof define === "function" && define.amd) {
-        define(["deep-freeze-strict", "proxy-polyfill", "exports"], factory);
+        define(["deep-freeze-strict", "exports"], factory);
     } else {
         // Browser globals (root is window)
-        root.iassign = factory(root.deepFreeze, undefined, {});
+        root.iassign = factory(root.deepFreeze, {});
     }
-})(this, function(deepFreeze, proxyPolyfill, exports) {
+})(this, function(deepFreeze, exports) {
     var autoCurry = (function() {
         var toArray = function toArray(arr, from?) {
             return Array.prototype.slice.call(arr, from || 0);
@@ -169,12 +161,12 @@ interface IIassign extends IIassignOption {
                 }
             }
 
-            const propPath = getPropPath(getProp, obj, context, option);
-            if (!propPath) {
+            const propPaths = getPropPath(getProp, obj, context, option);
+            if (!propPaths && propPaths.length <= 0) {
                 throw new Error("getProp() function does not return a part of obj");
             }
 
-            obj = updateProperty(obj, setProp, newValue, context, propPath, option);
+            obj = updateProperty(obj, setProp, newValue, context, propPaths, option);
         }
 
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
@@ -197,51 +189,35 @@ interface IIassign extends IIassignOption {
         TProp,
         TContext
     >(getProp: getPropFunc<TObj, TProp, TContext>, obj: TObj, context: TContext, option: IIassignOption): string[] {
-        // will be a double map, both original values and proxied objects will have the path indexed
-        const pathMap = new Map<any, string[]>();
-        const handlers = {
-            get: (target: any, prop: string) => {
-                // if (typeof prop === "symbol") {
-                //     return;
-                // }
-                switch (prop) {
-                    // Allows this object be used as a primitive for self-referential access (e.g. obj.a[obj.b])
-                    // See http://www.adequatelygood.com/Object-to-Primitive-Conversions-in-JavaScript.html
-                    case "valueOf":
-                        return () => target.valueOf();
-                    case "toString":
-                        return () => target.toString();
-                }
-                const nextValue = target[prop];
-                // if (nextValue === undefined || nextValue === null) {
-                //     return nextValue;
-                // }
-                let nextObj;
-                if (
-                    typeof nextValue !== "object" ||
-                    nextValue === undefined ||
-                    nextValue === null
-                ) {
-                    nextObj = {
-                        valueOf: () => nextValue,
-                        toString: () => String(nextValue),
-                    };
-                } else {
-                    nextObj = quickCopy(nextValue, prop, option.useConstructor, option.copyFunc);
-                }
-                const prevPath = pathMap.get(target) || [];
-                const nextPath = prevPath.concat(prop);
-                const proxied = new Proxy(nextObj, handlers);
-                pathMap.set(nextObj, nextPath);
-                pathMap.set(proxied, nextPath);
-                return proxied;
-            },
-        };
-        let coreObj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
-        coreObj = new Proxy(coreObj, handlers);
-        pathMap.set(coreObj, []);
-        pathMap.set(obj, []);
-        return pathMap.get(getProp(coreObj, context));
+        let objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+        let paths = [];
+        _getPropPath(obj, objCopy, paths);
+        getProp(objCopy, context);
+
+        return paths;
+    }
+
+    function _getPropPath(obj, objCopy, paths: string[]): void {
+        const propertyNames = Object.getOwnPropertyNames(obj);
+        propertyNames.forEach(function(propKey) {
+            const descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
+            if (descriptor && (!(obj instanceof Array) || propKey != "length")) {
+                const copyDescriptor = {
+                    enumerable: descriptor.enumerable,
+                    configurable: false,
+                    get: function() {
+                        paths.push(propKey);
+                        let propValue = obj[propKey];
+                        let propValueCopy = quickCopy(propValue);
+                        if (propValue != undefined) {
+                            _getPropPath(propValue, propValueCopy, paths);
+                        }
+                        return propValueCopy;
+                    },
+                };
+                Object.defineProperty(objCopy, propKey, copyDescriptor);
+            }
+        });
     }
 
     // For performance
@@ -287,16 +263,16 @@ interface IIassign extends IIassignOption {
         TObj,
         TProp,
         TContext
-    >(obj: TObj, setProp: setPropFunc<TProp>, newValue: TProp, context: TContext, propPath: string[], option: IIassignOption): TObj {
+    >(obj: TObj, setProp: setPropFunc<TProp>, newValue: TProp, context: TContext, propPaths: string[], option: IIassignOption): TObj {
         let propValue: any = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         obj = propValue;
-        if (!propPath.length) {
-            return option.ignoreIfNoChange ? newValue : setProp(propValue) as any;
+        if (!propPaths.length) {
+            return option.ignoreIfNoChange ? newValue : (setProp(propValue) as any);
         }
 
-        for (var propIndex = 0; propIndex < propPath.length; ++propIndex) {
-            const propName = propPath[propIndex];
-            const isLast = propIndex + 1 === propPath.length;
+        for (var propIndex = 0; propIndex < propPaths.length; ++propIndex) {
+            const propName = propPaths[propIndex];
+            const isLast = propIndex + 1 === propPaths.length;
 
             const prevPropValue = propValue;
 
@@ -315,7 +291,7 @@ interface IIassign extends IIassignOption {
 
     function quickCopy<
         T
-    >(value: T, propName: string, useConstructor: boolean, copyFunc: ICopyFunc): T {
+    >(value: T, propName?: string, useConstructor?: boolean, copyFunc?: ICopyFunc): T {
         if (value != undefined && !(value instanceof Date)) {
             if (value instanceof Array) {
                 return (<any>value).slice();

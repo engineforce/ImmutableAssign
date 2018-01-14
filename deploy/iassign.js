@@ -7,24 +7,18 @@
         catch (ex) {
             console.warn("Cannot load deep-freeze-strict module, however you can still use iassign() function.");
         }
-        try {
-            var proxyPolyfill = require("proxy-polyfill");
-        }
-        catch (ex) {
-            console.warn("Cannot load proxy-polyfill module. iassign() will not work in IE 11 or other old browsers.");
-        }
-        var v = factory(deepFreeze, proxyPolyfill, exports);
+        var v = factory(deepFreeze, exports);
         if (v !== undefined)
             module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["deep-freeze-strict", "proxy-polyfill", "exports"], factory);
+        define(["deep-freeze-strict", "exports"], factory);
     }
     else {
         // Browser globals (root is window)
-        root.iassign = factory(root.deepFreeze, undefined, {});
+        root.iassign = factory(root.deepFreeze, {});
     }
-})(this, function (deepFreeze, proxyPolyfill, exports) {
+})(this, function (deepFreeze, exports) {
     var autoCurry = (function () {
         var toArray = function toArray(arr, from) {
             return Array.prototype.slice.call(arr, from || 0);
@@ -95,11 +89,11 @@
                     return obj;
                 }
             }
-            var propPath = getPropPath(getProp, obj, context, option);
-            if (!propPath) {
+            var propPaths = getPropPath(getProp, obj, context, option);
+            if (!propPaths && propPaths.length <= 0) {
                 throw new Error("getProp() function does not return a part of obj");
             }
-            obj = updateProperty(obj, setProp, newValue, context, propPath, option);
+            obj = updateProperty(obj, setProp, newValue, context, propPaths, option);
         }
         if (deepFreeze && (option.freeze || option.freezeOutput)) {
             deepFreeze(obj);
@@ -110,50 +104,35 @@
         return _iassign(obj, getProp, setProp, context, option);
     }
     function getPropPath(getProp, obj, context, option) {
-        // will be a double map, both original values and proxied objects will have the path indexed
-        var pathMap = new Map();
-        var handlers = {
-            get: function (target, prop) {
-                if (typeof prop === "symbol") {
-                    return;
-                }
-                switch (prop) {
-                    // Allows this object be used as a primitive for self-referential access (e.g. obj.a[obj.b])
-                    // See http://www.adequatelygood.com/Object-to-Primitive-Conversions-in-JavaScript.html
-                    case "valueOf":
-                        return function () { return target.valueOf(); };
-                    case "toString":
-                        return function () { return target.toString(); };
-                }
-                var nextValue = target[prop];
-                // if (nextValue === undefined || nextValue === null) {
-                //     return nextValue;
-                // }
-                var nextObj;
-                if (typeof nextValue !== "object" ||
-                    nextValue === undefined ||
-                    nextValue === null) {
-                    nextObj = {
-                        valueOf: function () { return nextValue; },
-                        toString: function () { return String(nextValue); },
-                    };
-                }
-                else {
-                    nextObj = quickCopy(nextValue, prop, option.useConstructor, option.copyFunc);
-                }
-                var prevPath = pathMap.get(target) || [];
-                var nextPath = prevPath.concat(prop);
-                var proxied = new Proxy(nextObj, handlers);
-                pathMap.set(nextObj, nextPath);
-                pathMap.set(proxied, nextPath);
-                return proxied;
-            },
-        };
-        var coreObj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
-        coreObj = new Proxy(coreObj, handlers);
-        pathMap.set(coreObj, []);
-        pathMap.set(obj, []);
-        return pathMap.get(getProp(coreObj, context));
+        debugger;
+        var objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
+        var paths = [];
+        _getPropPath(obj, objCopy, paths);
+        getProp(objCopy, context);
+        return paths;
+    }
+    function _getPropPath(obj, objCopy, paths) {
+        var propertyNames = Object.getOwnPropertyNames(obj);
+        propertyNames.forEach(function (propKey) {
+            var descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
+            if (descriptor && (!(obj instanceof Array) || propKey != "length")) {
+                var copyDescriptor = {
+                    enumerable: descriptor.enumerable,
+                    configurable: false,
+                    get: function () {
+                        debugger;
+                        paths.push(propKey);
+                        var propValue = obj[propKey];
+                        var propValueCopy = quickCopy(propValue);
+                        if (propValue != undefined) {
+                            _getPropPath(propValue, propValueCopy, paths);
+                        }
+                        return propValueCopy;
+                    },
+                };
+                Object.defineProperty(objCopy, propKey, copyDescriptor);
+            }
+        });
     }
     // For performance
     function copyOption(target, option, defaultOption) {
@@ -188,15 +167,15 @@
         }
         return target;
     }
-    function updateProperty(obj, setProp, newValue, context, propPath, option) {
+    function updateProperty(obj, setProp, newValue, context, propPaths, option) {
         var propValue = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         obj = propValue;
-        if (!propPath.length) {
+        if (!propPaths.length) {
             return option.ignoreIfNoChange ? newValue : setProp(propValue);
         }
-        for (var propIndex = 0; propIndex < propPath.length; ++propIndex) {
-            var propName = propPath[propIndex];
-            var isLast = propIndex + 1 === propPath.length;
+        for (var propIndex = 0; propIndex < propPaths.length; ++propIndex) {
+            var propName = propPaths[propIndex];
+            var isLast = propIndex + 1 === propPaths.length;
             var prevPropValue = propValue;
             propValue = propValue[propName];
             propValue = quickCopy(propValue, propName, option.useConstructor, option.copyFunc);

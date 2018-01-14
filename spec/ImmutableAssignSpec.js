@@ -59,7 +59,7 @@ var __extends = (this && this.__extends) || (function () {
         willThrowWhenUpdateFronzenArray = true;
     }
     var _ = require("lodash");
-    var immutable = require("immutable");
+    // var immutable = require("immutable");
     describe("Test", function () {
         beforeEach(function () { });
         it("Access array item", function () {
@@ -113,7 +113,7 @@ var __extends = (this && this.__extends) || (function () {
                 a2: {},
             };
             expect(function () {
-                var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
+                iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
                     ci.d++;
                     return ci;
                 }, undefined, {
@@ -161,7 +161,7 @@ var __extends = (this && this.__extends) || (function () {
                 freeze: true,
             });
             expect(function () {
-                var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
+                iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
                     ci.d++;
                     return ci;
                 });

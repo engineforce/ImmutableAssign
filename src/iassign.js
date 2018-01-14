@@ -114,11 +114,16 @@
     function getPropPath(getProp, obj, context, option) {
         var objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         var paths = [];
-        _getPropPath(obj, objCopy, paths);
+        if (typeof Proxy === "undefined") {
+            _getPropPathViaProperty(obj, objCopy, paths);
+        }
+        else {
+            objCopy = _getPropPathViaProxy(obj, objCopy, paths);
+        }
         getProp(objCopy, context);
         return paths;
     }
-    function _getPropPath(obj, objCopy, paths, level) {
+    function _getPropPathViaProperty(obj, objCopy, paths, level) {
         if (level === void 0) { level = 0; }
         var propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function (propKey) {
@@ -133,7 +138,7 @@
                             var propValue = obj[propKey];
                             var propValueCopy = quickCopy(propValue);
                             if (propValue != undefined) {
-                                _getPropPath(propValue, propValueCopy, paths, level + 1);
+                                _getPropPathViaProperty(propValue, propValueCopy, paths, level + 1);
                             }
                             return propValueCopy;
                         }
@@ -143,6 +148,26 @@
                 Object.defineProperty(objCopy, propKey, copyDescriptor);
             }
         });
+    }
+    function _getPropPathViaProxy(obj, objCopy, paths, level) {
+        if (level === void 0) { level = 0; }
+        var handlers = {
+            get: function (target, propKey) {
+                if (level == paths.length) {
+                    paths.push(propKey);
+                    var propValue = obj[propKey];
+                    if (typeof propValue === "object") {
+                        var propValueCopy = quickCopy(propValue);
+                        if (propValue != undefined) {
+                            propValueCopy = _getPropPathViaProxy(propValue, propValueCopy, paths, level + 1);
+                        }
+                        return propValueCopy;
+                    }
+                }
+                return obj[propKey];
+            },
+        };
+        return new Proxy(objCopy, handlers);
     }
     // For performance
     function copyOption(target, option, defaultOption) {

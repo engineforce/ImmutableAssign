@@ -51,7 +51,7 @@
     }
 
     var _: _.LoDashStatic = require("lodash");
-    var immutable = require("immutable");
+    // var immutable = require("immutable");
 
     describe("Test", function() {
         beforeEach(function() {});
@@ -119,7 +119,7 @@
             };
 
             expect(() => {
-                var o2 = iassign(
+                iassign(
                     o1,
                     o => o.a.b.c[0][0],
                     ci => {
@@ -189,7 +189,7 @@
             });
 
             expect(() => {
-                var o2 = iassign(
+                iassign(
                     o1,
                     o => o.a.b.c[0][0],
                     ci => {

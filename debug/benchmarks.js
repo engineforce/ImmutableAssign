@@ -651,7 +651,7 @@
         });
 
         var totalElapsed = totalRead + totalWrite;
-        console.log("Total elapsed = " + totalElapsed + " ms = " + totalRead + " ms (read) + " + totalWrite + " ms (write).");
+        console.log("Total elapsed = " + totalRead + " ms (read) + " + totalWrite + " ms (write) = " + totalElapsed + " ms.");
         return totalElapsed;
     };
 

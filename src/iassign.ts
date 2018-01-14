@@ -200,13 +200,17 @@ interface IIassign extends IIassignOption {
     >(getProp: getPropFunc<TObj, TProp, TContext>, obj: TObj, context: TContext, option: IIassignOption): string[] {
         let objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         let paths = [];
-        _getPropPath(obj, objCopy, paths);
+        if (typeof Proxy === "undefined") {
+            _getPropPathViaProperty(obj, objCopy, paths);
+        } else {
+            objCopy = _getPropPathViaProxy(obj, objCopy, paths);
+        }
         getProp(objCopy, context);
 
         return paths;
     }
 
-    function _getPropPath(obj, objCopy, paths: string[], level = 0): void {
+    function _getPropPathViaProperty(obj, objCopy, paths: string[], level = 0): void {
         const propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function(propKey) {
             const descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
@@ -220,7 +224,7 @@ interface IIassign extends IIassignOption {
                             let propValue = obj[propKey];
                             let propValueCopy = quickCopy(propValue);
                             if (propValue != undefined) {
-                                _getPropPath(propValue, propValueCopy, paths, level + 1);
+                                _getPropPathViaProperty(propValue, propValueCopy, paths, level + 1);
                             }
                             return propValueCopy;
                         }
@@ -231,6 +235,33 @@ interface IIassign extends IIassignOption {
                 Object.defineProperty(objCopy, propKey, copyDescriptor);
             }
         });
+    }
+
+    function _getPropPathViaProxy(obj, objCopy, paths: string[], level = 0): any {
+        var handlers = {
+            get: (target: any, propKey: string) => {
+                if (level == paths.length) {
+                    paths.push(propKey);
+                    let propValue = obj[propKey];
+                    if (typeof propValue === "object") {
+                        let propValueCopy = quickCopy(propValue);
+                        if (propValue != undefined) {
+                            propValueCopy = _getPropPathViaProxy(
+                                propValue,
+                                propValueCopy,
+                                paths,
+                                level + 1
+                            );
+                        }
+                        return propValueCopy;
+                    }
+                }
+
+                return obj[propKey];
+            },
+        };
+
+        return new Proxy(objCopy, handlers);
     }
 
     // For performance

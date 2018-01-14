@@ -48,58 +48,6 @@ npm run benchmarks
 
     npm install immutable-assign --save
 
-### Function Signature (TypeScript syntax)
-
-```javascript
-
-// Return a new POJO object with property updated.
-
-// function overload 1: 
-iassign = function<TObj, TProp, TContext>(
-    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
-    getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
-    setProp: (prop: TProp) => TProp,                    // Function to set the property.
-    context?: TContext,                                 // (Optional) Context to be used in getProp().
-    option?: IIassignOption): TObj;                     // (Optional) Options
-
-// function overload 2: you can skip getProp() if you trying to update the root object, refer to example 1 and 2
-iassign = function<TObj>(
-    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
-    setProp: setPropFunc<TObj>,                         // Function to set the property.
-    option?: IIassignOption): TObj;                     // (Optional) Options
-
-// functional programming friendly style, moved obj to the last parameter and supports currying, refer to example 8
-iassign.fp = function <TObj, TProp, TContext>(
-    option: IIassignOption,
-    getProp: getPropFunc<TObj, TProp, TContext>,
-    setProp: setPropFunc<TProp>,
-    context?: TContext,
-    obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
-
-// In ES6, you cannot set property on imported module directly, because they are default
-// to readonly, in this case you need to use this method.
-iassign.setOption(option: IIassignOption): void;
-
-// Options, can be applied globally or individually
-interface IIassignOption {
-    freeze?: boolean;              // Deep freeze both input and output
-    freezeInput?: boolean;         // Deep freeze input
-    freezeOutput?: boolean;        // Deep freeze output
-    useConstructor?: boolean;      // Uses the constructor to create new instances
-
-    // Custom copy function, can be used to handle special types, e.g., Map, Set; refer to example 9
-    copyFunc?: <T>(value: T, propName: string): T;
-
-    // Disable validation for extra statements in the getProp() function, 
-    // which is needed when running the coverage, e.g., istanbul.js does add 
-    // instrument statements in our getProp() function, which can be safely ignored. 
-    disableExtraStatementCheck?: boolean;
-
-    // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
-    ignoreIfNoChange?: boolean;
-}
-```
-
 <br />
 
 ### Example 1: Update object
@@ -471,6 +419,59 @@ var map2 = iassign(
 
 ```
 
+<br />
+
+### Function Signature (TypeScript syntax)
+
+```javascript
+
+// Return a new POJO object with property updated.
+
+// function overload 1: 
+iassign = function<TObj, TProp, TContext>(
+    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
+    getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
+    setProp: (prop: TProp) => TProp,                    // Function to set the property.
+    context?: TContext,                                 // (Optional) Context to be used in getProp().
+    option?: IIassignOption): TObj;                     // (Optional) Options
+
+// function overload 2: you can skip getProp() if you trying to update the root object, refer to example 1 and 2
+iassign = function<TObj>(
+    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
+    setProp: setPropFunc<TObj>,                         // Function to set the property.
+    option?: IIassignOption): TObj;                     // (Optional) Options
+
+// functional programming friendly style, moved obj to the last parameter and supports currying, refer to example 8
+iassign.fp = function <TObj, TProp, TContext>(
+    option: IIassignOption,
+    getProp: getPropFunc<TObj, TProp, TContext>,
+    setProp: setPropFunc<TProp>,
+    context?: TContext,
+    obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
+
+// In ES6, you cannot set property on imported module directly, because they are default
+// to readonly, in this case you need to use this method.
+iassign.setOption(option: IIassignOption): void;
+
+// Options, can be applied globally or individually
+interface IIassignOption {
+    freeze?: boolean;              // Deep freeze both input and output
+    freezeInput?: boolean;         // Deep freeze input
+    freezeOutput?: boolean;        // Deep freeze output
+    useConstructor?: boolean;      // Uses the constructor to create new instances
+
+    // Custom copy function, can be used to handle special types, e.g., Map, Set; refer to example 9
+    copyFunc?: <T>(value: T, propName: string): T;
+
+    // Disable validation for extra statements in the getProp() function, 
+    // which is needed when running the coverage, e.g., istanbul.js does add 
+    // instrument statements in our getProp() function, which can be safely ignored. 
+    disableExtraStatementCheck?: boolean;
+
+    // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+    ignoreIfNoChange?: boolean;
+}
+```
 
 ## Constraints
 

@@ -155,7 +155,6 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'src/Libs/*.js',
-            //'node_modules/proxy-polyfill/proxy.js',
             'node_modules/lodash/lodash.js',
             'node_modules/immutable/dist/immutable.js',
             'src/*.js',

@@ -479,7 +479,7 @@ var map2 = iassign(
 
 ## History
 
-* 2.0.2 - Removed dependency on ES6 Proxy (including the proxy-polyfill), used Object.defineProperty() instead which has much better browser support.
+* 2.0.3 - Replaced Proxy (including the proxy-polyfill) with Object.defineProperty(), which has much better browser support.
 * 2.0.1 - Minor bug fixes.
 * 2.0.0  - 
     * Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of [eval()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) to process getProp(), which is more secure.

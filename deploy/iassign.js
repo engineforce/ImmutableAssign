@@ -89,8 +89,16 @@
                     return obj;
                 }
             }
+            var funcText = getProp.toString();
+            var arrowIndex = funcText.indexOf("=>");
+            if (arrowIndex <= -1) {
+                var returnIndex = funcText.indexOf("return ");
+                if (returnIndex <= -1) {
+                    throw new Error("getProp() function does not return a part of obj");
+                }
+            }
             var propPaths = getPropPath(getProp, obj, context, option);
-            if (!propPaths && propPaths.length <= 0) {
+            if (!propPaths) {
                 throw new Error("getProp() function does not return a part of obj");
             }
             obj = updateProperty(obj, setProp, newValue, context, propPaths, option);
@@ -104,14 +112,14 @@
         return _iassign(obj, getProp, setProp, context, option);
     }
     function getPropPath(getProp, obj, context, option) {
-        debugger;
         var objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         var paths = [];
         _getPropPath(obj, objCopy, paths);
         getProp(objCopy, context);
         return paths;
     }
-    function _getPropPath(obj, objCopy, paths) {
+    function _getPropPath(obj, objCopy, paths, level) {
+        if (level === void 0) { level = 0; }
         var propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function (propKey) {
             var descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
@@ -120,14 +128,16 @@
                     enumerable: descriptor.enumerable,
                     configurable: false,
                     get: function () {
-                        debugger;
-                        paths.push(propKey);
-                        var propValue = obj[propKey];
-                        var propValueCopy = quickCopy(propValue);
-                        if (propValue != undefined) {
-                            _getPropPath(propValue, propValueCopy, paths);
+                        if (level == paths.length) {
+                            paths.push(propKey);
+                            var propValue = obj[propKey];
+                            var propValueCopy = quickCopy(propValue);
+                            if (propValue != undefined) {
+                                _getPropPath(propValue, propValueCopy, paths, level + 1);
+                            }
+                            return propValueCopy;
                         }
-                        return propValueCopy;
+                        return obj[propKey];
                     },
                 };
                 Object.defineProperty(objCopy, propKey, copyDescriptor);

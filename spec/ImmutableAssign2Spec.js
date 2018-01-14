@@ -278,7 +278,6 @@
         });
 
         it("Access array using context parameter 5", function () {
-            debugger;
             var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } }, a2: 0 };
             deepFreeze(o1);
             var p1 = { a: 0 };
@@ -348,7 +347,6 @@
         });
 
         it("getProp() function without return should throw exception", function () {
-            debugger;
             if (iassign.disableHasReturnCheck)
                 return;
 

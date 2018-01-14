@@ -161,8 +161,17 @@ interface IIassign extends IIassignOption {
                 }
             }
 
+            let funcText = getProp.toString();
+            let arrowIndex = funcText.indexOf("=>");
+            if (arrowIndex <= -1) {
+                let returnIndex = funcText.indexOf("return ");
+                if (returnIndex <= -1) {
+                    throw new Error("getProp() function does not return a part of obj");
+                }
+            }
+
             const propPaths = getPropPath(getProp, obj, context, option);
-            if (!propPaths && propPaths.length <= 0) {
+            if (!propPaths) {
                 throw new Error("getProp() function does not return a part of obj");
             }
 
@@ -197,7 +206,7 @@ interface IIassign extends IIassignOption {
         return paths;
     }
 
-    function _getPropPath(obj, objCopy, paths: string[]): void {
+    function _getPropPath(obj, objCopy, paths: string[], level = 0): void {
         const propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function(propKey) {
             const descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
@@ -206,13 +215,17 @@ interface IIassign extends IIassignOption {
                     enumerable: descriptor.enumerable,
                     configurable: false,
                     get: function() {
-                        paths.push(propKey);
-                        let propValue = obj[propKey];
-                        let propValueCopy = quickCopy(propValue);
-                        if (propValue != undefined) {
-                            _getPropPath(propValue, propValueCopy, paths);
+                        if (level == paths.length) {
+                            paths.push(propKey);
+                            let propValue = obj[propKey];
+                            let propValueCopy = quickCopy(propValue);
+                            if (propValue != undefined) {
+                                _getPropPath(propValue, propValueCopy, paths, level + 1);
+                            }
+                            return propValueCopy;
                         }
-                        return propValueCopy;
+
+                        return obj[propKey];
                     },
                 };
                 Object.defineProperty(objCopy, propKey, copyDescriptor);

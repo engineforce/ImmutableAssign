@@ -1,6 +1,6 @@
 {
     "name": "immutable-assign",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "description":
         "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
     "main": "deploy/iassign.js",
@@ -11,6 +11,7 @@
         "test-karma": "node_modules/.bin/karma start",
         "test-karma-win": "node_modules/.bin/karma start --browsers Chrome,Edge,IE",
         "test-karma-mac": "node_modules/.bin/karma start --browsers Safari,Chrome",
+        "test-karma-mac-no-proxy": "NO_PROXY='true' yarn run test-karma-mac",
         "cover": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
         "debug": "node --inspect --inspect-brk node_modules/jasmine/bin/jasmine.js",
         "build": "gulp",

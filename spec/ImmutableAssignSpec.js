@@ -1123,6 +1123,72 @@ var __extends = (this && this.__extends) || (function () {
             expect(t4.inst2.constructor.name == undefined ||
                 t4.inst2.constructor.name == "ChildKlass").toEqual(true);
         });
+        it("Issue 4b: Support classes", function () {
+            debugger;
+            iassign.freeze = true;
+            var option = {
+                useConstructor: true,
+            };
+            var Klass = /** @class */ (function () {
+                function Klass() {
+                    this.prop = 11;
+                }
+                Klass.prototype.func = function () {
+                    return "Klass" + this.prop;
+                };
+                return Klass;
+            }());
+            var ChildKlass = /** @class */ (function (_super) {
+                __extends(ChildKlass, _super);
+                function ChildKlass() {
+                    var _this = _super !== null && _super.apply(this, arguments) || this;
+                    _this.prop = 101;
+                    return _this;
+                }
+                ChildKlass.prototype.func2 = function () {
+                    return "ChildKlass" + this.prop;
+                };
+                return ChildKlass;
+            }(Klass));
+            var s = {
+                arr: [1],
+                obj: {
+                    prop: 1,
+                    func: function () {
+                        return "Klass" + this.prop;
+                    },
+                },
+                inst: {
+                    k: new Klass(),
+                },
+                inst2: {
+                    ck: new ChildKlass(),
+                },
+            };
+            var t1 = iassign(s, function (x) { return x.arr; }, function (arr) {
+                arr.push(2);
+                return arr;
+            }, null, option);
+            expect(s.arr.length).toEqual(1);
+            expect(t1.arr.length).toEqual(2);
+            var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return y + 1; }, null, option);
+            expect(s.obj.prop).toEqual(1);
+            expect(t2.obj.prop).toEqual(2);
+            expect(t2.obj.func()).toEqual("Klass2");
+            var t3 = iassign(s, function (x) { return x.inst.k.prop; }, function (v) { return v + 1; }, null, option);
+            expect(s.inst.k.prop).toEqual(11);
+            expect(t3.inst.k.prop).toEqual(12);
+            expect(t3.inst.k.func()).toEqual("Klass12");
+            var t4 = iassign(s, function (x) { return x.inst2.ck.prop; }, function (v) { return v + 1; }, null, option);
+            expect(s.inst2.ck.prop).toEqual(101);
+            expect(t4.inst2.ck.prop).toEqual(102);
+            expect(t4.inst2.ck.func()).toEqual("Klass102");
+            expect(t4.inst2.ck.func2()).toEqual("ChildKlass102");
+            expect(t4.inst2.ck instanceof Klass).toEqual(true);
+            expect(t4.inst2.ck instanceof ChildKlass).toEqual(true);
+            expect(t4.inst2.ck.constructor.name == undefined ||
+                t4.inst2.ck.constructor.name == "ChildKlass").toEqual(true);
+        });
         it("iassign.fp", function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.

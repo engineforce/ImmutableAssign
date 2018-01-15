@@ -1533,6 +1533,80 @@
             ).toEqual(true);
         });
 
+        it("Issue 4b: Support classes", function() {
+            debugger;
+            iassign.freeze = true;
+
+            const option: IIassignOption = {
+                useConstructor: true,
+            };
+
+            class Klass {
+                prop: number = 11;
+                func() {
+                    return "Klass" + this.prop;
+                }
+            }
+
+            class ChildKlass extends Klass {
+                prop: number = 101;
+                func2() {
+                    return "ChildKlass" + this.prop;
+                }
+            }
+
+            const s = {
+                arr: [1],
+                obj: {
+                    prop: 1,
+                    func: function() {
+                        return "Klass" + this.prop;
+                    },
+                },
+                inst: {
+                    k: new Klass(),
+                },
+                inst2: {
+                    ck: new ChildKlass(),
+                },
+            };
+
+            const t1 = iassign(
+                s,
+                x => x.arr,
+                arr => {
+                    arr.push(2);
+                    return arr;
+                },
+                null,
+                option
+            );
+            expect(s.arr.length).toEqual(1);
+            expect(t1.arr.length).toEqual(2);
+
+            const t2 = iassign(s, x => x.obj.prop, y => y + 1, null, option);
+            expect(s.obj.prop).toEqual(1);
+            expect(t2.obj.prop).toEqual(2);
+            expect(t2.obj.func()).toEqual("Klass2");
+
+            const t3 = iassign(s, x => x.inst.k.prop, v => v + 1, null, option);
+            expect(s.inst.k.prop).toEqual(11);
+            expect(t3.inst.k.prop).toEqual(12);
+            expect(t3.inst.k.func()).toEqual("Klass12");
+
+            const t4 = iassign(s, x => x.inst2.ck.prop, v => v + 1, null, option);
+            expect(s.inst2.ck.prop).toEqual(101);
+            expect(t4.inst2.ck.prop).toEqual(102);
+            expect(t4.inst2.ck.func()).toEqual("Klass102");
+            expect(t4.inst2.ck.func2()).toEqual("ChildKlass102");
+            expect(t4.inst2.ck instanceof Klass).toEqual(true);
+            expect(t4.inst2.ck instanceof ChildKlass).toEqual(true);
+            expect(
+                (<any>t4.inst2.ck.constructor).name == undefined ||
+                    (<any>t4.inst2.ck.constructor).name == "ChildKlass"
+            ).toEqual(true);
+        });
+
         it("iassign.fp", function() {
             //var iassign = require("immutable-assign");
 

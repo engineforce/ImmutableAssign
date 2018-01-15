@@ -154,11 +154,12 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+            ...(process.env.NO_PROXY ? ["spec/disableProxy.js"] : []),
             'src/Libs/*.js',
             'node_modules/lodash/lodash.js',
             'node_modules/immutable/dist/immutable.js',
             'src/*.js',
-            'spec/**/*.js'
+            'spec/**/*Spec.js'
         ],
 
 

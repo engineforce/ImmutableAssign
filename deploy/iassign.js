@@ -112,19 +112,20 @@
         return _iassign(obj, getProp, setProp, context, option);
     }
     function getPropPath(getProp, obj, context, option) {
-        var objCopy = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
         var paths = [];
+        var objCopy;
         if (typeof Proxy === "undefined") {
-            _getPropPathViaProperty(obj, objCopy, paths);
+            objCopy = _getPropPathViaProperty(obj, paths);
         }
         else {
-            objCopy = _getPropPathViaProxy(obj, objCopy, paths);
+            objCopy = _getPropPathViaProxy(obj, paths);
         }
         getProp(objCopy, context);
         return paths;
     }
-    function _getPropPathViaProperty(obj, objCopy, paths, level) {
+    function _getPropPathViaProperty(obj, paths, level) {
         if (level === void 0) { level = 0; }
+        var objCopy = quickCopy(obj, paths[level - 1]);
         var propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function (propKey) {
             var descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
@@ -136,11 +137,9 @@
                         if (level == paths.length) {
                             paths.push(propKey);
                             var propValue = obj[propKey];
-                            var propValueCopy = quickCopy(propValue);
                             if (propValue != undefined) {
-                                _getPropPathViaProperty(propValue, propValueCopy, paths, level + 1);
+                                return _getPropPathViaProperty(propValue, paths, level + 1);
                             }
-                            return propValueCopy;
                         }
                         return obj[propKey];
                     },
@@ -148,26 +147,23 @@
                 Object.defineProperty(objCopy, propKey, copyDescriptor);
             }
         });
+        return objCopy;
     }
-    function _getPropPathViaProxy(obj, objCopy, paths, level) {
+    function _getPropPathViaProxy(obj, paths, level) {
         if (level === void 0) { level = 0; }
         var handlers = {
             get: function (target, propKey) {
+                var propValue = obj[propKey];
                 if (level == paths.length) {
                     paths.push(propKey);
-                    var propValue = obj[propKey];
-                    if (typeof propValue === "object") {
-                        var propValueCopy = quickCopy(propValue);
-                        if (propValue != undefined) {
-                            propValueCopy = _getPropPathViaProxy(propValue, propValueCopy, paths, level + 1);
-                        }
-                        return propValueCopy;
+                    if (typeof propValue === "object" && propValue != null) {
+                        return _getPropPathViaProxy(propValue, paths, level + 1);
                     }
                 }
-                return obj[propKey];
+                return propValue;
             },
         };
-        return new Proxy(objCopy, handlers);
+        return new Proxy(quickCopy(obj, paths[level - 1]), handlers);
     }
     // For performance
     function copyOption(target, option, defaultOption) {

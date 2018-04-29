@@ -21,7 +21,8 @@ var __extends = (this && this.__extends) || (function () {
     else {
         // Browser globals (root is window)
         var browserRequire = function (name) {
-            if ((name == "deep-freeze" || name == "deep-freeze-strict") && root.deepFreeze) {
+            if ((name == "deep-freeze" || name == "deep-freeze-strict") &&
+                root.deepFreeze) {
                 return root.deepFreeze;
             }
             if (name == "lodash" && root._) {
@@ -65,10 +66,13 @@ var __extends = (this && this.__extends) || (function () {
         it("Access array item", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
@@ -81,10 +85,13 @@ var __extends = (this && this.__extends) || (function () {
             // expect o1 has not been changed
             expect(o1).toEqual({
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             });
             // expect o2 inner property has been updated.
             expect(o2.a.b.c[0][0].d).toBe(12);
@@ -107,10 +114,13 @@ var __extends = (this && this.__extends) || (function () {
         it("Access array item, need to detect change but the setProp is setting the inner property.", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
@@ -118,32 +128,38 @@ var __extends = (this && this.__extends) || (function () {
                     return ci;
                 }, undefined, {
                     ignoreIfNoChange: true,
-                    freeze: true,
+                    freeze: true
                 });
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
         });
         it("Access array item, need to detect change and no change", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
                 return ci;
             }, undefined, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             // expect o1 has not been changed
             expect(o1).toEqual({
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             });
             // expect o2 === o1, because no change in the setProp().
             expect(o2).toBe(o1);
@@ -151,14 +167,17 @@ var __extends = (this && this.__extends) || (function () {
         it("Access array item, need to detect change but the setProp is setting the inner property, use setOption()", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             iassign.setOption({
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(function () {
                 iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
@@ -168,20 +187,23 @@ var __extends = (this && this.__extends) || (function () {
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
             iassign.setOption({
                 ignoreIfNoChange: false,
-                freeze: false,
+                freeze: false
             });
         });
         it("Access array item, need to detect change and no change, use setOption()", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             iassign.setOption({
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
                 return ci;
@@ -189,25 +211,31 @@ var __extends = (this && this.__extends) || (function () {
             // expect o1 has not been changed
             expect(o1).toEqual({
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             });
             // expect o2 === o1, because no change in the setProp().
             expect(o2).toBe(o1);
             iassign.setOption({
                 ignoreIfNoChange: false,
-                freeze: false,
+                freeze: false
             });
         });
         it("Access array item, need to detect change and ensure setProp() is called once", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             // No change to the root object
             var count = 0;
@@ -216,7 +244,7 @@ var __extends = (this && this.__extends) || (function () {
                 return o;
             }, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).toBe(o1);
@@ -227,7 +255,7 @@ var __extends = (this && this.__extends) || (function () {
                 return {};
             }, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
@@ -238,7 +266,7 @@ var __extends = (this && this.__extends) || (function () {
                 return ci;
             }, undefined, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).toBe(o1);
@@ -249,7 +277,7 @@ var __extends = (this && this.__extends) || (function () {
                 return {};
             }, undefined, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
@@ -260,7 +288,7 @@ var __extends = (this && this.__extends) || (function () {
                 return o;
             }, undefined, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).toBe(o1);
@@ -271,7 +299,7 @@ var __extends = (this && this.__extends) || (function () {
                 return {};
             }, undefined, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
@@ -279,10 +307,13 @@ var __extends = (this && this.__extends) || (function () {
         it("Access array item, need to detect change and has change", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c[0][0]; }, function (ci) {
@@ -290,7 +321,7 @@ var __extends = (this && this.__extends) || (function () {
                 return ci;
             }, {
                 ignoreIfNoChange: true,
-                freeze: true,
+                freeze: true
             });
             //
             // Jasmine Tests
@@ -298,10 +329,13 @@ var __extends = (this && this.__extends) || (function () {
             // expect o1 has not been changed
             expect(o1).toEqual({
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             });
             // expect o2 inner property has been updated.
             expect(o2.a.b.c[0][0].d).toBe(12);
@@ -324,10 +358,13 @@ var __extends = (this && this.__extends) || (function () {
         it("Access array 1", function () {
             var o1 = {
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c[1]; }, function (c) {
@@ -340,10 +377,13 @@ var __extends = (this && this.__extends) || (function () {
             // expect o1 has not been changed
             expect(o1).toEqual({
                 a: {
-                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]], c2: {} },
-                    b2: {},
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
                 },
-                a2: {},
+                a2: {}
             });
             // expect o2 inner property has been updated.
             expect(o2.a.b.c[1][1]).toBe(101);
@@ -365,7 +405,9 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Access array 2", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) {
@@ -399,7 +441,9 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Access primitive", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c[0][0].d; }, function (d) {
@@ -430,7 +474,9 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Access array item using string", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c["1"]["0"].d; }, function (d) {
@@ -447,7 +493,11 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Access object property using string", function () {
             var o1 = {
-                a: { propB: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    propB: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]]
+                    }
+                }
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a["propB"].c["1"][0].d; }, function (d) {
@@ -468,9 +518,13 @@ var __extends = (this && this.__extends) || (function () {
             var o1 = {
                 a: (_a = {},
                     _a[propBName] = (_b = {},
-                        _b[propCName] = [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        _b[propCName] = [
+                            [{ d: 11, e: 12 }],
+                            [{ d: 21, e: 22 }],
+                            [{ d: 31, e: 32 }]
+                        ],
                         _b),
-                    _a),
+                    _a)
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]["1"][0].d; }, function (d) {
@@ -499,12 +553,12 @@ var __extends = (this && this.__extends) || (function () {
                                 _d[propEName] = [
                                     [{ d: 11, e: 12 }],
                                     [{ d: 21, e: 22 }],
-                                    [{ d: 31, e: 32 }],
+                                    [{ d: 31, e: 32 }]
                                 ],
                                 _d),
                             _c),
                         _b),
-                    _a),
+                    _a)
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) {
@@ -537,12 +591,12 @@ var __extends = (this && this.__extends) || (function () {
                                 _d[propEName] = [
                                     [{ d: 11, e: 12 }],
                                     [{ d: 21, e: 22 }],
-                                    [{ d: 31, e: 32 }],
+                                    [{ d: 31, e: 32 }]
                                 ],
                                 _d),
                             _c),
                         _b),
-                    _a),
+                    _a)
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) {
@@ -564,7 +618,9 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Access array using context parameter", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             deepFreeze(o1);
             var p1 = { a: 0 };
@@ -587,7 +643,9 @@ var __extends = (this && this.__extends) || (function () {
             if (noDeepFreeze)
                 return;
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             deepFreeze(o1);
             if (willThrowWhenUpdateFronzenArray) {
@@ -629,8 +687,10 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Update array using lodash", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } },
-                a2: {},
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] }
+                },
+                a2: {}
             };
             deepFreeze(o1); // Ensure o1 is not changed, for testing only
             //
@@ -643,12 +703,16 @@ var __extends = (this && this.__extends) || (function () {
             });
             // expect o1 has not been changed
             expect(o1).toEqual({
-                a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] } },
-                a2: {},
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] }
+                },
+                a2: {}
             });
             expect(o2).toEqual({
-                a: { b: { c: [[{ d: 12, e: 12 }, { d: 14, e: 14 }], [{ d: 21, e: 22 }]] } },
-                a2: {},
+                a: {
+                    b: { c: [[{ d: 12, e: 12 }, { d: 14, e: 14 }], [{ d: 21, e: 22 }]] }
+                },
+                a2: {}
             });
             expect(o2).not.toBe(o1);
             expect(o2.a).not.toBe(o1.a);
@@ -694,9 +758,13 @@ var __extends = (this && this.__extends) || (function () {
                 });
             });
             // expect o1 has not been changed
-            expect(o1).toEqual([[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]]);
+            expect(o1).toEqual([
+                [{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]
+            ]);
             // expect o2.a.b.c has been updated.
-            expect(o2).toEqual([[{ d: 12, e: 12 }, { d: 14, e: 14 }, { d: 21, e: 22 }]]);
+            expect(o2).toEqual([
+                [{ d: 12, e: 12 }, { d: 14, e: 14 }, { d: 21, e: 22 }]
+            ]);
             // expect object graph for changed property in o2 is now different from (!==) o1.
             expect(o2).not.toBe(o1);
             expect(o2[0]).not.toBe(o1[0]);
@@ -721,9 +789,17 @@ var __extends = (this && this.__extends) || (function () {
                 });
             });
             // expect o1 has not been changed
-            expect(o1).toEqual([{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]);
+            expect(o1).toEqual([
+                { d: 11, e: 12 },
+                { d: 13, e: 14 },
+                { d: 21, e: 22 }
+            ]);
             // expect o2.a.b.c has been updated.
-            expect(o2).toEqual([{ d: 12, e: 12 }, { d: 14, e: 14 }, { d: 21, e: 22 }]);
+            expect(o2).toEqual([
+                { d: 12, e: 12 },
+                { d: 14, e: 14 },
+                { d: 21, e: 22 }
+            ]);
             // expect object graph for changed property in o2 is now different from (!==) o1.
             expect(o2).not.toBe(o1);
             expect(o2[0]).not.toBe(o1[0]);
@@ -733,8 +809,11 @@ var __extends = (this && this.__extends) || (function () {
         });
         it("Test root is an object, and try to update root object", function () {
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} },
-                a2: {},
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} },
+                    b2: {}
+                },
+                a2: {}
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o; }, function (o) {
@@ -746,8 +825,11 @@ var __extends = (this && this.__extends) || (function () {
             //
             // expect o1 has not been changed
             expect(o1).toEqual({
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} },
-                a2: {},
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} },
+                    b2: {}
+                },
+                a2: {}
             });
             // expect o2 inner property has been updated.
             expect(o2).toEqual({ a: { b: 1 }, a2: {} });
@@ -762,7 +844,9 @@ var __extends = (this && this.__extends) || (function () {
             if (noDeepFreeze)
                 return;
             var o1 = {
-                a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
+                }
             };
             iassign.freezeInput = true;
             if (willThrowWhenUpdateFronzenArray) {
@@ -806,7 +890,11 @@ var __extends = (this && this.__extends) || (function () {
         it("Use built-in deep freeze to protect output", function () {
             if (noDeepFreeze)
                 return;
-            var o1 = { a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } } };
+            var o1 = {
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] }
+                }
+            };
             iassign.freezeOutput = true;
             var o2 = iassign(o1, function (o) { return o.a.b.c[0]; }, function (c) {
                 return _.map(c, function (item) {
@@ -815,7 +903,9 @@ var __extends = (this && this.__extends) || (function () {
             });
             // expect o1 has not been changed
             expect(o1).toEqual({
-                a: { b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] } },
+                a: {
+                    b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]] }
+                }
             });
             expect(o2.a.b.c[0][0].d).toBe(12);
             expect(o2.a.b.c[0][1].d).toBe(14);
@@ -1065,7 +1155,7 @@ var __extends = (this && this.__extends) || (function () {
         it("Issue 4: Support classes", function () {
             iassign.freeze = true;
             var option = {
-                useConstructor: true,
+                useConstructor: true
             };
             var Klass = /** @class */ (function () {
                 function Klass() {
@@ -1094,10 +1184,10 @@ var __extends = (this && this.__extends) || (function () {
                     prop: 1,
                     func: function () {
                         return "Klass" + this.prop;
-                    },
+                    }
                 },
                 inst: new Klass(),
-                inst2: new ChildKlass(),
+                inst2: new ChildKlass()
             };
             var t1 = iassign(s, function (x) { return x.arr; }, function (arr) {
                 arr.push(2);
@@ -1127,7 +1217,7 @@ var __extends = (this && this.__extends) || (function () {
             debugger;
             iassign.freeze = true;
             var option = {
-                useConstructor: true,
+                useConstructor: true
             };
             var Klass = /** @class */ (function () {
                 function Klass() {
@@ -1156,14 +1246,14 @@ var __extends = (this && this.__extends) || (function () {
                     prop: 1,
                     func: function () {
                         return "Klass" + this.prop;
-                    },
+                    }
                 },
                 inst: {
-                    k: new Klass(),
+                    k: new Klass()
                 },
                 inst2: {
-                    ck: new ChildKlass(),
-                },
+                    ck: new ChildKlass()
+                }
             };
             var t1 = iassign(s, function (x) { return x.arr; }, function (arr) {
                 arr.push(2);
@@ -1230,14 +1320,29 @@ var __extends = (this && this.__extends) || (function () {
             var obj1 = {
                 a: undefined,
                 b: {
-                    c: undefined,
-                },
+                    c: undefined
+                }
             };
             var obj2 = iassign(obj1, function (t) { return t.a; }, function (a) {
                 return "test a";
             });
             expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
             expect(obj2).toEqual({ a: "test a", b: { c: undefined } });
+        });
+        it("test exposed deepFreeze should freeze", function () {
+            var nested1 = { a: { b: { c: [3, 4, 5] } } };
+            iassign.deepFreeze(nested1);
+            expect(function () {
+                nested1.a.b.c.push(6);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
+        });
+        it("test exposed deepFreeze should not freeze", function () {
+            var nested1 = { a: { b: { c: [3, 4, 5] } } };
+            iassign.setOption({ freeze: false });
+            iassign.deepFreeze(nested1);
+            nested1.a.b.c.push(6);
+            expect(nested1).toEqual({ a: { b: { c: [3, 4, 5, 6] } } });
+            iassign.setOption({ freeze: false });
         });
     });
 });

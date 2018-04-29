@@ -50,7 +50,7 @@ npm run benchmarks
 
 <br />
 
-### Example 1: Update object
+### Example 1: Update root object
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -73,7 +73,7 @@ var map2 = iassign(
 
 <br />
 
-### Example 2: Update list/array
+### Example 2: Update root list/array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -124,7 +124,7 @@ var list5 = iassign(
 
 <br />
 
-### Example 3: Update nested structures
+### Example 3: Update nested object
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -206,7 +206,7 @@ var nested3 = iassign(
 
 <br />
 
-### Advanced example 5: Update nested property
+### Example 5: Update nested object
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -220,37 +220,10 @@ var o2 = iassign(
     function (ci) { ci.d++; return ci; }
 );
 ```
-```javascript
-//
-// Jasmine Tests
-//
-
-// expect o1 has not been changed
-expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} });
-
-// expect o2 inner property has been updated.
-expect(o2.a.b.c[0][0].d).toBe(12);
-
-// expect object graph for changed property in o2 is now different from (!==) o1.
-expect(o2).not.toBe(o1);
-expect(o2.a).not.toBe(o1.a);
-expect(o2.a.b).not.toBe(o1.a.b);
-expect(o2.a.b.c).not.toBe(o1.a.b.c);
-expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
-expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
-expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
-
-// expect object graph for unchanged property in o2 is still equal to (===) o1.
-expect(o2.a2).toBe(o1.a2);
-expect(o2.a.b2).toBe(o1.a.b2);
-expect(o2.a.b.c2).toBe(o1.a.b.c2);
-expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
-expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
-```
 
 <br />
 
-### Advanced example 6: Update array
+### Example 6: Update nested array
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -264,36 +237,10 @@ var o2 = iassign(
     function (c) { c.push(101); return c; }
 );
 ```
-```javascript
-//
-// Jasmine Tests
-//
-
-// expect o1 has not been changed
-expect(o1).toEqual({ a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} });
-
-// expect o2 inner property has been updated.
-expect(o2.a.b.c[1][1]).toBe(101);
-
-// expect object graph for changed property in o2 is now different from (!==) o1.
-expect(o2).not.toBe(o1);
-expect(o2.a).not.toBe(o1.a);
-expect(o2.a.b).not.toBe(o1.a.b);
-expect(o2.a.b.c).not.toBe(o1.a.b.c);
-expect(o2.a.b.c[1]).not.toBe(o1.a.b.c[1]);
-
-// expect object graph for unchanged property in o2 is still equal to (===) o1.
-expect(o2.a2).toBe(o1.a2);
-expect(o2.a.b2).toBe(o1.a.b2);
-expect(o2.a.b.c2).toBe(o1.a.b.c2);
-expect(o2.a.b.c[0]).toBe(o1.a.b.c[0]);
-expect(o2.a.b.c[0][0]).toBe(o1.a.b.c[0][0]);
-expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
-```
 
 <br />
 
-### Advanced example 7: Update nested property, referring to external context.
+### Example 7: Update nested object, referring to external context.
 
 ```javascript
 var iassign = require("immutable-assign");
@@ -310,36 +257,10 @@ var o2 = iassign(
     { external: external }
 );
 ```
-```javascript
-//
-// Jasmine Tests
-//
-
-// expect o1 has not been changed
-expect(o1).toEqual({ a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] });
-
-// expect o2 inner property has been updated.
-expect(o2.a.b.c[external.a].d).toBe(12);
-
-// expect object graph for changed property in o2 is now different from (!==) o1.
-expect(o2).not.toBe(o1);
-expect(o2.a).not.toBe(o1.a);
-expect(o2.a.b).not.toBe(o1.a.b);
-expect(o2.a.b.c).not.toBe(o1.a.b.c);
-expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
-expect(o2.a.b.c[0].d).not.toBe(o1.a.b.c[0].d);
-
-// expect object graph for unchanged property in o2 is still equal to (===) o1.
-expect(o2.a.b.c[0].e).toBe(o1.a.b.c[0].e);
-expect(o2.a.b.c[1]).toBe(o1.a.b.c[1]);
-expect(o2.a.b.c[1].d).toBe(o1.a.b.c[1].d);
-expect(o2.a.b.c[1].e).toBe(o1.a.b.c[1].e);
-
-```
 
 <br />
 
-### Example 8: Update nested structures using iassign.fp() and currying
+### Example 8: Update nested object using iassign.fp() and currying
 
 ```javascript
 var iassign = require("immutable-assign");

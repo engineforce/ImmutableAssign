@@ -26,7 +26,7 @@
         var curry = function curry(fn /* variadic number of args */) {
             var args = toArray(arguments, 1);
             return function curried() {
-                return fn.apply(this, args.concat(toArray(arguments)));
+                return fn.apply(undefined, args.concat(toArray(arguments)));
             };
         };
         return function autoCurry(fn, numArgs) {
@@ -34,17 +34,18 @@
             return function autoCurried() {
                 if (arguments.length < numArgs) {
                     return numArgs - arguments.length > 0
-                        ? autoCurry(curry.apply(this, [fn].concat(toArray(arguments))), numArgs - arguments.length)
-                        : curry.apply(this, [fn].concat(toArray(arguments)));
+                        ? autoCurry(curry.apply(undefined, [fn].concat(toArray(arguments))), numArgs - arguments.length)
+                        : curry.apply(undefined, [fn].concat(toArray(arguments)));
                 }
                 else {
-                    return fn.apply(this, arguments);
+                    return fn.apply(undefined, arguments);
                 }
             };
         };
     })();
     var iassign = _iassign;
     iassign.fp = autoCurry(_iassignFp);
+    iassign.freeze = process.env.NODE_ENV !== "production";
     iassign.setOption = function (option) {
         copyOption(iassign, option);
     };
@@ -142,7 +143,7 @@
                             }
                         }
                         return obj[propKey];
-                    },
+                    }
                 };
                 Object.defineProperty(objCopy, propKey, copyDescriptor);
             }
@@ -161,7 +162,7 @@
                     }
                 }
                 return propValue;
-            },
+            }
         };
         return new Proxy(quickCopy(obj, paths[level - 1]), handlers);
     }
@@ -257,5 +258,6 @@
         return destination;
     }
     iassign.default = iassign;
+    iassign.deepFreeze = function (obj) { return (iassign.freeze ? deepFreeze(obj) : obj); };
     return iassign;
 });

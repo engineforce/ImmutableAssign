@@ -63,7 +63,7 @@ declare namespace ImmutableAssign {
     // to readonly, in this case you need to use this method.
     setOption(option: IIassignOption): void;
 
-    deepFreeze: DeepFreeze.DeepFreezeInterface;
+    deepFreeze<T>(obj: T): T;
 
     // ES6 default export
     default: ImmutableAssign.IIassign;

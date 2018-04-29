@@ -56,7 +56,7 @@ interface IIassign extends IIassignOption {
   // to readonly, in this case you need to use this method.
   setOption(option: IIassignOption);
 
-  deepFreeze: DeepFreeze.DeepFreezeInterface;
+  deepFreeze<T>(obj: T): T;
 
   // ES6 default export
   default: IIassign;

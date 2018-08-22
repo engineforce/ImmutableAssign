@@ -112,7 +112,7 @@ interface IIassign extends IIassignOption {
 
   var iassign: IIassign = <any>_iassign;
   iassign.fp = autoCurry(_iassignFp);
-  iassign.freeze = process.env.NODE_ENV !== "production";
+  iassign.freeze = typeof(process) !== "undefined" && process.env.NODE_ENV !== "production";
 
   iassign.setOption = function(option) {
     copyOption(iassign, option);
@@ -369,18 +369,14 @@ interface IIassign extends IIassignOption {
     return value;
   }
 
-  function extend(destination: any, ...sources) {
-    for (var source of sources) {
+  function extend(destination: any, source) {
       for (var key in source) {
         if (!Object.prototype.hasOwnProperty.call(source, key)) {
           continue;
         }
         let value = source[key];
-        if (value !== undefined) {
-          destination[key] = value;
-        }
+        destination[key] = value;
       }
-    }
     return destination;
   }
 

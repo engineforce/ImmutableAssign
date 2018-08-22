@@ -1808,6 +1808,16 @@
       );
       expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
       expect(obj2).toEqual({ a: "test a", b: { c: undefined } });
+
+      let obj3 = iassign(
+        obj1,
+        t => (<any>t).d,
+        d => {
+          return "test d";
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+      expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: "test d" });
     });
 
     it("test exposed deepFreeze should freeze", function() {
@@ -1817,7 +1827,7 @@
 
       expect(() => {
         nested1.a.b.c.push(6);
-      }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
+      }).toThrowError(TypeError, /Invalid|add|extensible|readonly|doesn't support/i);
     });
 
     it("test exposed deepFreeze should not freeze", function() {

@@ -1328,13 +1328,18 @@ var __extends = (this && this.__extends) || (function () {
             });
             expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
             expect(obj2).toEqual({ a: "test a", b: { c: undefined } });
+            var obj3 = iassign(obj1, function (t) { return t.d; }, function (d) {
+                return "test d";
+            });
+            expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+            expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: "test d" });
         });
         it("test exposed deepFreeze should freeze", function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
             iassign.deepFreeze(nested1);
             expect(function () {
                 nested1.a.b.c.push(6);
-            }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly|doesn't support/i);
         });
         it("test exposed deepFreeze should not freeze", function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };

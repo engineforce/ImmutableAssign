@@ -1,20 +1,16 @@
 {
   "name": "immutable-assign",
   "version": "2.0.6",
-  "description":
-    "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
+  "description": "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
   "main": "deploy/iassign.js",
   "types": "deploy/iassign.d.ts",
   "scripts": {
-    "test":
-      "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
-    "test-backup": "node node_modules/jasmine/bin/jasmine.js",
+    "test": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
     "test-karma": "node_modules/.bin/karma start",
-    "test-karma-win": "node_modules/.bin/karma start --browsers Chrome,Edge,IE",
+    "test-karma-win10": "node_modules/.bin/karma start --browsers Chrome,Fireforx,Edge,IE",
+    "test-karma-win7": "node_modules/.bin/karma start --browsers Chrome,Fireforx,IE",
     "test-karma-mac": "node_modules/.bin/karma start --browsers Safari,Chrome",
     "test-karma-mac-no-proxy": "NO_PROXY='true' yarn run test-karma-mac",
-    "cover":
-      "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js",
     "debug": "node --inspect --inspect-brk node_modules/jasmine/bin/jasmine.js",
     "build": "gulp",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
@@ -30,13 +26,20 @@
   },
   "homepage": "https://github.com/engineforce/ImmutableAssign",
   "license": "MIT",
-  "keywords": ["immutable", "typescript", "javascript", "data", "stateless"],
+  "keywords": [
+    "immutable",
+    "typescript",
+    "javascript",
+    "data",
+    "stateless"
+  ],
   "dependencies": {},
   "optionalDependencies": {
     "deep-freeze-strict": "^1.1.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.74",
+    "browserify": "^16.2.2",
     "chalk": "^1.1.3",
     "core-js": "^2.4.1",
     "coveralls": "^2.11.15",
@@ -48,10 +51,11 @@
     "immutable": "^3.8.1",
     "istanbul": "^0.4.3",
     "jasmine": "^2.4.1",
-    "karma": "^1.1.2",
-    "karma-chrome-launcher": "^1.0.1",
+    "karma": "^3.0.0",
+    "karma-browserify": "^5.3.0",
+    "karma-chrome-launcher": "^2.2.0",
     "karma-edge-launcher": "^0.4.2",
-    "karma-firefox-launcher": "^1.0.0",
+    "karma-firefox-launcher": "^1.1.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.1",

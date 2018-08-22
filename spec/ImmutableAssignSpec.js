@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -13,60 +13,60 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 (function (root, factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
         var v = factory(require, exports);
         if (v !== undefined)
             module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["require", "exports"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(['require', 'exports'], factory);
     }
     else {
         // Browser globals (root is window)
         var browserRequire = function (name) {
-            if ((name == "deep-freeze" || name == "deep-freeze-strict") &&
+            if ((name == 'deep-freeze' || name == 'deep-freeze-strict') &&
                 root.deepFreeze) {
                 return root.deepFreeze;
             }
-            if (name == "lodash" && root._) {
+            if (name == 'lodash' && root._) {
                 return root._;
             }
-            if (name == "immutable" && root.Immutable) {
+            if (name == 'immutable' && root.Immutable) {
                 return root.Immutable;
             }
-            if (name.indexOf("iassign") > -1 && root.iassign) {
+            if (name.indexOf('iassign') > -1 && root.iassign) {
                 return root.iassign;
             }
-            throw new Error("Unable to require: " + name);
+            throw new Error('Unable to require: ' + name);
         };
         factory(browserRequire, {});
     }
 })(this, function (require, exports) {
-    var iassign = require("../src/iassign");
+    var iassign = require('../src/iassign');
     var noDeepFreeze = false;
     try {
-        var deepFreeze = require("deep-freeze-strict");
+        var deepFreeze = require('deep-freeze-strict');
     }
     catch (ex) {
         deepFreeze = function () { };
         noDeepFreeze = true;
-        console.warn("Cannot load deep-freeze module.", ex && ex.message ? ex.message : ex);
+        console.warn('Cannot load deep-freeze module.', ex && ex.message ? ex.message : ex);
     }
     var willThrowWhenUpdateFronzenArray = false;
     try {
         var o = { b: [] };
         deepFreeze(o);
         o.b.push(1);
-        console.warn("Not throw when update frozen array.");
+        console.warn('Not throw when update frozen array.');
     }
     catch (ex) {
         willThrowWhenUpdateFronzenArray = true;
     }
-    var _ = require("lodash");
+    var _ = require('lodash');
     // var immutable = require("immutable");
-    describe("Test", function () {
+    describe('Test', function () {
         beforeEach(function () { });
-        it("Access array item", function () {
+        it('Access array item', function () {
             var o1 = {
                 a: {
                     b: {
@@ -114,7 +114,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
             expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
         });
-        it("Access array item, need to detect change but the setProp is setting the inner property.", function () {
+        it('Access array item, need to detect change but the setProp is setting the inner property.', function () {
             var o1 = {
                 a: {
                     b: {
@@ -135,7 +135,7 @@ var __extends = (this && this.__extends) || (function () {
                 });
             }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not|read-only/i);
         });
-        it("Access array item, need to detect change and no change", function () {
+        it('Access array item, need to detect change and no change', function () {
             var o1 = {
                 a: {
                     b: {
@@ -167,7 +167,7 @@ var __extends = (this && this.__extends) || (function () {
             // expect o2 === o1, because no change in the setProp().
             expect(o2).toBe(o1);
         });
-        it("Access array item, need to detect change but the setProp is setting the inner property, use setOption()", function () {
+        it('Access array item, need to detect change but the setProp is setting the inner property, use setOption()', function () {
             var o1 = {
                 a: {
                     b: {
@@ -193,7 +193,7 @@ var __extends = (this && this.__extends) || (function () {
                 freeze: false
             });
         });
-        it("Access array item, need to detect change and no change, use setOption()", function () {
+        it('Access array item, need to detect change and no change, use setOption()', function () {
             var o1 = {
                 a: {
                     b: {
@@ -229,7 +229,7 @@ var __extends = (this && this.__extends) || (function () {
                 freeze: false
             });
         });
-        it("Access array item, need to detect change and ensure setProp() is called once", function () {
+        it('Access array item, need to detect change and ensure setProp() is called once', function () {
             var o1 = {
                 a: {
                     b: {
@@ -307,7 +307,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(count).toBe(1);
             expect(o2).not.toBe(o1);
         });
-        it("Access array item, need to detect change and has change", function () {
+        it('Access array item, need to detect change and has change', function () {
             var o1 = {
                 a: {
                     b: {
@@ -358,7 +358,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
             expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
         });
-        it("Access array 1", function () {
+        it('Access array 1', function () {
             var o1 = {
                 a: {
                     b: {
@@ -406,7 +406,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[2]).toBe(o1.a.b.c[2]);
             expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
         });
-        it("Access array 2", function () {
+        it('Access array 2', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
@@ -427,7 +427,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[1]).toBe(o1.a.b.c[1]);
             expect(o2.a.b.c[2]).toBe(undefined);
         });
-        it("Access object", function () {
+        it('Access object', function () {
             var o1 = { a: { b: { c: { d: 11, e: 12 } } } };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c; }, function (c) {
@@ -442,7 +442,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c.d).not.toBe(o1.a.b.c.d);
             expect(o2.a.b.c.d).toBe(12);
         });
-        it("Access primitive", function () {
+        it('Access primitive', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
@@ -461,7 +461,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
             expect(o2.a.b.c[0][0].d).toBe(12);
         });
-        it("Access date", function () {
+        it('Access date', function () {
             var o1 = { a: { b: { c: { d: 11, e: 12, f: new Date() } } } };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) { return o.a.b.c.f; }, function (f) {
@@ -475,14 +475,14 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c.f).not.toBe(o1.a.b.c.f);
             expect(o2.a.b.c.f).toEqual(new Date(2016, 1, 1));
         });
-        it("Access array item using string", function () {
+        it('Access array item using string', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
                 }
             };
             deepFreeze(o1);
-            var o2 = iassign(o1, function (o) { return o.a.b.c["1"]["0"].d; }, function (d) {
+            var o2 = iassign(o1, function (o) { return o.a.b.c['1']['0'].d; }, function (d) {
                 return d + 1;
             });
             expect(o2).not.toBe(o1);
@@ -494,7 +494,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[1][0].d).not.toBe(o1.a.b.c[1][0].d);
             expect(o2.a.b.c[1][0].d).toBe(22);
         });
-        it("Access object property using string", function () {
+        it('Access object property using string', function () {
             var o1 = {
                 a: {
                     propB: {
@@ -503,7 +503,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
             };
             deepFreeze(o1);
-            var o2 = iassign(o1, function (o) { return o.a["propB"].c["1"][0].d; }, function (d) {
+            var o2 = iassign(o1, function (o) { return o.a['propB'].c['1'][0].d; }, function (d) {
                 return d + 1;
             });
             expect(o2).not.toBe(o1);
@@ -515,7 +515,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.propB.c[1][0].d).not.toBe(o1.a.propB.c[1][0].d);
             expect(o2.a.propB.c[1][0].d).toBe(22);
         });
-        it("Access object property using string 2", function () {
+        it('Access object property using string 2', function () {
             var _a, _b;
             var propBName = "p\\r\"o.p t[] e.s't'B";
             var propCName = "h\\e'llo w'or\"ld";
@@ -531,7 +531,7 @@ var __extends = (this && this.__extends) || (function () {
                     _a)
             };
             deepFreeze(o1);
-            var o2 = iassign(o1, function (o) { return o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]["1"][0].d; }, function (d) {
+            var o2 = iassign(o1, function (o) { return o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]['1'][0].d; }, function (d) {
                 return d + 1;
             });
             expect(o2.a[propBName][propCName][1][0].d).toBe(22);
@@ -543,12 +543,12 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][1][0]).not.toBe(o1.a[propBName][propCName][1][0]);
             expect(o2.a[propBName][propCName][1][0].d).not.toBe(o1.a[propBName][propCName][1][0].d);
         });
-        it("Access object property using string 3", function () {
+        it('Access object property using string 3', function () {
             var _a, _b, _c, _d;
-            var propBName = "p\\ro.p t[] e.stB";
+            var propBName = 'p\\ro.p t[] e.stB';
             var propCName = "h\\e'llo w'or\"ld";
             var propDName = 'h\\e"llo w"or\'ld';
-            var propEName = "p\\ro.p t[] e.stB";
+            var propEName = 'p\\ro.p t[] e.stB';
             var o1 = {
                 a: (_a = {},
                     _a[propBName] = (_b = {},
@@ -566,7 +566,7 @@ var __extends = (this && this.__extends) || (function () {
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) {
-                return o.a["p\\ro.p t[] e.stB"]["h\\e'llo w'or\"ld"]['h\\e"llo w"or\'ld']["p\\ro.p t[] e.stB"]["1"][0].d;
+                return o.a['p\\ro.p t[] e.stB']["h\\e'llo w'or\"ld"]['h\\e"llo w"or\'ld']['p\\ro.p t[] e.stB']['1'][0].d;
             }, function (d) {
                 return d + 1;
             });
@@ -581,7 +581,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
         });
-        it("Access object property using string 4", function () {
+        it('Access object property using string 4', function () {
             var _a, _b, _c, _d;
             var propBName = "p\\r\"o.p t[] e.s't'B";
             var propCName = "h\\e'llo w'or\"ld";
@@ -604,7 +604,7 @@ var __extends = (this && this.__extends) || (function () {
             };
             deepFreeze(o1);
             var o2 = iassign(o1, function (o) {
-                return o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]['h\\e"llo w"or\'ld']['p\\r\'o.p t[] e.s"t"B']["1"][0].d;
+                return o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]['h\\e"llo w"or\'ld']['p\\r\'o.p t[] e.s"t"B']['1'][0].d;
             }, function (d) {
                 return d + 1;
             });
@@ -619,7 +619,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
         });
-        it("Access array using context parameter", function () {
+        it('Access array using context parameter', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]] }
@@ -642,7 +642,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
             expect(o2.a.b.c[0][0].d).toBe(12);
         });
-        it("Try to modify freezed object should throw error.", function () {
+        it('Try to modify freezed object should throw error.', function () {
             if (noDeepFreeze)
                 return;
             var o1 = {
@@ -688,7 +688,7 @@ var __extends = (this && this.__extends) || (function () {
                 }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
             }
         });
-        it("Update array using lodash", function () {
+        it('Update array using lodash', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }, { d: 13, e: 14 }], [{ d: 21, e: 22 }]] }
@@ -726,7 +726,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
             expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
         });
-        it("Update array using lodash 2", function () {
+        it('Update array using lodash 2', function () {
             var o1 = { a: { b: { c: [1, 2, 3] } } };
             deepFreeze(o1); // Ensure o1 is not changed, for testing only
             //
@@ -745,7 +745,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b).not.toBe(o1.a.b);
             expect(o2.a.b.c).not.toBe(o1.a.b.c);
         });
-        it("Test root object is an array", function () {
+        it('Test root object is an array', function () {
             var o1 = [[{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }]];
             deepFreeze(o1); // Ensure o1 is not changed, for testing only
             //
@@ -776,7 +776,7 @@ var __extends = (this && this.__extends) || (function () {
             // expect object graph for unchanged property in o2 is still equal to (===) o1.
             expect(o2[0][2]).toBe(o1[0][2]);
         });
-        it("Test root is an array, and try to update root array", function () {
+        it('Test root is an array, and try to update root array', function () {
             var o1 = [{ d: 11, e: 12 }, { d: 13, e: 14 }, { d: 21, e: 22 }];
             deepFreeze(o1); // Ensure o1 is not changed, for testing only
             //
@@ -810,7 +810,7 @@ var __extends = (this && this.__extends) || (function () {
             // expect object graph for unchanged property in o2 is still equal to (===) o1.
             expect(o2[2]).toBe(o1[2]);
         });
-        it("Test root is an object, and try to update root object", function () {
+        it('Test root is an object, and try to update root object', function () {
             var o1 = {
                 a: {
                     b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} },
@@ -843,7 +843,7 @@ var __extends = (this && this.__extends) || (function () {
             // expect object graph for unchanged property in o2 is still equal to (===) o1.
             expect(o2.a2).toBe(o1.a2);
         });
-        it("Use built-in deep freeze to protect input", function () {
+        it('Use built-in deep freeze to protect input', function () {
             if (noDeepFreeze)
                 return;
             var o1 = {
@@ -890,7 +890,7 @@ var __extends = (this && this.__extends) || (function () {
             }
             iassign.freezeInput = undefined;
         });
-        it("Use built-in deep freeze to protect output", function () {
+        it('Use built-in deep freeze to protect output', function () {
             if (noDeepFreeze)
                 return;
             var o1 = {
@@ -939,7 +939,7 @@ var __extends = (this && this.__extends) || (function () {
             }
             iassign.freezeOutput = undefined;
         });
-        it("Example 1: update object", function () {
+        it('Example 1: update object', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -953,7 +953,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(map2).toEqual({ a: 1, b: 50, c: 3 });
             expect(map2).not.toBe(map1);
         });
-        it("Example 1b: update object with option", function () {
+        it('Example 1b: update object with option', function () {
             if (noDeepFreeze)
                 return;
             //var iassign = require("immutable-assign");
@@ -982,7 +982,7 @@ var __extends = (this && this.__extends) || (function () {
                 map3.a = 3;
             }).not.toThrow();
         });
-        it("Example 1c: update object that pass undefined to getProp()", function () {
+        it('Example 1c: update object that pass undefined to getProp()', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -996,7 +996,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(map2).toEqual({ a: 1, b: 50, c: 3 });
             expect(map2).not.toBe(map1);
         });
-        it("Example 1d: update object with option that pass undefined to getProp()", function () {
+        it('Example 1d: update object with option that pass undefined to getProp()', function () {
             if (noDeepFreeze)
                 return;
             //var iassign = require("immutable-assign");
@@ -1025,7 +1025,7 @@ var __extends = (this && this.__extends) || (function () {
                 map3.a = 3;
             }).not.toThrow();
         });
-        it("Example 2: update list/array", function () {
+        it('Example 2: update list/array', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -1065,7 +1065,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(list5).toEqual([0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5]);
             expect(list5).not.toBe(list4);
         });
-        it("Example 2b: update list/array that pass undefined to getProp()", function () {
+        it('Example 2b: update list/array that pass undefined to getProp()', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -1105,7 +1105,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(list5).toEqual([0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5]);
             expect(list5).not.toBe(list4);
         });
-        it("Example 3: update nested structures", function () {
+        it('Example 3: update nested structures', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -1140,7 +1140,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(nested4).toEqual({ a: { b: { c: [3, 4, 5, 6], d: 7 } } });
             expect(nested4).not.toBe(nested3);
         });
-        it("Issue 3: nicer api", function () {
+        it('Issue 3: nicer api', function () {
             iassign.freeze = true;
             var mutate = function (getter, setter, context) { return function (state) {
                 return iassign(state, getter, setter, context, { freeze: true });
@@ -1155,7 +1155,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: 6 } } });
             expect(nested2).not.toBe(nested1);
         });
-        it("Issue 4: Support classes", function () {
+        it('Issue 4: Support classes', function () {
             iassign.freeze = true;
             var option = {
                 useConstructor: true
@@ -1165,7 +1165,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.prop = 11;
                 }
                 Klass.prototype.func = function () {
-                    return "Klass" + this.prop;
+                    return 'Klass' + this.prop;
                 };
                 return Klass;
             }());
@@ -1177,7 +1177,7 @@ var __extends = (this && this.__extends) || (function () {
                     return _this;
                 }
                 ChildKlass.prototype.func2 = function () {
-                    return "ChildKlass" + this.prop;
+                    return 'ChildKlass' + this.prop;
                 };
                 return ChildKlass;
             }(Klass));
@@ -1186,7 +1186,7 @@ var __extends = (this && this.__extends) || (function () {
                 obj: {
                     prop: 1,
                     func: function () {
-                        return "Klass" + this.prop;
+                        return 'Klass' + this.prop;
                     }
                 },
                 inst: new Klass(),
@@ -1201,22 +1201,22 @@ var __extends = (this && this.__extends) || (function () {
             var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return y + 1; }, null, option);
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
-            expect(t2.obj.func()).toEqual("Klass2");
+            expect(t2.obj.func()).toEqual('Klass2');
             var t3 = iassign(s, function (x) { return x.inst.prop; }, function (v) { return v + 1; }, null, option);
             expect(s.inst.prop).toEqual(11);
             expect(t3.inst.prop).toEqual(12);
-            expect(t3.inst.func()).toEqual("Klass12");
+            expect(t3.inst.func()).toEqual('Klass12');
             var t4 = iassign(s, function (x) { return x.inst2.prop; }, function (v) { return v + 1; }, null, option);
             expect(s.inst2.prop).toEqual(101);
             expect(t4.inst2.prop).toEqual(102);
-            expect(t4.inst2.func()).toEqual("Klass102");
-            expect(t4.inst2.func2()).toEqual("ChildKlass102");
+            expect(t4.inst2.func()).toEqual('Klass102');
+            expect(t4.inst2.func2()).toEqual('ChildKlass102');
             expect(t4.inst2 instanceof Klass).toEqual(true);
             expect(t4.inst2 instanceof ChildKlass).toEqual(true);
             expect(t4.inst2.constructor.name == undefined ||
-                t4.inst2.constructor.name == "ChildKlass").toEqual(true);
+                t4.inst2.constructor.name == 'ChildKlass').toEqual(true);
         });
-        it("Issue 4b: Support classes", function () {
+        it('Issue 4b: Support classes', function () {
             debugger;
             iassign.freeze = true;
             var option = {
@@ -1227,7 +1227,7 @@ var __extends = (this && this.__extends) || (function () {
                     this.prop = 11;
                 }
                 Klass.prototype.func = function () {
-                    return "Klass" + this.prop;
+                    return 'Klass' + this.prop;
                 };
                 return Klass;
             }());
@@ -1239,7 +1239,7 @@ var __extends = (this && this.__extends) || (function () {
                     return _this;
                 }
                 ChildKlass.prototype.func2 = function () {
-                    return "ChildKlass" + this.prop;
+                    return 'ChildKlass' + this.prop;
                 };
                 return ChildKlass;
             }(Klass));
@@ -1248,7 +1248,7 @@ var __extends = (this && this.__extends) || (function () {
                 obj: {
                     prop: 1,
                     func: function () {
-                        return "Klass" + this.prop;
+                        return 'Klass' + this.prop;
                     }
                 },
                 inst: {
@@ -1267,22 +1267,22 @@ var __extends = (this && this.__extends) || (function () {
             var t2 = iassign(s, function (x) { return x.obj.prop; }, function (y) { return y + 1; }, null, option);
             expect(s.obj.prop).toEqual(1);
             expect(t2.obj.prop).toEqual(2);
-            expect(t2.obj.func()).toEqual("Klass2");
+            expect(t2.obj.func()).toEqual('Klass2');
             var t3 = iassign(s, function (x) { return x.inst.k.prop; }, function (v) { return v + 1; }, null, option);
             expect(s.inst.k.prop).toEqual(11);
             expect(t3.inst.k.prop).toEqual(12);
-            expect(t3.inst.k.func()).toEqual("Klass12");
+            expect(t3.inst.k.func()).toEqual('Klass12');
             var t4 = iassign(s, function (x) { return x.inst2.ck.prop; }, function (v) { return v + 1; }, null, option);
             expect(s.inst2.ck.prop).toEqual(101);
             expect(t4.inst2.ck.prop).toEqual(102);
-            expect(t4.inst2.ck.func()).toEqual("Klass102");
-            expect(t4.inst2.ck.func2()).toEqual("ChildKlass102");
+            expect(t4.inst2.ck.func()).toEqual('Klass102');
+            expect(t4.inst2.ck.func2()).toEqual('ChildKlass102');
             expect(t4.inst2.ck instanceof Klass).toEqual(true);
             expect(t4.inst2.ck instanceof ChildKlass).toEqual(true);
             expect(t4.inst2.ck.constructor.name == undefined ||
-                t4.inst2.ck.constructor.name == "ChildKlass").toEqual(true);
+                t4.inst2.ck.constructor.name == 'ChildKlass').toEqual(true);
         });
-        it("iassign.fp", function () {
+        it('iassign.fp', function () {
             //var iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
@@ -1317,7 +1317,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(nested4).toEqual({ a: { b: { c: [3, 4, 5, 6], d: 7 } } });
             expect(nested4).not.toBe(nested3);
         });
-        it("undefined property", function () {
+        it('undefined property', function () {
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var obj1 = {
@@ -1327,25 +1327,30 @@ var __extends = (this && this.__extends) || (function () {
                 }
             };
             var obj2 = iassign(obj1, function (t) { return t.a; }, function (a) {
-                return "test a";
+                return 'test a';
             });
             expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-            expect(obj2).toEqual({ a: "test a", b: { c: undefined } });
-            var obj3 = iassign(obj1, function (t) { return t.d; }, function (d) {
-                return "test d";
-            });
-            expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-            expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: "test d" });
+            expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
+            // Test not work without Proxy
+            // let obj3 = iassign(
+            //   obj1,
+            //   t => (<any>t).d,
+            //   d => {
+            //     return 'test d';
+            //   }
+            // );
+            // expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+            // expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
         });
-        it("test exposed deepFreeze should freeze", function () {
+        it('test exposed deepFreeze should freeze', function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
             iassign.freeze = true;
             iassign.deepFreeze(nested1);
             expect(function () {
                 nested1.a.b.c.push(6);
-            }).toThrowError(TypeError, /Invalid|add|extensible|readonly|doesn't support/i);
+            }).toThrowError(TypeError, /Invalid|add|extensible|readonly|doesn't support|non-writable|Cannot assign/i);
         });
-        it("test exposed deepFreeze should not freeze", function () {
+        it('test exposed deepFreeze should not freeze', function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
             iassign.setOption({ freeze: false });
             iassign.deepFreeze(nested1);

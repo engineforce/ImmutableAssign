@@ -90,7 +90,7 @@ module.exports = function (config) {
             base: 'SauceLabs',
             browserName: 'Browser',
             platform: 'iOS',
-            version: '9.0',
+            version: '9.3',
             deviceName: 'iPhone 6s Simulator',
         },
         sl_ios_10: {
@@ -198,6 +198,8 @@ module.exports = function (config) {
 
         sauceLabs: {
             testName: 'Immutable Assign Unit Tests',
+            username: process.env.SAUCE_USERNAME,
+            accessKey: process.env.SAUCE_ACCESS_KEY,
             startConnect: true,
             build: new Date().getTime() //Math.random().toString()
         },

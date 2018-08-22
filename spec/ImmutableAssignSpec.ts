@@ -1824,15 +1824,16 @@
     it('test exposed deepFreeze should freeze', function() {
       var nested1 = { a: { b: { c: [3, 4, 5] } } };
 
-      iassign.freeze = true;
-      iassign.deepFreeze(nested1);
+      if (willThrowWhenUpdateFronzenArray) {
+        iassign.freeze = true;
 
-      expect(() => {
-        nested1.a.b.c.push(6);
-      }).toThrowError(
-        TypeError,
-        /Invalid|add|extensible|readonly|doesn't support|non-writable|Cannot assign/i
-      );
+        expect(() => {
+          nested1.a.b.c.push(6);
+        }).toThrowError(
+          TypeError,
+          /Invalid|add|extensible|readonly|doesn't support|non-writable|Cannot assign/i
+        );
+      }
     });
 
     it('test exposed deepFreeze should not freeze', function() {

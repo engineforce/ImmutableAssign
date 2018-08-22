@@ -1822,9 +1822,10 @@
 
     it("test exposed deepFreeze should freeze", function() {
       var nested1 = { a: { b: { c: [3, 4, 5] } } };
-
+     
+      iassign.freeze = true;
       iassign.deepFreeze(nested1);
-
+      
       expect(() => {
         nested1.a.b.c.push(6);
       }).toThrowError(TypeError, /Invalid|add|extensible|readonly|doesn't support/i);

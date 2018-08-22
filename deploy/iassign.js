@@ -51,10 +51,10 @@
     };
     // Immutable Assign
     function _iassign(obj, // Object to set property, it will not be modified.
-        getPropOrSetProp, // Function to get property to be updated. Must be pure function.
-        setPropOrOption, // Function to set property.
-        contextOrUndefined, // (Optional) Context to be used in getProp().
-        optionOrUndefined) {
+    getPropOrSetProp, // Function to get property to be updated. Must be pure function.
+    setPropOrOption, // Function to set property.
+    contextOrUndefined, // (Optional) Context to be used in getProp().
+    optionOrUndefined) {
         var getProp = getPropOrSetProp;
         var setProp = setPropOrOption;
         var context = contextOrUndefined;

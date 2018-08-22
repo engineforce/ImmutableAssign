@@ -1,8 +1,11 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -513,6 +516,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.propB.c[1][0].d).toBe(22);
         });
         it("Access object property using string 2", function () {
+            var _a, _b;
             var propBName = "p\\r\"o.p t[] e.s't'B";
             var propCName = "h\\e'llo w'or\"ld";
             var o1 = {
@@ -538,9 +542,9 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][1]).not.toBe(o1.a[propBName][propCName][1]);
             expect(o2.a[propBName][propCName][1][0]).not.toBe(o1.a[propBName][propCName][1][0]);
             expect(o2.a[propBName][propCName][1][0].d).not.toBe(o1.a[propBName][propCName][1][0].d);
-            var _a, _b;
         });
         it("Access object property using string 3", function () {
+            var _a, _b, _c, _d;
             var propBName = "p\\ro.p t[] e.stB";
             var propCName = "h\\e'llo w'or\"ld";
             var propDName = 'h\\e"llo w"or\'ld';
@@ -576,9 +580,9 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][propDName][propEName][1]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
-            var _a, _b, _c, _d;
         });
         it("Access object property using string 4", function () {
+            var _a, _b, _c, _d;
             var propBName = "p\\r\"o.p t[] e.s't'B";
             var propCName = "h\\e'llo w'or\"ld";
             var propDName = 'h\\e"llo w"or\'ld';
@@ -614,7 +618,6 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a[propBName][propCName][propDName][propEName][1]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0]).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0]);
             expect(o2.a[propBName][propCName][propDName][propEName][1][0].d).not.toBe(o1.a[propBName][propCName][propDName][propEName][1][0].d);
-            var _a, _b, _c, _d;
         });
         it("Access array using context parameter", function () {
             var o1 = {

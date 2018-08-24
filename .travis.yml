@@ -3,8 +3,8 @@ node_js:
   - "10"
   - "9"
   - "8"
-  - "6"
-  - "4"
+  # - "6"
+  # - "4"
 after_success: 'npm run coveralls'
 
 env:

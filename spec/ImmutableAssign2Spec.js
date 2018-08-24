@@ -360,8 +360,8 @@
             }).toThrowError(/does not return a part of obj/);
         });
 
-        xit("getProp() function has other statements should throw exception", function () {            
-            if (iassign.disableExtraStatementCheck) {
+        it("getProp() function has other statements should throw exception if non-proxy fallback is used.", function () {            
+            if (iassign.disableExtraStatementCheck || typeof Proxy !== "undefined") {
                 return;
             }
 
@@ -371,8 +371,8 @@
             expect(function () {
                 var o2 = iassign(o1, function (o) {
                     var text = "unexpected text";
-                    return o.a.b.c[0][0]
-                }, function (ci) { ci.d++; return ci; });
+                    return o.notExists
+                }, function (notExists) { "exists now"; });
             }).toThrowError(/has statements other than 'return'/);
         });
 

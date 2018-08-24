@@ -1,6 +1,6 @@
 {
   "name": "immutable-assign",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "description": "Lightweight immutable helper that allows you to continue working with Plain JavaScript Objects",
   "main": "deploy/iassign.js",
   "types": "deploy/iassign.d.ts",
@@ -47,6 +47,7 @@
     "gulp": "^3.9.1",
     "gulp-less": "^4.0.1",
     "gulp-typescript": "^5.0.0-alpha.3",
+    "immer": "^1.5.0",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "jasmine": "^3.2.0",

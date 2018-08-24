@@ -401,6 +401,7 @@ interface IIassignOption {
 
 ## History
 
+* 2.0.8 - Fixed bug for undefined properties.
 * 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has much better browser support.
 * 2.0.1 - Minor bug fixes.
 * 2.0.0  - 

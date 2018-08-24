@@ -24,6 +24,10 @@
         return root.Immutable;
       }
 
+      if (name == 'immer' && root.immer) {
+        return root.immer;
+      }
+
       if (name.indexOf('iassign') > -1 && root.iassign) {
         return root.iassign;
       }
@@ -57,6 +61,7 @@
   }
 
   var _: _.LoDashStatic = require('lodash');
+  var immer = require('immer').default;
   // var immutable = require("immutable");
 
   describe('Test', function() {
@@ -1792,6 +1797,116 @@
       // Deep freeze both input and output, can be used in development to make sure they don't change.
       iassign.freeze = true;
 
+      const obj1 = {
+        a: undefined,
+        b: {
+          c: undefined,
+          c2: {}
+        }
+      };
+
+      const obj2 = iassign(
+        obj1,
+        o => o.a,
+        a => {
+          return 'test a';
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined, c2: {} } });
+      expect(obj2).toEqual({ a: 'test a', b: { c: undefined, c2: {} } });
+
+      const obj3 = iassign(
+        obj1,
+        o => (<any>o).d,
+        d => {
+          return 'test d';
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined, c2: {} } });
+      expect(obj3).toEqual({
+        a: undefined,
+        b: { c: undefined, c2: {} },
+        d: 'test d'
+      });
+
+      const obj4 = iassign(
+        obj1,
+        o => (<any>o).b.e,
+        e => {
+          return 'test e';
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined, c2: {} } });
+      expect(obj4).toEqual({
+        a: undefined,
+        b: { c: undefined, c2: {}, e: 'test e' }
+      });
+
+      const obj5 = iassign(
+        obj1,
+        (o, ctx) => (<any>o)[ctx.prop].f,
+        f => {
+          return 'test f';
+        },
+        {
+          prop: 'b'
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined, c2: {} } });
+      expect(obj5).toEqual({
+        a: undefined,
+        b: { c: undefined, c2: {}, f: 'test f' }
+      });
+
+      expect(() => {
+        iassign(
+          obj1,
+          (o, ctx) => (<any>o)[ctx.prop].g,
+          f => {
+            return 'test g';
+          },
+          {
+            prop: 'notExists'
+          }
+        );
+      }).toThrowError(TypeError, /undefined/i);
+
+      const obj6 = iassign(
+        obj1,
+        (o, ctx) => (<any>o).b[ctx.prop].h,
+        h => {
+          return 'test h';
+        },
+        {
+          prop: 'c2'
+        }
+      );
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined, c2: {} } });
+      expect(obj6).toEqual({
+        a: undefined,
+        b: { c: undefined, c2: { h: 'test h' } }
+      });
+
+      if (typeof Proxy === 'undefined') {
+        expect(() => {
+          iassign(
+            obj1,
+            (o, ctx) => (<any>o).b.c2[ctx.prop],
+            h => {
+              return 'test i';
+            },
+            {
+              prop: 'i'
+            }
+          );
+        }).toThrowError(/Cannot handle ctx\.prop/i);
+      }
+    });
+
+    it('undefined property using immer', function() {
+      // Deep freeze both input and output, can be used in development to make sure they don't change.
+      iassign.freeze = true;
+
       let obj1 = {
         a: undefined,
         b: {
@@ -1799,26 +1914,17 @@
         }
       };
 
-      let obj2 = iassign(
-        obj1,
-        t => t.a,
-        a => {
-          return 'test a';
-        }
-      );
+      let obj2 = immer(obj1, o => {
+        o.a = 'test a';
+      });
       expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
       expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
 
-      // Test not work without Proxy
-      // let obj3 = iassign(
-      //   obj1,
-      //   t => (<any>t).d,
-      //   d => {
-      //     return 'test d';
-      //   }
-      // );
-      // expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-      // expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
+      let obj3 = immer(obj1, o => {
+        o.d = 'test d';
+      });
+      expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+      expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
     });
 
     it('test exposed deepFreeze should freeze', function() {
@@ -1826,6 +1932,7 @@
 
       if (willThrowWhenUpdateFronzenArray) {
         iassign.freeze = true;
+        iassign.deepFreeze(nested1);
 
         expect(() => {
           nested1.a.b.c.push(6);

@@ -1,18 +1,18 @@
-"use strict";
+'use strict';
 (function (root, factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
         try {
-            var deepFreeze = require("deep-freeze-strict");
+            var deepFreeze = require('deep-freeze-strict');
         }
         catch (ex) {
-            console.warn("Cannot load deep-freeze-strict module, however you can still use iassign() function.");
+            console.warn('Cannot load deep-freeze-strict module, however you can still use iassign() function.');
         }
         var v = factory(deepFreeze, exports);
         if (v !== undefined)
             module.exports = v;
     }
-    else if (typeof define === "function" && define.amd) {
-        define(["deep-freeze-strict", "exports"], factory);
+    else if (typeof define === 'function' && define.amd) {
+        define(['deep-freeze-strict', 'exports'], factory);
     }
     else {
         // Browser globals (root is window)
@@ -45,7 +45,9 @@
     })();
     var iassign = _iassign;
     iassign.fp = autoCurry(_iassignFp);
-    iassign.freeze = typeof (process) !== "undefined" && process.env.NODE_ENV !== "production";
+    iassign.maxGetPropCacheSize = 100;
+    iassign.freeze =
+        typeof process !== 'undefined' && process.env.NODE_ENV !== 'production';
     iassign.setOption = function (option) {
         copyOption(iassign, option);
     };
@@ -59,7 +61,7 @@
         var setProp = setPropOrOption;
         var context = contextOrUndefined;
         var option = optionOrUndefined;
-        if (typeof setPropOrOption !== "function") {
+        if (typeof setPropOrOption !== 'function') {
             getProp = undefined;
             setProp = getPropOrSetProp;
             context = undefined;
@@ -91,16 +93,16 @@
                 }
             }
             var funcText = getProp.toString();
-            var arrowIndex = funcText.indexOf("=>");
+            var arrowIndex = funcText.indexOf('=>');
             if (arrowIndex <= -1) {
-                var returnIndex = funcText.indexOf("return ");
+                var returnIndex = funcText.indexOf('return ');
                 if (returnIndex <= -1) {
-                    throw new Error("getProp() function does not return a part of obj");
+                    throw new Error('getProp() function does not return a part of obj');
                 }
             }
             var propPaths = getPropPath(getProp, obj, context, option);
             if (!propPaths) {
-                throw new Error("getProp() function does not return a part of obj");
+                throw new Error('getProp() function does not return a part of obj');
             }
             obj = updateProperty(obj, setProp, newValue, context, propPaths, option);
         }
@@ -115,13 +117,30 @@
     function getPropPath(getProp, obj, context, option) {
         var paths = [];
         var objCopy;
-        if (typeof Proxy === "undefined") {
+        var propValue;
+        if (typeof Proxy === 'undefined') {
+            propValue = getProp(obj, context);
             objCopy = _getPropPathViaProperty(obj, paths);
         }
         else {
             objCopy = _getPropPathViaProxy(obj, paths);
         }
         getProp(objCopy, context);
+        // Check propValue === undefined for performance
+        if (typeof Proxy === 'undefined' && propValue === undefined) {
+            var functionInfo = parseGetPropFuncInfo(getProp, option);
+            if (paths.length != functionInfo.funcTokens.length - 1) {
+                var remainingFunctionTokens = functionInfo.funcTokens.slice(paths.length + 1);
+                for (var _i = 0, remainingFunctionTokens_1 = remainingFunctionTokens; _i < remainingFunctionTokens_1.length; _i++) {
+                    var token = remainingFunctionTokens_1[_i];
+                    if (token.propNameSource == ePropNameSource.inBracket &&
+                        isNaN(token.propName)) {
+                        throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined, which require unsafe feature of eval.");
+                    }
+                }
+                paths = paths.concat(remainingFunctionTokens.map(function (s) { return s.propName; }));
+            }
+        }
         return paths;
     }
     function _getPropPathViaProperty(obj, paths, level) {
@@ -130,7 +149,7 @@
         var propertyNames = Object.getOwnPropertyNames(obj);
         propertyNames.forEach(function (propKey) {
             var descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
-            if (descriptor && (!(obj instanceof Array) || propKey != "length")) {
+            if (descriptor && (!(obj instanceof Array) || propKey != 'length')) {
                 var copyDescriptor = {
                     enumerable: descriptor.enumerable,
                     configurable: false,
@@ -157,7 +176,7 @@
                 var propValue = obj[propKey];
                 if (level == paths.length) {
                     paths.push(propKey);
-                    if (typeof propValue === "object" && propValue != null) {
+                    if (typeof propValue === 'object' && propValue != null) {
                         return _getPropPathViaProxy(propValue, paths, level + 1);
                     }
                 }
@@ -175,6 +194,11 @@
             target.freezeOutput = defaultOption.freezeOutput;
             target.useConstructor = defaultOption.useConstructor;
             target.copyFunc = defaultOption.copyFunc;
+            target.disableAllCheck = defaultOption.disableAllCheck;
+            target.disableHasReturnCheck = defaultOption.disableHasReturnCheck;
+            target.disableExtraStatementCheck =
+                defaultOption.disableExtraStatementCheck;
+            target.maxGetPropCacheSize = defaultOption.maxGetPropCacheSize;
             target.ignoreIfNoChange = defaultOption.ignoreIfNoChange;
         }
         if (option) {
@@ -192,6 +216,18 @@
             }
             if (option.copyFunc != undefined) {
                 target.copyFunc = option.copyFunc;
+            }
+            if (option.disableAllCheck != undefined) {
+                target.disableAllCheck = option.disableAllCheck;
+            }
+            if (option.disableHasReturnCheck != undefined) {
+                target.disableHasReturnCheck = option.disableHasReturnCheck;
+            }
+            if (option.disableExtraStatementCheck != undefined) {
+                target.disableExtraStatementCheck = option.disableExtraStatementCheck;
+            }
+            if (option.maxGetPropCacheSize != undefined) {
+                target.maxGetPropCacheSize = option.maxGetPropCacheSize;
             }
             if (option.ignoreIfNoChange != undefined) {
                 target.ignoreIfNoChange = option.ignoreIfNoChange;
@@ -223,7 +259,7 @@
             if (value instanceof Array) {
                 return value.slice();
             }
-            else if (typeof value === "object") {
+            else if (typeof value === 'object') {
                 if (useConstructor) {
                     var target = new value.constructor();
                     return extend(target, value);
@@ -247,6 +283,188 @@
             destination[key] = value;
         }
         return destination;
+    }
+    var ePropNameSource;
+    (function (ePropNameSource) {
+        ePropNameSource[ePropNameSource["none"] = 0] = "none";
+        ePropNameSource[ePropNameSource["beforeDot"] = 1] = "beforeDot";
+        ePropNameSource[ePropNameSource["beforeBracket"] = 2] = "beforeBracket";
+        ePropNameSource[ePropNameSource["inBracket"] = 3] = "inBracket";
+        ePropNameSource[ePropNameSource["last"] = 4] = "last";
+    })(ePropNameSource || (ePropNameSource = {}));
+    var getPropCaches = {};
+    var getPropCacheKeys = [];
+    function parseGetPropFuncInfo(func, option) {
+        var funcText = func.toString();
+        var cacheKey = funcText + JSON.stringify(option);
+        var info = getPropCaches[cacheKey];
+        if (getPropCaches[cacheKey]) {
+            return info;
+        }
+        var matches = /\(([^\)]*)\)/.exec(funcText);
+        var objParameterName = undefined;
+        var cxtParameterName = undefined;
+        if (matches) {
+            var parametersText = matches[1];
+            var parameters = parametersText.split(',');
+            objParameterName = parameters[0];
+            cxtParameterName = parameters[1];
+        }
+        if (objParameterName) {
+            objParameterName = objParameterName.trim();
+        }
+        if (cxtParameterName) {
+            cxtParameterName = cxtParameterName.trim();
+        }
+        var bodyStartIndex = funcText.indexOf('{');
+        var bodyEndIndex = funcText.lastIndexOf('}');
+        var bodyText = '';
+        if (bodyStartIndex > -1 && bodyEndIndex > -1) {
+            bodyText = funcText.substring(bodyStartIndex + 1, bodyEndIndex);
+        }
+        else {
+            var arrowIndex = funcText.indexOf('=>');
+            if (arrowIndex > -1) {
+                //console.log("Handle arrow function.");
+                bodyText = 'return ' + funcText.substring(arrowIndex + 3);
+            }
+            else {
+                throw new Error("Cannot parse function: " + funcText);
+            }
+        }
+        var accessorTextInfo = getAccessorTextInfo(bodyText, option);
+        info = {
+            objParameterName: objParameterName,
+            cxtParameterName: cxtParameterName,
+            bodyText: bodyText,
+            accessorText: accessorTextInfo.accessorText,
+            quotedTextInfos: accessorTextInfo.quotedTextInfos,
+            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText)
+        };
+        if (option.maxGetPropCacheSize > 0) {
+            getPropCaches[cacheKey] = info;
+            getPropCacheKeys.push(cacheKey);
+            if (getPropCacheKeys.length > option.maxGetPropCacheSize) {
+                var cacheKeyToRemove = getPropCacheKeys.shift();
+                delete getPropCaches[cacheKeyToRemove];
+            }
+        }
+        return info;
+    }
+    function parseGetPropFuncTokens(accessorText) {
+        var tokens = [];
+        while (accessorText) {
+            var openBracketIndex = accessorText.indexOf('[');
+            var closeBracketIndex = accessorText.indexOf(']');
+            var dotIndex = accessorText.indexOf('.');
+            var propName = '';
+            var propNameSource = ePropNameSource.none;
+            // if (dotIndex == 0) {
+            //     accessorText = accessorText.substr(dotIndex + 1);
+            //     continue;
+            // }
+            if (openBracketIndex > -1 && closeBracketIndex <= -1) {
+                throw new Error('Found open bracket but not close bracket.');
+            }
+            if (openBracketIndex <= -1 && closeBracketIndex > -1) {
+                throw new Error('Found close bracket but not open bracket.');
+            }
+            if (dotIndex > -1 &&
+                (dotIndex < openBracketIndex || openBracketIndex <= -1)) {
+                propName = accessorText.substr(0, dotIndex);
+                accessorText = accessorText.substr(dotIndex + 1);
+                propNameSource = ePropNameSource.beforeDot;
+            }
+            else if (openBracketIndex > -1 &&
+                (openBracketIndex < dotIndex || dotIndex <= -1)) {
+                if (openBracketIndex > 0) {
+                    propName = accessorText.substr(0, openBracketIndex);
+                    accessorText = accessorText.substr(openBracketIndex);
+                    propNameSource = ePropNameSource.beforeBracket;
+                }
+                else {
+                    propName = accessorText.substr(openBracketIndex + 1, closeBracketIndex - 1);
+                    accessorText = accessorText.substr(closeBracketIndex + 1);
+                    propNameSource = ePropNameSource.inBracket;
+                }
+            }
+            else {
+                propName = accessorText;
+                accessorText = '';
+                propNameSource = ePropNameSource.last;
+            }
+            propName = propName.trim();
+            if (propName == '') {
+                continue;
+            }
+            //console.log(propName);
+            tokens.push({
+                propName: propName,
+                propNameSource: propNameSource,
+                subAccessorText: accessorText
+            });
+        }
+        return tokens;
+    }
+    function getAccessorTextInfo(bodyText, option) {
+        var returnIndex = bodyText.indexOf('return ');
+        if (!option.disableAllCheck && !option.disableHasReturnCheck) {
+            if (returnIndex <= -1) {
+                throw new Error("getProp() function has no 'return' keyword.");
+            }
+        }
+        if (!option.disableAllCheck && !option.disableExtraStatementCheck) {
+            var otherBodyText = bodyText.substr(0, returnIndex);
+            otherBodyText = otherBodyText.replace(/['"]use strict['"];*/g, '');
+            otherBodyText = otherBodyText.trim();
+            if (otherBodyText != '') {
+                throw new Error("getProp() function has statements other than 'return': " +
+                    otherBodyText);
+            }
+        }
+        var accessorText = bodyText.substr(returnIndex + 7).trim();
+        if (accessorText[accessorText.length - 1] == ';') {
+            accessorText = accessorText.substring(0, accessorText.length - 1);
+        }
+        accessorText = accessorText.trim();
+        return parseTextInQuotes(accessorText, option);
+    }
+    function parseTextInQuotes(accessorText, option) {
+        var quotedTextInfos = {};
+        var index = 0;
+        while (true) {
+            var singleQuoteIndex = accessorText.indexOf("'");
+            var doubleQuoteIndex = accessorText.indexOf('"');
+            var varName = '#' + index++;
+            if (singleQuoteIndex <= -1 && doubleQuoteIndex <= -1)
+                break;
+            var matches = undefined;
+            var quoteIndex = void 0;
+            if (doubleQuoteIndex > -1 &&
+                (doubleQuoteIndex < singleQuoteIndex || singleQuoteIndex <= -1)) {
+                matches = /("[^"\\]*(?:\\.[^"\\]*)*")/.exec(accessorText);
+                quoteIndex = doubleQuoteIndex;
+            }
+            else if (singleQuoteIndex > -1 &&
+                (singleQuoteIndex < doubleQuoteIndex || doubleQuoteIndex <= -1)) {
+                matches = /('[^'\\]*(?:\\.[^'\\]*)*')/.exec(accessorText);
+                quoteIndex = singleQuoteIndex;
+            }
+            if (matches) {
+                quotedTextInfos[varName] = matches[1];
+                accessorText =
+                    accessorText.substr(0, quoteIndex) +
+                        varName +
+                        accessorText.substr(matches.index + matches[1].length);
+            }
+            else {
+                throw new Error('Invalid text in quotes: ' + accessorText);
+            }
+        }
+        return {
+            accessorText: accessorText,
+            quotedTextInfos: quotedTextInfos
+        };
     }
     iassign.default = iassign;
     iassign.deepFreeze = function (obj) { return (iassign.freeze ? deepFreeze(obj) : obj); };

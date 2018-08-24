@@ -76,7 +76,7 @@ module.exports = function (config) {
         sl_mac_safari: {
             base: 'SauceLabs',
             browserName: 'safari',
-            platform: 'macOS 10.12',
+            platform: 'macOS 10.13',
             version: 'latest'
         },
         sl_mac_firefox: {
@@ -158,6 +158,7 @@ module.exports = function (config) {
             'src/Libs/*.js',
             'node_modules/lodash/lodash.js',
             'node_modules/immutable/dist/immutable.js',
+            'node_modules/immer/dist/immer.umd.js',
             'src/*.js',
             'spec/**/*Spec.js'
         ],
@@ -229,6 +230,6 @@ module.exports = function (config) {
 
         // Concurrency level
         // how many browser should be started simultaneous
-        concurrency: 3
+        concurrency: 2
     })
 }

@@ -35,7 +35,7 @@ This library works in JavaScript and it works really well with TypeScript, becau
 Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following are the benchmarks for multiple immutable libraries (assuming the read to write ratio is 5 to 1):
 
 ```
-npm run benchmarks
+$ npm run benchmarks
 
 Mutable
 Total elapsed = 57 ms (read) + 41 ms (write) = 98 ms.
@@ -54,10 +54,9 @@ Total elapsed = 65 ms (read) + 4706 ms (write) = 4771 ms.
 
 Immutable (seamless-immutable production)
 Total elapsed = 73 ms (read) + 29688 ms (write) = 29761 ms.
-
 ```
 
-Full test result is at <a href="https://github.com/engineforce/ImmutableAssign/tree/master/debug" target="_blank">benchmarks</a>
+Full performance test results can be found at <a href="https://github.com/engineforce/ImmutableAssign/tree/master/debug" target="_blank">benchmarks</a>.
 
 ## Install with npm
 

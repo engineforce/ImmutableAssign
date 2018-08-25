@@ -1,7 +1,7 @@
-## Performance results
+## Performance test results
 
 ```
-$ node debug/benchmarks.js
+$ npm run benchmarks
 
 Mutable
   Object: read (x500000): 10 ms

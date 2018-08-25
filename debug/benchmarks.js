@@ -12,6 +12,8 @@
 
     chalk = require('chalk');
 
+    var expect = require("expect");
+
     Seamless = require('../node_modules/seamless-immutable/seamless-immutable.production.min');
     //Seamless = require('seamless-immutable'); // This will also be production, because process.env.NODE_ENV = "production"
 
@@ -24,6 +26,10 @@
     var deepFreeze = require("deep-freeze-strict");
 
     var iassign = require("../src/iassign");
+
+    var immer = require("immer");
+    immer.setAutoFreeze(false);
+    var produce = immer.default;
 
     var INITIAL_OBJECT = {
         toggle: false,
@@ -329,6 +335,100 @@
         }
     };
 
+    var _solImmer = {
+        init: function () {
+            var obj = _.cloneDeep(INITIAL_OBJECT);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
+        },
+        get: function (obj, key) {
+            return obj[key];
+        },
+        set: function (obj, key, val) {
+            // Paul Note
+            if (obj[key] === val)
+                return obj;
+
+            return produce(
+                obj,
+                function (obj) { obj[key] = val; return obj; }
+            );
+        },
+        getDeep: function (obj, key1, key2) {
+            return obj[key1][key2];
+        },
+        setDeep: function (obj, key1, key2, val) {
+            // Paul Note
+            if (obj[key1][key2] === val)
+                return obj;
+
+            return produce(
+                obj,
+                function (obj) { obj[key1][key2] = val; return obj; }
+            );
+        },
+        getIn: _getIn,
+        setIn: function (obj, path, val) {
+            return produce(obj, obj => {
+                var idx, j, ptr, ref1;
+                ptr = obj;
+                for (idx = j = 0, ref1 = path.length - 1; 0 <= ref1 ? j < ref1 : j > ref1; idx = 0 <= ref1 ? ++j : --j) {
+                    ptr = ptr[path[idx]];
+                }
+                ptr[path[path.length - 1]] = val;
+            });
+        },
+        merge: function (obj1, obj2) {
+            return produce(
+                obj1,
+                function (obj1) {
+                    for (var key in obj2) {
+                        obj1[key] = obj2[key];
+                    }
+                    return obj1;
+                }
+            )
+        },
+        initArr: function (array) {
+            if (!array) {
+                array = INITIAL_ARRAY;
+            }
+
+            var obj = _.cloneDeep(array);
+            if (_isDevel) {
+                obj = deepFreeze(obj);
+            }
+            return obj;
+        },
+        getAt: function (arr, idx) {
+            return arr[idx];
+        },
+        setAt: function (arr, idx, val) {
+            // Paul Note
+            if (arr[idx] === val)
+                return arr;
+
+            return produce(
+                arr,
+                function (arr) { arr[idx] = val; return arr; }
+            );
+        },
+        getAtDeep: function (arr, idx1, idx2) {
+            return arr[idx1][idx2];
+        },
+        setAtDeep: function (arr, idx1, idx2, val) {
+            if (arr[idx1][idx2] === val)
+                return arr;
+
+            return produce(
+                arr,
+                function (arr) { arr[idx1][idx2] = val; return arr; }
+            )
+        }
+    };
+
 
     var _solImmutableTimm = {
         init: function () {
@@ -463,7 +563,7 @@
         return results.push(condition ? chalk.green.bold('P') : chalk.green.red('F'));
     };
 
-    var _verify = function (solution) {
+    var _verify = function (solution, ignoreMutationError) {
         var arr, arr2, get, getAt, getAtDeep, getIn, init, initArr, merge, obj, obj2, results, set, setAt, setDeep, setIn, setAtDeep;
         results = [];
         init = solution.init, get = solution.get, set = solution.set, setDeep = solution.setDeep, getIn = solution.getIn,
@@ -474,6 +574,11 @@
 
         results.push('-');  // 1
         obj2 = set(obj, 'toggle', true);
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {toggle: true}));
+        }
+
         _addResult(results, get(obj, 'toggle') === false);
         _addResult(results, get(obj2, 'toggle') === true);
         _addResult(results, obj2 !== obj);
@@ -481,11 +586,19 @@
 
         results.push('-');  // 2
         obj2 = set(obj, 'str', 'foo');
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {str: 'foo'}));
+        }
         _addResult(results, obj2 === obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
 
         results.push('-');  // 3
         obj2 = setDeep(obj, 'd', 'd1', 3);
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {d: { d1: 3}}));
+        }
         _addResult(results, solution.getDeep(obj, 'd', 'd1') === 6);
         _addResult(results, solution.getDeep(obj2, 'd', 'd1') === 3);
         _addResult(results, obj2 !== obj);
@@ -494,15 +607,28 @@
 
         results.push('-');  // 4
         obj2 = set(obj, 'b', get(obj, 'b'));
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(INITIAL_OBJECT);
+        }
         _addResult(results, obj2 === obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
 
         results.push('-');  // 5
         obj2 = set(obj, 'str', 'bar');
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {str: 'bar'}));
+        }
         _addResult(results, obj2 !== obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
+
         obj = init();
         obj2 = setDeep(obj, 'd', 'd1', 6);
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {d: { d1: 6}}));
+        }
         _addResult(results, solution.getDeep(obj, 'd', 'd1') === 6);
         _addResult(results, solution.getDeep(obj2, 'd', 'd1') === 6);
         _addResult(results, obj2 === obj);
@@ -510,6 +636,10 @@
 
         results.push('-');  // 6
         obj2 = setIn(obj, DEEP_PATH, 3);
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {d: { d9: {b: {b: {b: 3}}}}}));
+        }
         _addResult(results, obj2 !== obj);
         _addResult(results, get(obj2, 'd') !== get(obj, 'd'));
         _addResult(results, get(obj2, 'e') === get(obj, 'e'));
@@ -521,6 +651,10 @@
             c: 5,
             f: null
         });
+        if (!ignoreMutationError) {
+            expect(obj).toEqual(INITIAL_OBJECT);
+            expect(obj2).toEqual(_.merge(_.cloneDeep(INITIAL_OBJECT), {c: 5, f: null}));
+        }
         _addResult(results, obj2 !== obj);
         _addResult(results, get(obj2, 'd') === get(obj, 'd'));
         _addResult(results, get(obj2, 'c') === 5);
@@ -531,10 +665,20 @@
         arr2 = setAt(arr, 1, {
             b: 3
         });
+        if (!ignoreMutationError) {
+            expect(arr).toEqual(INITIAL_ARRAY);
+            const expectedArr2 = _.cloneDeep(INITIAL_ARRAY);
+            expectedArr2[1] = {b: 3};
+            expect(arr2).toEqual(expectedArr2);
+        }
         _addResult(results, arr2 !== arr);
         _addResult(results, getAt(arr, 1).b === 2);
         _addResult(results, getAt(arr2, 1).b === 3);
         arr2 = setAt(arr, 1, getAt(arr, 1));
+        if (!ignoreMutationError) {
+            expect(arr).toEqual(INITIAL_ARRAY);
+            expect(arr2).toEqual(INITIAL_ARRAY);
+        }
         _addResult(results, arr2 === arr);
 
         results.push('-');  // 9
@@ -542,10 +686,20 @@
         arr2 = setAtDeep(arr, 3, 0, {
             b: 3
         });
+        if (!ignoreMutationError) {
+            expect(arr).toEqual(INITIAL_DEEP_ARRAY);
+            const expectedArr2 = _.cloneDeep(INITIAL_DEEP_ARRAY);
+            expectedArr2[3][0] = {b: 3};
+            expect(arr2).toEqual(expectedArr2);
+        }
         _addResult(results, arr2 !== arr);
         _addResult(results, get(getAtDeep(arr, 3, 0), "b") === 2);
         _addResult(results, getAtDeep(arr2, 3, 0).b === 3);
         arr2 = setAtDeep(arr, 3, 1, getAtDeep(arr, 3, 1));
+        if (!ignoreMutationError) {
+            expect(arr).toEqual(INITIAL_DEEP_ARRAY);
+            expect(arr2).toEqual(INITIAL_DEEP_ARRAY);
+        }
         _addResult(results, arr2 === arr);
 
         return console.log("  Verification: " + (results.join('')));
@@ -561,10 +715,10 @@
         return elapsed;
     };
 
-    var _allTests = function (desc, solution) {
+    var _allTests = function (desc, solution, ignoreMutationError) {
         var MERGE_OBJ, arr, obj;
         console.log("\n" + chalk.bold(desc));
-        _verify(solution);
+        _verify(solution, ignoreMutationError);
         obj = solution.init();
         var totalRead = 0;
         var totalWrite = 0;
@@ -655,16 +809,18 @@
         return totalElapsed;
     };
 
-    _allTests("Mutable", _solMutable);
+    _allTests("Mutable", _solMutable, true);
     _allTests("Immutable (Object.assign)", _solObjectAssign);
     _allTests("Immutable (immutable-assign)", _solIassign);
-    _allTests("Immutable (immutable.js)", _solImmutableJs);
-    // _allTests("Immutable (timm)", _solImmutableTimm);
+    _allTests("Immutable (immer setAutoFreeze(false))", _solImmer);
+    _allTests("Immutable (immutable.js)", _solImmutableJs, true);
     _allTests("Immutable (seamless-immutable production)", _solImmutableSeamless);
+    // _allTests("Immutable (timm)", _solImmutableTimm);
 
     // Deep freeze initial object/array
     _isDevel = true;
     _allTests("Immutable (Object.assign) + deep freeze", _solObjectAssign);
     _allTests("Immutable (immutable-assign) + deep freeze", _solIassign);
+    _allTests("Immutable (immer) + deep freeze", _solImmer);
 
 }).call(this);

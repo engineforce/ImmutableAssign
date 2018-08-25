@@ -36,17 +36,36 @@ Performance of this library should be comparable to [Immutable.js](https://faceb
 
 ```
 npm run benchmarks
+
+Mutable
+Total elapsed = 57 ms (read) + 41 ms (write) = 98 ms.
+
+Immutable (immutable.js)
+Total elapsed = 254 ms (read) + 847 ms (write) = 1101 ms.
+
+Immutable (Object.assign)
+Total elapsed = 66 ms (read) + 1339 ms (write) = 1405 ms.
+
+Immutable (immutable-assign)
+Total elapsed = 77 ms (read) + 2265 ms (write) = 2342 ms.
+
+Immutable (immer setAutoFreeze(false))
+Total elapsed = 65 ms (read) + 4706 ms (write) = 4771 ms.
+
+Immutable (seamless-immutable production)
+Total elapsed = 73 ms (read) + 29688 ms (write) = 29761 ms.
+
 ```
 
-<p>
-    <a href="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/benchmarks.png" target="_blank">
-        <img src="https://raw.githubusercontent.com/engineforce/ImmutableAssign/master/benchmarks.png" alt="benchmarks" title="benchmarks" width="70%;">
-    </a>
-</p>
+Full test result is at <a href="https://github.com/engineforce/ImmutableAssign/tree/master/debug" target="_blank">benchmarks</a>
 
 ## Install with npm
 
-    npm install immutable-assign --save
+```sh
+npm install immutable-assign
+# or
+yarn add immutable-assign
+```
 
 <br />
 

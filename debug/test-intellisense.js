@@ -49,6 +49,11 @@ function test3() {
             }
         }
     };
+    iassign(nested1, function (n) { return n.a.b.c; }, function (c) {
+        c.push(10);
+        return c;
+    });
 }
 test1();
 test2();
+test3();

@@ -68,18 +68,18 @@ yarn add immutable-assign
 
 <br />
 
-### Example 1: Update root object
+### Example 1: Update 1st level object properties
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
 // Deep freeze both input and output, can be used in development to make sure they don't change.
-iassign.freeze = true;
+iassign.setOption({ freeze: true });
 
-var map1 = { a:1, b:2, c:3 };
+const map1 = { a:1, b:2, c:3 };
 
-// 1: Calling iassign() to update map1.b, using overload 2
-var map2 = iassign(
+// 1: Calling iassign() to update map1.b, using overload 1
+const map2 = iassign(
     map1,
     function (m) { m.b = 50; return m; }
 );
@@ -91,16 +91,16 @@ var map2 = iassign(
 
 <br />
 
-### Example 2: Update root list/array
+### Example 2: Update 1st level list/array elements
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var list1 = [1, 2];
+const list1 = [1, 2];
 
 
-// 2.1: Calling iassign() to push items to list1, using overload 2
-var list2 = iassign(
+// 2.1: Calling iassign() to push items to list1, using overload 1
+const list2 = iassign(
     list1,
     function (l) { l.push(3, 4, 5); return l; }
 );
@@ -109,8 +109,8 @@ var list2 = iassign(
 // list2 !== list1
 
 
-// 2.2: Calling iassign() to unshift item to list2, using overload 2
-var list3 = iassign(
+// 2.2: Calling iassign() to unshift item to list2, using overload 1
+const list3 = iassign(
     list2,
     function (l) { l.unshift(0); return l; }
 );
@@ -119,8 +119,8 @@ var list3 = iassign(
 // list3 !== list2
 
 
-// 2.3, Calling iassign() to concat list1, list2 and list3, using overload 2
-var list4 = iassign(
+// 2.3, Calling iassign() to concat list1, list2 and list3, using overload 1
+const list4 = iassign(
     list1,
     function (l) { return l.concat(list2, list3); }
 );
@@ -129,8 +129,8 @@ var list4 = iassign(
 // list4 !== list1
 
 
-// 2.4, Calling iassign() to concat sort list4, using overload 2
-var list5 = iassign(
+// 2.4, Calling iassign() to concat sort list4, using overload 1
+const list5 = iassign(
     list4,
     function (l) { return l.sort(); }
 );
@@ -142,16 +142,16 @@ var list5 = iassign(
 
 <br />
 
-### Example 3: Update nested object
+### Example 3: Update nested level object properties
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var nested1 = { a:{ b:{ c:[3, 4, 5] } } };
+const nested1 = { a:{ b:{ c:[3, 4, 5] } } };
 
 
 // 3.1: Calling iassign() to assign d to nested1.a.b
-var nested2 = iassign(
+const nested2 = iassign(
     nested1,
     function (n) { return n.a.b; },
     function (b) { b.d = 6; return b; }
@@ -162,7 +162,7 @@ var nested2 = iassign(
 
 
 // 3.2: Calling iassign() to increment nested2.a.b.d
-var nested3 = iassign(
+const nested3 = iassign(
     nested2,
     function (n) { return n.a.b.d; },
     function (d) { return d + 1; }
@@ -173,7 +173,7 @@ var nested3 = iassign(
 
 
 // 3.3: Calling iassign() to push item to nested3.a.b.c
-var nested4 = iassign(
+const nested4 = iassign(
     nested3,
     function (n) { return n.a.b.c; },
     function (c) { c.push(6); return c; }
@@ -189,14 +189,14 @@ var nested4 = iassign(
 ### Example 4: Work with 3rd party libraries, e.g., lodash
 
 ```javascript
-var iassign = require("immutable-assign");
-var _ = require("lodash");
+const iassign = require("immutable-assign");
+const _ = require("lodash");
 
-var nested1 = { a: { b: { c: [1, 2, 3] } } };
+const nested1 = { a: { b: { c: [1, 2, 3] } } };
 
 
 // 4.1: Calling iassign() and _.map() to increment to every item in "c" array
-var nested2 = iassign(
+const nested2 = iassign(
     nested1,
     function (n) { return n.a.b.c; },
     function (c) {
@@ -209,7 +209,7 @@ var nested2 = iassign(
 
 
 // 4.2: Calling iassign() and _.flatMap()
-var nested3 = iassign(
+const nested3 = iassign(
     nested2,
     function (n) { return n.a.b.c; },
     function (c) {
@@ -227,12 +227,12 @@ var nested3 = iassign(
 ### Example 5: Update nested object
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
+const o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
 // 5: Calling iassign() to increment o1.a.b.c[0][0].d
-var o2 = iassign(
+const o2 = iassign(
     o1,
     function (o) { return o.a.b.c[0][0]; },
     function (ci) { ci.d++; return ci; }
@@ -244,12 +244,12 @@ var o2 = iassign(
 ### Example 6: Update nested array
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
+const o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} }, b2: {} }, a2: {} };
 
 // 6: Calling iassign() to push new item to o1.a.b.c[1]
-var o2 = iassign(
+const o2 = iassign(
     o1,
     function (o) { return o.a.b.c[1]; },
     function (c) { c.push(101); return c; }
@@ -261,14 +261,14 @@ var o2 = iassign(
 ### Example 7: Update nested object, referring to external context.
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var o1 = { a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] } } };
+const o1 = { a: { b: { c: [{ d: 11, e: 12 }, { d: 21, e: 22 }] } } };
 
 // 7: Calling iassign() to push increment to o1.a.b.c[0].d
-var external = { a: 0 };
+const external = { a: 0 };
 
-var o2 = iassign(
+const o2 = iassign(
     o1,
     function (o, ctx) { return o.a.b.c[ctx.external.a]; },
     function (ci) { ci.d++; return ci; },
@@ -281,18 +281,18 @@ var o2 = iassign(
 ### Example 8: Update nested object using iassign.fp() and currying
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var nested1 = { a: { b: { c: [3, 4, 5] } } };
+const nested1 = { a: { b: { c: [3, 4, 5] } } };
 
 
 // 8.1: Calling iassign() to assign d to nested1.a.b 
-var iassignFp = iassign.fp(undefined)
+const iassignFp = iassign.fp(undefined)
     (function (n) { return n.a.b; })
     (function (b) { b.d = 6; return b; })
     (undefined);
 
-var nested2 = iassignFp(nested1);
+const nested2 = iassignFp(nested1);
 
 // nested2 = { a: { b: { c: [3, 4, 5], d: 6 } } };
 // nested2 !== nested1
@@ -302,7 +302,7 @@ iassignFp = iassign.fp(undefined)
     (function (n) { return n.a.b.d; })
     (function (d) { return d + 1; })
     (undefined);
-var nested3 = iassignFp(nested2);
+const nested3 = iassignFp(nested2);
 
 // nested3 = { a: { b: { c: [3, 4, 5], d: 7 } } };
 // nested3 !== nested2
@@ -312,7 +312,7 @@ iassignFp = iassign.fp(undefined)
     (function (n) { return n.a.b.c; })
     (function (c) { c.push(6); return c; })
     (undefined);
-var nested4 = iassignFp(nested3);
+const nested4 = iassignFp(nested3);
 
 // nested4 = { a: { b: { c: [3, 4, 5, 6], d: 7 } } };
 // nested4 !== nested3
@@ -322,7 +322,7 @@ iassignFp = iassign.fp(undefined)
     (function (n, ctx) { return n.a.b.c[ctx.i]; })
     (function (ci) { return ci + 100; })
     ({i: 1});
-var nested5 = iassignFp(nested4);
+const nested5 = iassignFp(nested4);
 
 // nested5 = { a: { b: { c: [3, 104, 5, 6], d: 7 } } };
 // nested5 !== nested4
@@ -332,9 +332,9 @@ var nested5 = iassignFp(nested4);
 ### Example 9: Support ES6 Map
 
 ```javascript
-var iassign = require("immutable-assign");
+const iassign = require("immutable-assign");
 
-var map1 = new Map();
+const map1 = new Map();
 map1.set("a", "value a");
 
 iassign.setOption({
@@ -347,7 +347,7 @@ iassign.setOption({
     }
 });
 
-var map2 = iassign(
+const map2 = iassign(
     map1,
     m => { m.set(1, 'first'); return m; }
 );
@@ -362,11 +362,17 @@ var map2 = iassign(
 
 ### Function Signature (TypeScript syntax)
 
-```javascript
+```typescript
 
 // Return a new POJO object with property updated.
 
-// function overload 1: 
+// function overload 1: you can skip getProp() if you trying to update the 1st level object properties, refer to example 1 and 2
+iassign = function<TObj>(
+    obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
+    setProp: setPropFunc<TObj>,                         // Function to set the property.
+    option?: IIassignOption): TObj;                     // (Optional) Options
+
+// function overload 2: use getProp() to get prop paths
 iassign = function<TObj, TProp, TContext>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
     getProp: (obj: TObj, context: TContext) => TProp,   // Function to get the property that needs to be updated.
@@ -374,16 +380,17 @@ iassign = function<TObj, TProp, TContext>(
     context?: TContext,                                 // (Optional) Context to be used in getProp().
     option?: IIassignOption): TObj;                     // (Optional) Options
 
-// function overload 2: you can skip getProp() if you trying to update the root object, refer to example 1 and 2
-iassign = function<TObj>(
+// function overload 3: pass in known property paths (array)
+iassign = function<TObj, TProp, TContext>(
     obj: TObj,                                          // POJO object to be getting the property from, it will not be modified.
+    propPaths: (string | number)[],                     // paths to the property that needs to be updated.
     setProp: setPropFunc<TObj>,                         // Function to set the property.
     option?: IIassignOption): TObj;                     // (Optional) Options
 
 // functional programming friendly style, moved obj to the last parameter and supports currying, refer to example 8
 iassign.fp = function <TObj, TProp, TContext>(
     option: IIassignOption,
-    getProp: getPropFunc<TObj, TProp, TContext>,
+    getPropOrPropPaths: getPropFunc<TObj, TProp, TContext> | (string | number)[],
     setProp: setPropFunc<TProp>,
     context?: TContext,
     obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
@@ -419,6 +426,7 @@ interface IIassignOption {
 
 ## History
 
+* 2.0.10 - Added function overload 3 to pass in known property paths (array)
 * 2.0.8 - Fixed bug for undefined properties.
 * 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has much better browser support.
 * 2.0.1 - Minor bug fixes.
@@ -437,7 +445,7 @@ interface IIassignOption {
 * 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)
 * 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)
 * 1.0.23 - Greatly improved performance.
-* 1.0.21 - Added new function overload to skip getProp() if you trying to update the root object, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)
+* 1.0.21 - Added function overload 1 to skip getProp() if you trying to update the 1st level object properties, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)
 * 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)
 * 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)

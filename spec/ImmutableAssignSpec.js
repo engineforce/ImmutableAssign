@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -55,7 +55,7 @@ var __extends = (this && this.__extends) || (function () {
         noDeepFreeze = true;
         console.warn('Cannot load deep-freeze module.', ex && ex.message ? ex.message : ex);
     }
-    var willThrowWhenUpdateFronzenArray = false;
+    var willThrowWhenUpdateFrozenArray = false;
     try {
         var o = { b: [] };
         deepFreeze(o);
@@ -63,11 +63,11 @@ var __extends = (this && this.__extends) || (function () {
         console.warn('Not throw when update frozen array.');
     }
     catch (ex) {
-        willThrowWhenUpdateFronzenArray = true;
+        willThrowWhenUpdateFrozenArray = true;
     }
     var _ = require('lodash');
     var immer = require('immer').default;
-    // var immutable = require("immutable");
+    // const immutable = require("immutable");
     describe('Test', function () {
         beforeEach(function () { });
         it('Access array item', function () {
@@ -256,7 +256,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(count).toBe(1);
             expect(o2).toBe(o1);
             // Has change to the root object
-            var count = 0;
+            count = 0;
             o2 = iassign(o1, function (o) {
                 count++;
                 return {};
@@ -655,7 +655,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
             };
             deepFreeze(o1);
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     iassign(o1, function (o) {
                         return o.a.b.c;
@@ -681,7 +681,7 @@ var __extends = (this && this.__extends) || (function () {
                     return ci;
                 });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     iassign(o1, function (o) {
                         return o.a.b.c;
@@ -856,7 +856,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
             };
             iassign.freezeInput = true;
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     iassign(o1, function (o) {
                         return o.a.b.c;
@@ -882,7 +882,7 @@ var __extends = (this && this.__extends) || (function () {
                     return ci;
                 });
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     iassign(o1, function (o) {
                         return o.a.b.c;
@@ -925,7 +925,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
             expect(o2.a.b.c[0][1]).not.toBe(o1.a.b.c[0][1]);
             expect(o2.a.b.c[0][2]).not.toBe(o1.a.b.c[0][2]);
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     o2.a.b.c[0].push(3);
                 }).toThrowError(TypeError, /Cannot|Can't|writable|doesn't|support|readonly|not/i);
@@ -936,7 +936,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(function () {
                 o2.a.b.c[0][0].g = 1;
             }).toThrowError(TypeError, /Invalid|add|extensible|readonly/i);
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 expect(function () {
                     o2.a.b.c[0].pop();
                 }).toThrowError(TypeError, /extensible|Cannot|can't|support|unable/i);
@@ -944,7 +944,7 @@ var __extends = (this && this.__extends) || (function () {
             iassign.freezeOutput = undefined;
         });
         it('Example 1: update object', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var map1 = { a: 1, b: 2, c: 3 };
@@ -960,7 +960,7 @@ var __extends = (this && this.__extends) || (function () {
         it('Example 1b: update object with option', function () {
             if (noDeepFreeze)
                 return;
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var map1 = { a: 1, b: 2, c: 3 };
@@ -987,9 +987,9 @@ var __extends = (this && this.__extends) || (function () {
             }).not.toThrow();
         });
         it('Example 1c: update object that pass undefined to getProp()', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
-            iassign.freeze = true;
+            iassign.setOption({ freeze: true });
             var map1 = { a: 1, b: 2, c: 3 };
             // 1c: Calling iassign() to update map1.b
             var map2 = iassign(map1, undefined, function (m) {
@@ -1003,7 +1003,7 @@ var __extends = (this && this.__extends) || (function () {
         it('Example 1d: update object with option that pass undefined to getProp()', function () {
             if (noDeepFreeze)
                 return;
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var map1 = { a: 1, b: 2, c: 3 };
@@ -1030,7 +1030,7 @@ var __extends = (this && this.__extends) || (function () {
             }).not.toThrow();
         });
         it('Example 2: update list/array', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var list1 = [1, 2];
@@ -1070,7 +1070,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(list5).not.toBe(list4);
         });
         it('Example 2b: update list/array that pass undefined to getProp()', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var list1 = [1, 2];
@@ -1110,7 +1110,7 @@ var __extends = (this && this.__extends) || (function () {
             expect(list5).not.toBe(list4);
         });
         it('Example 3: update nested structures', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
@@ -1287,7 +1287,7 @@ var __extends = (this && this.__extends) || (function () {
                 t4.inst2.ck.constructor.name == 'ChildKlass').toEqual(true);
         });
         it('iassign.fp', function () {
-            //var iassign = require("immutable-assign");
+            //const iassign = require("immutable-assign");
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
@@ -1412,7 +1412,7 @@ var __extends = (this && this.__extends) || (function () {
         });
         it('test exposed deepFreeze should freeze', function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
-            if (willThrowWhenUpdateFronzenArray) {
+            if (willThrowWhenUpdateFrozenArray) {
                 iassign.freeze = true;
                 iassign.deepFreeze(nested1);
                 expect(function () {
@@ -1427,6 +1427,298 @@ var __extends = (this && this.__extends) || (function () {
             nested1.a.b.c.push(6);
             expect(nested1).toEqual({ a: { b: { c: [3, 4, 5, 6] } } });
             iassign.setOption({ freeze: false });
+        });
+        it('Access root array item using propPaths', function () {
+            var o1 = [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]];
+            deepFreeze(o1);
+            var o2 = iassign(o1, [1, 0], function (ci) {
+                ci.d++;
+                return ci;
+            });
+            //
+            // Jasmine Tests
+            //
+            // expect o1 has not been changed
+            expect(o1).toEqual([
+                [{ d: 11, e: 12 }],
+                [{ d: 21, e: 22 }],
+                [{ d: 31, e: 32 }]
+            ]);
+            // expect o2 inner property has been updated.
+            expect(o2[1][0].d).toBe(22);
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2[1]).not.toBe(o1[1]);
+            expect(o2[1][0]).not.toBe(o1[1][0]);
+            expect(o2[1][0].d).not.toBe(o1[1][0].d);
+            // // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2[1][0].e).toBe(o1[1][0].e);
+            expect(o2[0][0]).toBe(o1[0][0]);
+            expect(o2[2][0]).toBe(o1[2][0]);
+        });
+        it('Access array item using propPaths', function () {
+            var o1 = {
+                a: {
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
+                },
+                a2: {}
+            };
+            deepFreeze(o1);
+            var o2 = iassign(o1, ['a', 'b', 'c', 0, '0'], function (ci) {
+                ci.d++;
+                return ci;
+            });
+            //
+            // Jasmine Tests
+            //
+            // expect o1 has not been changed
+            expect(o1).toEqual({
+                a: {
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
+                },
+                a2: {}
+            });
+            // expect o2 inner property has been updated.
+            expect(o2.a.b.c[0][0].d).toBe(12);
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2.a).not.toBe(o1.a);
+            expect(o2.a.b).not.toBe(o1.a.b);
+            expect(o2.a.b.c).not.toBe(o1.a.b.c);
+            expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+            expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+            expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+            // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2.a2).toBe(o1.a2);
+            expect(o2.a.b2).toBe(o1.a.b2);
+            expect(o2.a.b.c2).toBe(o1.a.b.c2);
+            expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
+            expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
+            expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
+        });
+        it('Access array item using propPaths, need to detect change and ensure setProp() is called once', function () {
+            var o1 = {
+                a: {
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
+                },
+                a2: {}
+            };
+            // No change to the root object
+            var count = 0;
+            var o2 = iassign(o1, [], function (o) {
+                count++;
+                return o;
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+            // Has change to the root object
+            count = 0;
+            o2 = iassign(o1, [], function (o) {
+                count++;
+                return {};
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
+            // No change to the object properties
+            count = 0;
+            o2 = iassign(o1, ['a', 'b', 'c', '0', 0], function (ci) {
+                count++;
+                return ci;
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+            // Has change to the object properties
+            count = 0;
+            o2 = iassign(o1, ['a', 'b', 'c', 0, 0], function (ci) {
+                count++;
+                return {};
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
+            // No change to the root object, used getProp()
+            count = 0;
+            o2 = iassign(o1, [], function (o) {
+                count++;
+                return o;
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).toBe(o1);
+            // Has change to the root object, used getProp()
+            count = 0;
+            o2 = iassign(o1, [], function (o) {
+                count++;
+                return {};
+            }, undefined, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            expect(count).toBe(1);
+            expect(o2).not.toBe(o1);
+        });
+        it('Access array item using propPaths, need to detect change and has change', function () {
+            var o1 = {
+                a: {
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
+                },
+                a2: {}
+            };
+            deepFreeze(o1);
+            var o2 = iassign(o1, ['a', 'b', 'c', 0, 0], function (ci) {
+                ci.d++;
+                return ci;
+            }, {
+                ignoreIfNoChange: true,
+                freeze: true
+            });
+            //
+            // Jasmine Tests
+            //
+            // expect o1 has not been changed
+            expect(o1).toEqual({
+                a: {
+                    b: {
+                        c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }], [{ d: 31, e: 32 }]],
+                        c2: {}
+                    },
+                    b2: {}
+                },
+                a2: {}
+            });
+            // expect o2 inner property has been updated.
+            expect(o2.a.b.c[0][0].d).toBe(12);
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2.a).not.toBe(o1.a);
+            expect(o2.a.b).not.toBe(o1.a.b);
+            expect(o2.a.b.c).not.toBe(o1.a.b.c);
+            expect(o2.a.b.c[0]).not.toBe(o1.a.b.c[0]);
+            expect(o2.a.b.c[0][0]).not.toBe(o1.a.b.c[0][0]);
+            expect(o2.a.b.c[0][0].d).not.toBe(o1.a.b.c[0][0].d);
+            // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2.a2).toBe(o1.a2);
+            expect(o2.a.b2).toBe(o1.a.b2);
+            expect(o2.a.b.c2).toBe(o1.a.b.c2);
+            expect(o2.a.b.c[0][0].e).toBe(o1.a.b.c[0][0].e);
+            expect(o2.a.b.c[1][0]).toBe(o1.a.b.c[1][0]);
+            expect(o2.a.b.c[2][0]).toBe(o1.a.b.c[2][0]);
+        });
+        it('Issue 23: Feature request: Allow specifying the path of property to update by an array', function () {
+            var o1 = {
+                '/computer-sciences/': {
+                    title: 'Computer sciences',
+                    opened: false,
+                    children: {
+                        'artificial-intelligence/': {
+                            title: 'Artificial intelligence',
+                            opened: false,
+                            children: {
+                                'machine-learning/': {
+                                    title: 'Machine learning',
+                                    opened: false,
+                                    children: {
+                                        'introduction/': {
+                                            title: 'Introduction'
+                                        },
+                                        'common-models/': {
+                                            title: 'Common Models'
+                                        },
+                                        'common-training-methods/': {
+                                            title: 'Common training methods'
+                                        },
+                                        'ensemble-techniques/': {
+                                            title: 'Ensemble techniques'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            deepFreeze(o1);
+            var o2 = iassign(o1, [
+                '/computer-sciences/',
+                'children',
+                'artificial-intelligence/',
+                'opened'
+            ], function (opened) { return !opened; });
+            //
+            // Jasmine Tests
+            //
+            // expect o1 has not been changed
+            expect(o1).toEqual({
+                '/computer-sciences/': {
+                    title: 'Computer sciences',
+                    opened: false,
+                    children: {
+                        'artificial-intelligence/': {
+                            title: 'Artificial intelligence',
+                            opened: false,
+                            children: {
+                                'machine-learning/': {
+                                    title: 'Machine learning',
+                                    opened: false,
+                                    children: {
+                                        'introduction/': {
+                                            title: 'Introduction'
+                                        },
+                                        'common-models/': {
+                                            title: 'Common Models'
+                                        },
+                                        'common-training-methods/': {
+                                            title: 'Common training methods'
+                                        },
+                                        'ensemble-techniques/': {
+                                            title: 'Ensemble techniques'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            // expect o2 inner property has been updated.
+            expect(o2['/computer-sciences/']['children']['artificial-intelligence/']['opened']).toBe(true);
+            // expect object graph for changed property in o2 is now different from (!==) o1.
+            expect(o2).not.toBe(o1);
+            expect(o2['/computer-sciences/']).not.toBe(o1['/computer-sciences/']);
+            expect(o2['/computer-sciences/']['children']).not.toBe(o1['/computer-sciences/']['children']);
+            expect(o2['/computer-sciences/']['children']['artificial-intelligence/']).not.toBe(o1['/computer-sciences/']['children']['artificial-intelligence/']);
+            expect(o2['/computer-sciences/']['children']['artificial-intelligence/']['opened']).not.toBe(o1['/computer-sciences/']['children']['artificial-intelligence/']['opened']);
+            // expect object graph for unchanged property in o2 is still equal to (===) o1.
+            expect(o2['/computer-sciences/']['children']['artificial-intelligence/']['children']).toBe(o1['/computer-sciences/']['children']['artificial-intelligence/']['children']);
         });
     });
 });

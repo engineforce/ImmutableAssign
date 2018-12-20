@@ -35,6 +35,11 @@ declare namespace ImmutableAssign {
     //   3. If we continue to type without removing the closing bracket, e.g., iassign(nested, (n) => n.),
     //      editor such as VS Code will not show any intellisense for "n"
     //   4. We must remove the closing bracket of iassign(), and intellisense will be shown for "n"
+    <TObj>(
+      obj: TObj,
+      setProp: setPropFunc<TObj>,
+      option?: IIassignOption
+    ): TObj;
 
     <TObj, TProp, TContext>(
       obj: TObj,
@@ -44,16 +49,20 @@ declare namespace ImmutableAssign {
       option?: IIassignOption
     ): TObj;
 
-    <TObj>(
+    <TObj, TProp, TContext>(
       obj: TObj,
-      setProp: setPropFunc<TObj>,
+      propPaths: (string | number)[],
+      setProp: setPropFunc<TProp>,
+      context?: TContext,
       option?: IIassignOption
     ): TObj;
 
     // functional programming friendly style, moved obj to the last parameter and supports currying
     fp<TObj, TProp, TContext>(
       option: IIassignOption,
-      getProp: getPropFunc<TObj, TProp, TContext>,
+      getPropOrPropPath:
+        | getPropFunc<TObj, TProp, TContext>
+        | (string | number)[],
       setProp: setPropFunc<TProp>,
       context?: TContext,
       obj?: TObj

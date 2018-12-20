@@ -42,6 +42,7 @@ interface IIassign extends IIassignOption {
   //   3. If we continue to type without removing the closing bracket, e.g., iassign(nested, (n) => n.),
   //      editor such as VS Code will not show any intellisense for "n"
   //   4. We must remove the closing bracket of iassign(), and intellisense will be shown for "n"
+  <TObj>(obj: TObj, setProp: setPropFunc<TObj>, option?: IIassignOption): TObj;
 
   <TObj, TProp, TContext>(
     obj: TObj,
@@ -51,12 +52,18 @@ interface IIassign extends IIassignOption {
     option?: IIassignOption
   ): TObj;
 
-  <TObj>(obj: TObj, setProp: setPropFunc<TObj>, option?: IIassignOption): TObj;
+  <TObj, TProp, TContext>(
+    obj: TObj,
+    propPaths: (string | number)[],
+    setProp: setPropFunc<TProp>,
+    context?: TContext,
+    option?: IIassignOption
+  ): TObj;
 
   // functional programming friendly style, moved obj to the last parameter and supports currying
   fp<TObj, TProp, TContext>(
     option: IIassignOption,
-    getProp: getPropFunc<TObj, TProp, TContext>,
+    getPropOrPropPath: getPropFunc<TObj, TProp, TContext> | (string | number)[],
     setProp: setPropFunc<TProp>,
     context?: TContext,
     obj?: TObj
@@ -134,21 +141,29 @@ interface IIassign extends IIassignOption {
   // Immutable Assign
   function _iassign<TObj, TProp, TContext>(
     obj: TObj, // Object to set property, it will not be modified.
-    getPropOrSetProp: getPropFunc<TObj, TProp, TContext> | setPropFunc<TProp>, // Function to get property to be updated. Must be pure function.
+    getPropOrSetPropOrPaths:
+      | getPropFunc<TObj, TProp, TContext>
+      | setPropFunc<TProp>
+      | (string | number)[], // Function to get property to be updated. Must be pure function.
     setPropOrOption: setPropFunc<TProp> | IIassignOption, // Function to set property.
     contextOrUndefined?: TContext, // (Optional) Context to be used in getProp().
     optionOrUndefined?: IIassignOption
   ): TObj {
-    let getProp = <getPropFunc<TObj, TProp, TContext>>getPropOrSetProp;
+    let getProp = <getPropFunc<TObj, TProp, TContext>>getPropOrSetPropOrPaths;
+    let propPaths = undefined;
     let setProp = <setPropFunc<TProp>>setPropOrOption;
     let context = contextOrUndefined;
     let option = optionOrUndefined;
 
     if (typeof setPropOrOption !== 'function') {
       getProp = undefined;
-      setProp = <setPropFunc<TProp>>getPropOrSetProp;
+      setProp = <setPropFunc<TProp>>getPropOrSetPropOrPaths;
       context = undefined;
       option = <IIassignOption>setPropOrOption;
+    } else {
+      if (getProp instanceof Array) {
+        propPaths = getProp;
+      }
     }
 
     option = copyOption(undefined, option, iassign);
@@ -169,27 +184,40 @@ interface IIassign extends IIassignOption {
       obj = quickCopy(obj, undefined, option.useConstructor, option.copyFunc);
       obj = option.ignoreIfNoChange ? newValue : <any>setProp(<any>obj);
     } else {
-      // Check if getProp() is valid
-      let value = getProp(obj, context);
-
       let newValue = undefined;
-      if (option.ignoreIfNoChange) {
-        newValue = setProp(value);
-        if (newValue === value) {
-          return obj;
+      if (!propPaths) {
+        // Check if getProp() is valid
+        let value = getProp(obj, context);
+
+        if (option.ignoreIfNoChange) {
+          newValue = setProp(value);
+          if (newValue === value) {
+            return obj;
+          }
+        }
+
+        let funcText = getProp.toString();
+        let arrowIndex = funcText.indexOf('=>');
+        if (arrowIndex <= -1) {
+          let returnIndex = funcText.indexOf('return ');
+          if (returnIndex <= -1) {
+            throw new Error('getProp() function does not return a part of obj');
+          }
+        }
+
+        propPaths = getPropPath(getProp, obj, context, option);
+      } else {
+        // Check if getProp() is valid
+        let value = getPropByPaths(obj, propPaths);
+
+        if (option.ignoreIfNoChange) {
+          newValue = setProp(value);
+          if (newValue === value) {
+            return obj;
+          }
         }
       }
 
-      let funcText = getProp.toString();
-      let arrowIndex = funcText.indexOf('=>');
-      if (arrowIndex <= -1) {
-        let returnIndex = funcText.indexOf('return ');
-        if (returnIndex <= -1) {
-          throw new Error('getProp() function does not return a part of obj');
-        }
-      }
-
-      const propPaths = getPropPath(getProp, obj, context, option);
       if (!propPaths) {
         throw new Error('getProp() function does not return a part of obj');
       }
@@ -249,7 +277,7 @@ interface IIassign extends IIassignOption {
             throw new Error(
               `Cannot handle ${
                 token.propName
-              } when the property it point to is undefined, which require unsafe feature of eval.`
+              } when the property it point to is undefined, which require unsafe feature of e v a l.`
             );
           }
         }
@@ -686,3 +714,15 @@ interface IIassign extends IIassignOption {
   iassign.deepFreeze = obj => (iassign.freeze ? deepFreeze(obj) : obj);
   return iassign;
 });
+
+function getPropByPaths(obj, paths: (string | number)[]) {
+  paths = paths.slice();
+  let value = obj;
+
+  while (paths.length > 0) {
+    let path = paths.shift();
+    value = value[path];
+  }
+
+  return value;
+}

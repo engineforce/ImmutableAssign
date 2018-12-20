@@ -152,7 +152,7 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
 
-        // list of files / patterns to load in the browser
+        // list of files/patterns to load in the browser
         files: [
             ...(process.env.NO_PROXY ? ["spec/disableProxy.js"] : []),
             'src/Libs/*.js',

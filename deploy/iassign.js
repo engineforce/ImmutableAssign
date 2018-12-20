@@ -53,19 +53,25 @@
     };
     // Immutable Assign
     function _iassign(obj, // Object to set property, it will not be modified.
-    getPropOrSetProp, // Function to get property to be updated. Must be pure function.
+    getPropOrSetPropOrPaths, // Function to get property to be updated. Must be pure function.
     setPropOrOption, // Function to set property.
     contextOrUndefined, // (Optional) Context to be used in getProp().
     optionOrUndefined) {
-        var getProp = getPropOrSetProp;
+        var getProp = getPropOrSetPropOrPaths;
+        var propPaths = undefined;
         var setProp = setPropOrOption;
         var context = contextOrUndefined;
         var option = optionOrUndefined;
         if (typeof setPropOrOption !== 'function') {
             getProp = undefined;
-            setProp = getPropOrSetProp;
+            setProp = getPropOrSetPropOrPaths;
             context = undefined;
             option = setPropOrOption;
+        }
+        else {
+            if (getProp instanceof Array) {
+                propPaths = getProp;
+            }
         }
         option = copyOption(undefined, option, iassign);
         if (deepFreeze && (option.freeze || option.freezeInput)) {
@@ -83,24 +89,36 @@
             obj = option.ignoreIfNoChange ? newValue : setProp(obj);
         }
         else {
-            // Check if getProp() is valid
-            var value = getProp(obj, context);
             var newValue = undefined;
-            if (option.ignoreIfNoChange) {
-                newValue = setProp(value);
-                if (newValue === value) {
-                    return obj;
+            if (!propPaths) {
+                // Check if getProp() is valid
+                var value = getProp(obj, context);
+                if (option.ignoreIfNoChange) {
+                    newValue = setProp(value);
+                    if (newValue === value) {
+                        return obj;
+                    }
+                }
+                var funcText = getProp.toString();
+                var arrowIndex = funcText.indexOf('=>');
+                if (arrowIndex <= -1) {
+                    var returnIndex = funcText.indexOf('return ');
+                    if (returnIndex <= -1) {
+                        throw new Error('getProp() function does not return a part of obj');
+                    }
+                }
+                propPaths = getPropPath(getProp, obj, context, option);
+            }
+            else {
+                // Check if getProp() is valid
+                var value = getPropByPaths(obj, propPaths);
+                if (option.ignoreIfNoChange) {
+                    newValue = setProp(value);
+                    if (newValue === value) {
+                        return obj;
+                    }
                 }
             }
-            var funcText = getProp.toString();
-            var arrowIndex = funcText.indexOf('=>');
-            if (arrowIndex <= -1) {
-                var returnIndex = funcText.indexOf('return ');
-                if (returnIndex <= -1) {
-                    throw new Error('getProp() function does not return a part of obj');
-                }
-            }
-            var propPaths = getPropPath(getProp, obj, context, option);
             if (!propPaths) {
                 throw new Error('getProp() function does not return a part of obj');
             }
@@ -135,7 +153,7 @@
                     var token = remainingFunctionTokens_1[_i];
                     if (token.propNameSource == ePropNameSource.inBracket &&
                         isNaN(token.propName)) {
-                        throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined, which require unsafe feature of eval.");
+                        throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined, which require unsafe feature of e v a l.");
                     }
                 }
                 paths = paths.concat(remainingFunctionTokens.map(function (s) { return s.propName; }));
@@ -470,3 +488,12 @@
     iassign.deepFreeze = function (obj) { return (iassign.freeze ? deepFreeze(obj) : obj); };
     return iassign;
 });
+function getPropByPaths(obj, paths) {
+    paths = paths.slice();
+    var value = obj;
+    while (paths.length > 0) {
+        var path = paths.shift();
+        value = value[path];
+    }
+    return value;
+}

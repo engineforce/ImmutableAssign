@@ -7,7 +7,7 @@
             "dom"
         ],
         "removeComments": false,
-        "noUnusedLocals": true,
+        // "noUnusedLocals": true,
         "jsx": "preserve" /*,
         "declaration": true */
     },

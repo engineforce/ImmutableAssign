@@ -358,6 +358,25 @@ const map2 = iassign(
 
 ```
 
+### Example 10: Update nested level object properties using property paths (overload 3)
+
+```javascript
+const iassign = require("immutable-assign");
+
+const o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} } } };
+
+const o2 = iassign(
+    o1,
+    ['a', 'b', 'c', 0, '0'],
+    (ci: any) => {
+        ci.d++;
+        return ci;
+    });
+
+// o2 = { a: { b: { c: [[{ d: 12, e: 12 }], [{ d: 21, e: 22 }]], c2: {} } } };
+// o2 !== o1
+```
+
 <br />
 
 ### Function Signature (TypeScript syntax)
@@ -414,7 +433,7 @@ interface IIassignOption {
     // instrument statements in our getProp() function, which can be safely ignored. 
     disableExtraStatementCheck?: boolean;
 
-    // Return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+    // Return the same object if setProp() returns the input with no change.
     ignoreIfNoChange?: boolean;
 }
 ```
@@ -426,7 +445,7 @@ interface IIassignOption {
 
 ## History
 
-* 2.0.10 - Added function overload 3 to pass in known property paths (array)
+* 2.1.0 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-object)
 * 2.0.8 - Fixed bug for undefined properties.
 * 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has much better browser support.
 * 2.0.1 - Minor bug fixes.

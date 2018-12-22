@@ -453,7 +453,7 @@ interface IIassignOption {
     * Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of [eval()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) to process getProp(), which is more secure.
     * Also works on platforms that don't support Proxy and Map, such as IE 10 and IE 11 using the [proxy-polyfill](https://github.com/GoogleChrome/proxy-polyfill) and [ES6 Map polyfill](https://github.com/zloirock/core-js)
 
-* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](#example-9-support-es6-map)
+* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](#example-9-support-the-es6-map)
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
     * Added ignoreIfNoChange option, which causes iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).

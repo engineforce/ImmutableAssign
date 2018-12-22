@@ -2007,6 +2007,8 @@
         return ci;
       });
 
+      // o2 != o1
+
       //
       // Jasmine Tests
       //

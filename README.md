@@ -13,12 +13,12 @@ Lightweight immutable helper that allows you to continue working with POJO (Plai
     </a>
 </p>
 
-This library is trying to solve following problems:
+This library is trying to solve the following problems:
 
 * Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
 * Encapsulated data is no more POJO, therefore cannot be easily used with other libraries, e.g., lodash, underscore, etc.
 * Most immutable libraries leak themselves throughout your entire application (including view components), however, they should have been encapsulated at the place where updates happen (e.g., Redux reducers). This is also a pain when you need to change to another immutable library that has its own APIs.
-* [seamless-immutable](https://github.com/rtfeldman/seamless-immutable) address some of above issues when reading the properties, but still use verbose APIs to write properties.
+* [seamless-immutable](https://github.com/rtfeldman/seamless-immutable) address some of the above issues when reading the properties, but still use verbose APIs to write properties.
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us to work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
 * In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(["a", "b", "c"]), TypeScript won't be able to warn me if I changed property "c" to "d".
 
@@ -329,7 +329,7 @@ const nested5 = iassignFp(nested4);
 
 ```
 
-### Example 9: Support ES6 Map
+### Example 9: Support the ES6 Map
 
 ```javascript
 const iassign = require("immutable-assign");
@@ -414,11 +414,11 @@ iassign.fp = function <TObj, TProp, TContext>(
     context?: TContext,
     obj?: TObj): TObj;                                  // POJO object to be getting the property from, it will not be modified.
 
-// In ES6, you cannot set property on imported module directly, because they are default
-// to readonly, in this case you need to use this method.
+// In ES6, you cannot set any property on imported modules directly, because they default
+// to readonly, in this case, you need to use this method.
 iassign.setOption(option: IIassignOption): void;
 
-// Options, can be applied globally or individually
+// Options: can be applied globally or individually
 interface IIassignOption {
     freeze?: boolean;              // Deep freeze both input and output
     freezeInput?: boolean;         // Deep freeze input
@@ -445,26 +445,26 @@ interface IIassignOption {
 
 ## History
 
-* 2.1.0 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-object)
+* 2.1.0 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-nested-level-object-properties-using-property-paths-overload-3)
 * 2.0.8 - Fixed bug for undefined properties.
-* 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has much better browser support.
+* 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has a much better browser support.
 * 2.0.1 - Minor bug fixes.
 * 2.0.0  - 
     * Used [ES6 Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) instead of [eval()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval) to process getProp(), which is more secure.
     * Also works on platforms that don't support Proxy and Map, such as IE 10 and IE 11 using the [proxy-polyfill](https://github.com/GoogleChrome/proxy-polyfill) and [ES6 Map polyfill](https://github.com/zloirock/core-js)
 
-* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](https://github.com/engineforce/ImmutableAssign#example-9-support-es6-map)
+* 1.0.36 - [Supports ES6 Map and Set](https://github.com/engineforce/ImmutableAssign/issues/12). Refer to [example 9](#example-9-support-es6-map)
 * 1.0.35 - Supports ES6 default export.
 * 1.0.31 - 
-    * Added ignoreIfNoChange option, which cause iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
-    * Added setOption() function to allow you set the iassign options globally in ES6.
+    * Added ignoreIfNoChange option, which causes iassign to return the same object if setProp() returns its parameter (i.e., reference pointer not changed).
+    * Added setOption() function to allow you to set the iassign options globally in ES6.
 
 * 1.0.30 - [Support classes](https://github.com/engineforce/ImmutableAssign/issues/4)
 * 1.0.29 - Supported ES6 [Arrow Functions](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
-* 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-structures-using-iassignfp-and-currying)
+* 1.0.27 - Added iassign.fp() that support [currying](https://www.sitepoint.com/currying-in-functional-javascript), refer to [example 8](#example-8-update-nested-object-using-iassignfp-and-currying)
 * 1.0.26 - Works with webpack, please refer to [ImmutableAssignTest](https://github.com/engineforce/ImmutableAssignTest)
 * 1.0.23 - Greatly improved performance.
-* 1.0.21 - Added function overload 1 to skip getProp() if you trying to update the 1st level object properties, refer to [example 1](#example-1-update-object) and [example 2](#example-2-update-listarray)
+* 1.0.21 - Added function overload 1 to skip getProp() if you trying to update the 1st level object properties, refer to [example 1](#example-1-update-1st-level-object-properties) and [example 2](#example-2-update-1st-level-listarray-elements)
 * 1.0.20 - Added Travis-CI, Coveralls (coverage) and SauceLabs (browsers' tests)
 * 1.0.19 - Added TypeScript types to package.json
 * 1.0.18 - Tested on Mac (Safari 10 and Chrome 54)

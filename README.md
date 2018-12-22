@@ -368,7 +368,7 @@ const o1 = { a: { b: { c: [[{ d: 11, e: 12 }], [{ d: 21, e: 22 }]], c2: {} } } }
 const o2 = iassign(
     o1,
     ['a', 'b', 'c', 0, '0'],
-    (ci: any) => {
+    (ci) => {
         ci.d++;
         return ci;
     });
@@ -445,7 +445,7 @@ interface IIassignOption {
 
 ## History
 
-* 2.1.0 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-nested-level-object-properties-using-property-paths-overload-3)
+* 2.1.1 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-nested-level-object-properties-using-property-paths-overload-3)
 * 2.0.8 - Fixed bug for undefined properties.
 * 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has a much better browser support.
 * 2.0.1 - Minor bug fixes.

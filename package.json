@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.116",
     "chalk": "^2.4.1",
-    "core-js": "^2.5.7",
+    "core-js": "^3.0.0",
     "coveralls": "^3.0.2",
     "deep-freeze": "^0.0.1",
     "edge-launcher": "^1.2.2",

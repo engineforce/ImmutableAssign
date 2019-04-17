@@ -48,7 +48,7 @@
     "gulp": "^4.0.0",
     "gulp-less": "^4.0.1",
     "gulp-typescript": "^5.0.0-alpha.3",
-    "immer": "^2.0.0",
+    "immer": "^3.0.0",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "jasmine": "^3.2.0",

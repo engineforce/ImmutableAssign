@@ -5,9 +5,11 @@ node_js:
   - "8"
   # - "6"
   # - "4"
-script: 
- - npm run coveralls
- - npm run test-karma
- - export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
- - export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
- - test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish 
+script:
+  - set -e
+  - npm run test
+  - npm run coveralls
+  - npm run test-karma
+  - export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
+  - export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
+  - test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish 

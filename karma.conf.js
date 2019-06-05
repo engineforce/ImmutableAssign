@@ -42,12 +42,12 @@ module.exports = function (config) {
             platform: 'Windows 10',
             version: '11'
         },
-        // sl_ie10: {
-        //     base: 'SauceLabs',
-        //     browserName: 'internet explorer',
-        //     platform: 'Windows 8',
-        //     version: '10'
-        // },
+        sl_ie10: {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 8',
+            version: '10'
+        },
         sl_edge: {
             base: 'SauceLabs',
             browserName: 'MicrosoftEdge',
@@ -96,26 +96,19 @@ module.exports = function (config) {
             base: 'SauceLabs',
             browserName: 'Browser',
             platform: 'iOS',
-            version: '11',
+            version: '11.3',
             deviceName: 'iPhone 6s Simulator',
         },
         sl_ios: {
             base: 'SauceLabs',
             browserName: 'iphone',
-            platform: 'iOS 10',
-        },
-        sl_android_4: {
-            base: 'SauceLabs',
-            browserName: 'Browser',
-            platform: 'Android',
-            version: '4.4',
-            deviceName: 'Android GoogleAPI Emulator',
+            platform: 'iOS',
         },
         sl_android_5: {
             base: 'SauceLabs',
             browserName: 'Browser',
             platform: 'Android',
-            version: '5.0',
+            version: '5.1',
             deviceName: 'Android GoogleAPI Emulator',
         },
         sl_android_6: {
@@ -125,18 +118,12 @@ module.exports = function (config) {
             version: '6.0',
             deviceName: 'Android GoogleAPI Emulator',
         },
-        sl_android_7: {
+        sl_android_9: {
             base: 'SauceLabs',
             browserName: 'Browser',
             platform: 'Android',
-            version: '7.0',
+            version: '9.0',
             deviceName: 'Android GoogleAPI Emulator',
-        },
-        sl_android: {
-            base: 'SauceLabs',
-            browserName: 'android',
-            platform: 'Android 5',
-            varsion: "5"
         },
     }
     config.set({

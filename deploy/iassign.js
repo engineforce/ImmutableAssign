@@ -1,5 +1,4 @@
 'use strict';
-;
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         try {
@@ -181,7 +180,7 @@
                             }
                         }
                         return obj[propKey];
-                    },
+                    }
                 };
                 Object.defineProperty(objCopy, propKey, copyDescriptor);
             }
@@ -200,7 +199,7 @@
                     }
                 }
                 return propValue;
-            },
+            }
         };
         return new Proxy(quickCopy(obj, paths[level - 1]), handlers);
     }
@@ -358,7 +357,7 @@
             bodyText: bodyText,
             accessorText: accessorTextInfo.accessorText,
             quotedTextInfos: accessorTextInfo.quotedTextInfos,
-            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText),
+            funcTokens: parseGetPropFuncTokens(accessorTextInfo.accessorText)
         };
         if (option.maxGetPropCacheSize > 0) {
             getPropCaches[cacheKey] = info;
@@ -420,7 +419,7 @@
             tokens.push({
                 propName: propName,
                 propNameSource: propNameSource,
-                subAccessorText: accessorText,
+                subAccessorText: accessorText
             });
         }
         return tokens;
@@ -482,7 +481,7 @@
         }
         return {
             accessorText: accessorText,
-            quotedTextInfos: quotedTextInfos,
+            quotedTextInfos: quotedTextInfos
         };
     }
     iassign.default = iassign;

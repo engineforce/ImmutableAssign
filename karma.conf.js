@@ -85,19 +85,18 @@ module.exports = function (config) {
             platform: 'macOS 10.12',
             version: 'latest'
         },
-
-        sl_ios_9: {
-            base: 'SauceLabs',
-            browserName: 'Browser',
-            platform: 'iOS',
-            version: '9.3',
-            deviceName: 'iPhone 6s Simulator',
-        },
         sl_ios_10: {
             base: 'SauceLabs',
             browserName: 'Browser',
             platform: 'iOS',
-            version: '10.0',
+            version: '10.3',
+            deviceName: 'iPhone 6s Simulator',
+        },
+        sl_ios_11: {
+            base: 'SauceLabs',
+            browserName: 'Browser',
+            platform: 'iOS',
+            version: '11',
             deviceName: 'iPhone 6s Simulator',
         },
         sl_ios: {
@@ -105,7 +104,6 @@ module.exports = function (config) {
             browserName: 'iphone',
             platform: 'iOS 10',
         },
-
         sl_android_4: {
             base: 'SauceLabs',
             browserName: 'Browser',

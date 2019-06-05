@@ -91,9 +91,9 @@
         else {
             var newValue = undefined;
             if (!propPaths) {
-                // Check if getProp() is valid
-                var value = getProp(obj, context);
                 if (option.ignoreIfNoChange) {
+                    // Check if getProp() is valid
+                    var value = getProp(obj, context);
                     newValue = setProp(value);
                     if (newValue === value) {
                         return obj;
@@ -110,9 +110,9 @@
                 propPaths = getPropPath(getProp, obj, context, option);
             }
             else {
-                // Check if getProp() is valid
-                var value = getPropByPaths(obj, propPaths);
                 if (option.ignoreIfNoChange) {
+                    // Check if getProp() is valid
+                    var value = getPropByPaths(obj, propPaths);
                     newValue = setProp(value);
                     if (newValue === value) {
                         return obj;
@@ -153,7 +153,7 @@
                     var token = remainingFunctionTokens_1[_i];
                     if (token.propNameSource == ePropNameSource.inBracket &&
                         isNaN(token.propName)) {
-                        throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined, which require unsafe feature of e v a l.");
+                        throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined.");
                     }
                 }
                 paths = paths.concat(remainingFunctionTokens.map(function (s) { return s.propName; }));

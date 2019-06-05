@@ -89,7 +89,7 @@ interface IIassign extends IIassignOption {
       );
     }
 
-    var v = factory(deepFreeze, exports);
+    const v = factory(deepFreeze, exports);
     if (v !== undefined) module.exports = v;
   } else if (typeof define === 'function' && define.amd) {
     define(['deep-freeze-strict', 'exports'], factory);
@@ -98,13 +98,13 @@ interface IIassign extends IIassignOption {
     root.iassign = factory(root.deepFreeze, {});
   }
 })(this, function(deepFreeze, exports) {
-  var autoCurry = (function() {
-    var toArray = function toArray(arr, from?) {
+  const autoCurry = (function() {
+    const toArray = function toArray(arr, from?) {
       return Array.prototype.slice.call(arr, from || 0);
     };
 
-    var curry = function curry(fn /* variadic number of args */) {
-      var args = toArray(arguments, 1);
+    const curry = function curry(fn /* variadic number of args */) {
+      const args = toArray(arguments, 1);
       return function curried() {
         return fn.apply(undefined, args.concat(toArray(arguments)));
       };
@@ -127,7 +127,7 @@ interface IIassign extends IIassignOption {
     };
   })();
 
-  var iassign: IIassign = <any>_iassign;
+  const iassign: IIassign = <any>_iassign;
   iassign.fp = autoCurry(_iassignFp);
   iassign.maxGetPropCacheSize = 100;
 
@@ -186,10 +186,10 @@ interface IIassign extends IIassignOption {
     } else {
       let newValue = undefined;
       if (!propPaths) {
-        // Check if getProp() is valid
-        let value = getProp(obj, context);
-
         if (option.ignoreIfNoChange) {
+          // Check if getProp() is valid
+          let value = getProp(obj, context);
+
           newValue = setProp(value);
           if (newValue === value) {
             return obj;
@@ -207,10 +207,10 @@ interface IIassign extends IIassignOption {
 
         propPaths = getPropPath(getProp, obj, context, option);
       } else {
-        // Check if getProp() is valid
-        let value = getPropByPaths(obj, propPaths);
-
         if (option.ignoreIfNoChange) {
+          // Check if getProp() is valid
+          let value = getPropByPaths(obj, propPaths);
+
           newValue = setProp(value);
           if (newValue === value) {
             return obj;
@@ -269,7 +269,7 @@ interface IIassign extends IIassignOption {
           paths.length + 1
         );
 
-        for (var token of remainingFunctionTokens) {
+        for (const token of remainingFunctionTokens) {
           if (
             token.propNameSource == ePropNameSource.inBracket &&
             isNaN(<any>token.propName)
@@ -277,12 +277,12 @@ interface IIassign extends IIassignOption {
             throw new Error(
               `Cannot handle ${
                 token.propName
-              } when the property it point to is undefined, which require unsafe feature of e v a l.`
+              } when the property it point to is undefined.`
             );
           }
         }
 
-        paths = [...paths, ...remainingFunctionTokens.map(s => s.propName)];
+        paths = [...paths, ...remainingFunctionTokens.map((s) => s.propName)];
       }
     }
 
@@ -318,7 +318,7 @@ interface IIassign extends IIassignOption {
   }
 
   function _getPropPathViaProxy(obj, paths: string[], level = 0): any {
-    var handlers = {
+    const handlers = {
       get: (target: any, propKey: string) => {
         let propValue = obj[propKey];
 
@@ -409,7 +409,7 @@ interface IIassign extends IIassignOption {
       return option.ignoreIfNoChange ? newValue : (setProp(propValue) as any);
     }
 
-    for (var propIndex = 0; propIndex < propPaths.length; ++propIndex) {
+    for (let propIndex = 0; propIndex < propPaths.length; ++propIndex) {
       const propName = propPaths[propIndex];
       const isLast = propIndex + 1 === propPaths.length;
 
@@ -456,7 +456,7 @@ interface IIassign extends IIassignOption {
   }
 
   function extend(destination: any, source) {
-    for (var key in source) {
+    for (let key in source) {
       if (!Object.prototype.hasOwnProperty.call(source, key)) {
         continue;
       }
@@ -509,7 +509,7 @@ interface IIassign extends IIassignOption {
     }
 
     let matches = /\(([^\)]*)\)/.exec(funcText);
-    var objParameterName = undefined;
+    let objParameterName = undefined;
     let cxtParameterName = undefined;
     if (matches) {
       let parametersText = matches[1];
@@ -711,7 +711,7 @@ interface IIassign extends IIassignOption {
   }
 
   iassign.default = iassign;
-  iassign.deepFreeze = obj => (iassign.freeze ? deepFreeze(obj) : obj);
+  iassign.deepFreeze = (obj) => (iassign.freeze ? deepFreeze(obj) : obj);
   return iassign;
 });
 

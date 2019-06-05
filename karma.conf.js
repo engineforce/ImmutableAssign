@@ -201,7 +201,7 @@ module.exports = function (config) {
             testName: 'Immutable Assign Unit Tests',
             username: process.env.SAUCE_USERNAME,
             accessKey: process.env.SAUCE_ACCESS_KEY,
-            startConnect: false,
+            startConnect: true,
             build: new Date().getTime() //Math.random().toString()
         },
         customLaunchers: customLaunchers,

@@ -15,12 +15,12 @@ Lightweight immutable helper that allows you to continue working with POJO (Plai
 
 This library is trying to solve the following problems:
 
-* Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., map1.get('b') vs map1.b, nested2.getIn(['a', 'b', 'd']) vs nested2.a.b.d, etc.
+* Most immutable JavaScript libraries try to encapsulate the data and provide proprietary APIs to work with the data. They are more verbose than normal JavaScript syntax. E.g., `map1.get('b')` vs `map1.b`, `nested2.getIn(['a', 'b', 'd'])` vs `nested2.a.b.d`, etc.
 * Encapsulated data is no more POJO, therefore cannot be easily used with other libraries, e.g., lodash, underscore, etc.
 * Most immutable libraries leak themselves throughout your entire application (including view components), however, they should have been encapsulated at the place where updates happen (e.g., Redux reducers). This is also a pain when you need to change to another immutable library that has its own APIs.
 * [seamless-immutable](https://github.com/rtfeldman/seamless-immutable) address some of the above issues when reading the properties, but still use verbose APIs to write properties.
 * [Immutability Helpers](https://facebook.github.io/react/docs/update.html) allows us to work with POJO, but it has still introduced some magic keywords, such as $set, $push, etc.
-* In addition, we lost TypeScript type checking. E.g., when calling nested2.getIn(["a", "b", "c"]), TypeScript won't be able to warn me if I changed property "c" to "d".
+* In addition, we lost TypeScript type checking. E.g., when calling `nested2.getIn(["a", "b", "c"])`, TypeScript won't be able to warn me if I changed property "c" to "d".
 
 This library is an alternative to [Immutable.js](https://facebook.github.io/immutable-js/), it has only one method **iassign()**, which accept a POJO object and return you a new POJO object with specific property updated. However, since it works with other libraries such as lodash (refer to [example 4](#example-4-work-with-3rd-party-libraries-eg-lodash)), it provides all the functionalities you need plus immutability.
 
@@ -32,7 +32,7 @@ This library works in JavaScript and it works really well with TypeScript, becau
 
 ## Performance
 
-Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use &lt;TextBox value={this.state.userinfo.fullName} /&gt; in your components, instead of &lt;TextBox value={this.state.getIn(["userinfo", "fullName"])} /&gt;. In addition, shouldComponentUpdate() can compare POJO objects without knowing about the immutable libraries, e.g., return this.props.userInfo.orders !== nextProps.userInfos.orders. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following are the benchmarks for multiple immutable libraries (assuming the read to write ratio is 5 to 1):
+Performance of this library should be comparable to [Immutable.js](https://facebook.github.io/immutable-js/), because read operations will always occur more than write operations. When using this library, all your react components can read object properties directly. E.g., you can use `<TextBox value={this.state.userinfo.fullName}>` in your components, instead of `<TextBox value={this.state.getIn(["userinfo", "fullName"])}>`. In addition, `shouldComponentUpdate()` can compare POJO objects without knowing about the immutable libraries, e.g., `return this.props.userInfo.orders !== nextProps.userInfos.orders`. I.e., the more read operations you have, the more it will outperform [Immutable.js](https://facebook.github.io/immutable-js/). Following are the benchmarks for multiple immutable libraries (assuming the read to write ratio is 5 to 1):
 
 ```
 $ npm run benchmarks
@@ -56,7 +56,7 @@ Immutable (seamless-immutable production)
 Total elapsed = 73 ms (read) + 29688 ms (write) = 29761 ms.
 ```
 
-Full performance test results can be found at <a href="https://github.com/engineforce/ImmutableAssign/tree/master/debug" target="_blank">benchmarks</a>.
+Full performance test results and test script can be found at <a href="https://github.com/engineforce/ImmutableAssign/tree/master/debug" target="_blank">benchmarks</a>.
 
 ## Install with npm
 
@@ -68,7 +68,7 @@ yarn add immutable-assign
 
 <br />
 
-### Example 1: Update 1st level object properties
+### Example 1: Update 1st level object properties, it has skipped the getProp parameter
 
 ```javascript
 const iassign = require("immutable-assign");
@@ -91,7 +91,7 @@ const map2 = iassign(
 
 <br />
 
-### Example 2: Update 1st level list/array elements
+### Example 2: Update 1st level list/array elements, it has skipped the getProp parameter
 
 ```javascript
 const iassign = require("immutable-assign");

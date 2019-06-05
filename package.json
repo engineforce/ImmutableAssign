@@ -59,7 +59,7 @@
     "karma-jasmine": "^2.0.1",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-safari-launcher": "^1.0.0",
-    "karma-sauce-launcher": "^2.0.2",
+    "karma-sauce-launcher": "^1.2.0",
     "lodash": "^4.17.10",
     "merge2": "^1.2.2",
     "minimatch": "^3.0.4",

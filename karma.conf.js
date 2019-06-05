@@ -42,12 +42,12 @@ module.exports = function (config) {
             platform: 'Windows 10',
             version: '11'
         },
-        sl_ie10: {
-            base: 'SauceLabs',
-            browserName: 'internet explorer',
-            platform: 'Windows 8',
-            version: '10'
-        },
+        // sl_ie10: {
+        //     base: 'SauceLabs',
+        //     browserName: 'internet explorer',
+        //     platform: 'Windows 8',
+        //     version: '10'
+        // },
         sl_edge: {
             base: 'SauceLabs',
             browserName: 'MicrosoftEdge',
@@ -224,8 +224,8 @@ module.exports = function (config) {
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true,
 
-        captureTimeout: 300000,
-        browserNoActivityTimeout: 300000,
+        captureTimeout: 60000,
+        browserNoActivityTimeout: 60000,
         retryLimit: 3,
 
         // Concurrency level

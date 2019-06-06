@@ -2,7 +2,7 @@
 
 Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking for nested objects.
 
-[![NPM version][3]][4] [![Build Status][1]][2] [![coverage status][5]][6]
+[![NPM version][3]][4] [![Build Status][1]][2] [![coverage status][5]][6] [![size][9]][10]
 
 [![Sauce Test Status][7]][8]
 
@@ -479,3 +479,5 @@ interface IIassignOption {
 [6]: https://coveralls.io/github/engineforce/ImmutableAssign?branch=master
 [7]: https://saucelabs.com/browser-matrix/iassign.svg
 [8]: https://saucelabs.com/u/iassign
+[9]: https://flat.badgen.net/bundlephobia/minzip/immutable-assign
+[10]: https://bundlephobia.com/result?p=immutable-assign

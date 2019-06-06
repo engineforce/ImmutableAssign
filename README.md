@@ -1,7 +1,5 @@
 # immutable-assign (iassign.js)
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/engineforce/ImmutableAssign.svg)](https://greenkeeper.io/)
-
 Lightweight immutable helper that allows you to continue working with POJO (Plain Old JavaScript Object), and supports full TypeScript type checking for nested objects.
 
 [![NPM version][3]][4] [![Build Status][1]][2] [![coverage status][5]][6]

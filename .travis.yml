@@ -4,6 +4,11 @@ node_js:
   - "8"
   - "10"
 
+script:
+  - set -e
+  - echo 0
+  - npm run test
+
 stages:
   - name: deploy
     if: branch = master

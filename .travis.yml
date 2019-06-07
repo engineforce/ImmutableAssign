@@ -2,6 +2,7 @@ language: node_js
 
 node_js:
   - "8"
+  - "10"
 
 stages:
   - name: deploy
@@ -9,24 +10,21 @@ stages:
 
 jobs:
   include:
-    - stage: test
-      node_js:
-        - "10"
-        - "8"
+    - stage: browser-test
       script:
         - set -e
         - echo 1
-        - echo 2 
-
-    - stage: test2
-      script: 
-        - set -e
-        - echo 3
+        # - npm run test-karma
 
     - stage: deploy
       script: 
         - set -e
-        - echo 4
+        - echo 2
+        # - npm run test
+        # - npm run coveralls
+        # - export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
+        # - export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
+        # - test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish || true
 
 # script:
 #   - set -e

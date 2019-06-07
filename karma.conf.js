@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Wed Aug 10 2016 13:14:23 GMT+1000 (AUS Eastern Standard Time)
 const { existsSync, writeFileSync, readFileSync, appendFileSync } = require("fs")
-const { toPairs, fromPairs } = require("lodash")
+const { toPairs, fromPairs, } = require("lodash")
 const { TRAVIS_COMMIT, CUSTOM_JOB_INDEX } = process.env
 
 console.assert(TRAVIS_COMMIT, "TRAVIS_COMMIT must exist")
@@ -13,7 +13,12 @@ const customJobIndex = parseInt(CUSTOM_JOB_INDEX)
 const allCustomLaunchers = JSON.parse(readFileSync(`./allCustomLaunchers.json`, "utf8"))
 const customLaunchers = fromPairs([toPairs(allCustomLaunchers)[customJobIndex]])
 
-console.log({buildId, customJobIndex, customLaunchers})
+console.log({
+    buildId, 
+    customJobIndex, 
+    customLaunchers, 
+    browserCount: Object.keys(allCustomLaunchers).length 
+})
 
 module.exports = function (config) {
     config.set({

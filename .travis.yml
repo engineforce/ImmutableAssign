@@ -9,6 +9,8 @@ script:
   - npm run test
 
 stages:
+  - test
+  - browser-test
   - name: deploy
     if: branch = master
 

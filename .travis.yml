@@ -19,7 +19,7 @@ jobs:
     - stage: browser-test
       script:
         - set -e
-        - echo 1
+        - echo 2
         # - npm run test-karma
 
     - stage: deploy

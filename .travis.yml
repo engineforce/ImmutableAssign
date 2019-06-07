@@ -5,6 +5,11 @@ node_js:
   - "8"
   # - "6"
   # - "4"
+
+stages:
+  - name: deploy
+    if: branch = master
+
 jobs:
   include:
     - stage: test

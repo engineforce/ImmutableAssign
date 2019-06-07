@@ -11,7 +11,7 @@ jobs:
       script:
         - set -e
         - echo 1
-        - ehco 1
+        - echo 2 
 
     - stage: test2
       script: 
@@ -21,7 +21,7 @@ jobs:
     - stage: deploy
       script: 
         - set -e
-        - echo 3
+        - echo 4
 
 # script:
 #   - set -e

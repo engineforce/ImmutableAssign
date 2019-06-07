@@ -17,10 +17,9 @@ stages:
 jobs:
   include:
     - stage: browser-test
-      script:
-        - set -e
-        - echo 2
-        # - npm run test-karma
+      script: CUSTOM_JOB_INDEX=0 npm run test-karma
+    - script: CUSTOM_JOB_INDEX=1 npm run test-karma
+    - script: CUSTOM_JOB_INDEX=2 npm run test-karma
 
     - stage: deploy
       script: 

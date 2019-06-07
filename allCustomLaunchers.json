@@ -1,0 +1,90 @@
+{
+  "sl_ie11": {
+    "base": "SauceLabs",
+    "browserName": "internet explorer",
+    "platform": "Windows 10",
+    "version": "11"
+  },
+  "sl_ie10": {
+    "base": "SauceLabs",
+    "browserName": "internet explorer",
+    "platform": "Windows 8",
+    "version": "10"
+  },
+  "sl_edge": {
+    "base": "SauceLabs",
+    "browserName": "MicrosoftEdge",
+    "platform": "Windows 10",
+    "version": "latest"
+  },
+  "sl_chrome": {
+    "base": "SauceLabs",
+    "browserName": "chrome",
+    "platform": "Windows 10",
+    "version": "latest"
+  },
+  "sl_firefox": {
+    "base": "SauceLabs",
+    "browserName": "firefox",
+    "platform": "Windows 10",
+    "version": "latest"
+  },
+  "sl_mac_chrome": {
+    "base": "SauceLabs",
+    "browserName": "chrome",
+    "platform": "macOS 10.12",
+    "version": "latest"
+  },
+  "sl_mac_safari": {
+    "base": "SauceLabs",
+    "browserName": "safari",
+    "platform": "macOS 10.13",
+    "version": "latest"
+  },
+  "sl_mac_firefox": {
+    "base": "SauceLabs",
+    "browserName": "firefox",
+    "platform": "macOS 10.12",
+    "version": "latest"
+  },
+  "sl_ios_10": {
+    "base": "SauceLabs",
+    "browserName": "Browser",
+    "platform": "iOS",
+    "version": "10.3",
+    "deviceName": "iPhone 6s Simulator"
+  },
+  "sl_ios_11": {
+    "base": "SauceLabs",
+    "browserName": "Browser",
+    "platform": "iOS",
+    "version": "11.3",
+    "deviceName": "iPhone 6s Simulator"
+  },
+  "sl_ios": {
+    "base": "SauceLabs",
+    "browserName": "iphone",
+    "platform": "iOS"
+  },
+  "sl_android_5": {
+    "base": "SauceLabs",
+    "browserName": "Browser",
+    "platform": "Android",
+    "version": "5.1",
+    "deviceName": "Android GoogleAPI Emulator"
+  },
+  "sl_android_6": {
+    "base": "SauceLabs",
+    "browserName": "Browser",
+    "platform": "Android",
+    "version": "6.0",
+    "deviceName": "Android GoogleAPI Emulator"
+  },
+  "sl_android_9": {
+    "base": "SauceLabs",
+    "browserName": "Browser",
+    "platform": "Android",
+    "version": "9.0",
+    "deviceName": "Android GoogleAPI Emulator"
+  }
+}

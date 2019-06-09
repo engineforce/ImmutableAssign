@@ -164,7 +164,7 @@
     function _getPropPathViaProperty(obj, paths, level) {
         if (level === void 0) { level = 0; }
         var objCopy = quickCopy(obj, paths[level - 1]);
-        var propertyNames = Object.getOwnPropertyNames(obj);
+        var propertyNames = getOwnPropertyNames(obj);
         propertyNames.forEach(function (propKey) {
             var descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
             if (descriptor && (!(obj instanceof Array) || propKey != 'length')) {
@@ -496,4 +496,11 @@ function getPropByPaths(obj, paths) {
         value = value[path];
     }
     return value;
+}
+// Android 5: Object.getOwnPropertyNames does not support primitive values gracefully.
+function getOwnPropertyNames(obj) {
+    if (typeof obj !== 'object') {
+        return [];
+    }
+    return Object.getOwnPropertyNames(obj);
 }

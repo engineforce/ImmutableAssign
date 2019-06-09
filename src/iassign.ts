@@ -79,7 +79,7 @@ interface IIassign extends IIassignOption {
   default: IIassign;
 }
 
-(function(root, factory) {
+(function(root: any, factory) {
   if (typeof module === 'object' && typeof module.exports === 'object') {
     try {
       var deepFreeze: DeepFreeze.DeepFreezeInterface = require('deep-freeze-strict');
@@ -291,7 +291,7 @@ interface IIassign extends IIassignOption {
 
   function _getPropPathViaProperty(obj, paths: string[], level = 0): any {
     let objCopy = quickCopy(obj, paths[level - 1]);
-    const propertyNames = Object.getOwnPropertyNames(obj);
+    const propertyNames = getOwnPropertyNames(obj);
     propertyNames.forEach(function(propKey) {
       const descriptor = Object.getOwnPropertyDescriptor(obj, propKey);
       if (descriptor && (!(obj instanceof Array) || propKey != 'length')) {
@@ -725,4 +725,13 @@ function getPropByPaths(obj, paths: (string | number)[]) {
   }
 
   return value;
+}
+
+// Android 5: Object.getOwnPropertyNames does not support primitive values gracefully.
+function getOwnPropertyNames(obj: any) {
+  if (typeof obj !== 'object') {
+    return [];
+  }
+
+  return Object.getOwnPropertyNames(obj);
 }

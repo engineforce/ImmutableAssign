@@ -76,22 +76,24 @@
     describe("Test 6", function () {
         beforeEach(function () {
         });
-        it("Arrow function 1: with {}", function () {
-            const nested1 = { a:{ b:{ c:[ {id: 3}, {id: 4}, {id: 5}], d: 1 } } };
+        if (typeof Proxy != "undefined") {
+            it("Arrow function 1: with {}", function () {
+                var nested1 = { a:{ b:{ c:[ {id: 3}, {id: 4}, {id: 5}], d: 1 } } };
 
-            let getPropCallCount = 0;
-            const nested2 = iassign(
-                nested1,
-                function (n) {
-                    getPropCallCount++
-                    const f = n.a.b.c[1]
-                    return f
-                },
-                function (c1) { return { id: 12}; }
-            );
+                var getPropCallCount = 0;
+                var nested2 = iassign(
+                    nested1,
+                    function (n) {
+                        getPropCallCount++
+                        var f = n.a.b.c[1]
+                        return f
+                    },
+                    function (c1) { return { id: 12}; }
+                );
 
-            expect(nested2).toEqual({ a:{ b:{ c:[ {id: 3}, {id: 12}, {id: 5}], d: 1 } } })
-            expect(getPropCallCount).toEqual(1)
-        });
+                expect(nested2).toEqual({ a:{ b:{ c:[ {id: 3}, {id: 12}, {id: 5}], d: 1 } } })
+                expect(getPropCallCount).toEqual(1)
+            });
+        }
     });
 });

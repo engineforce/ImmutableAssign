@@ -28,8 +28,8 @@ else {
     SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY
 }
 
-var allCustomLaunchers = JSON.parse(readFileSync(`./allCustomLaunchers.json`, "utf8"))
-var customLaunchers = fromPairs([toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]])
+var allCustomLaunchers = toPairs(JSON.parse(readFileSync(`./allCustomLaunchers.json`, "utf8")))
+var customLaunchers = fromPairs([allCustomLaunchers[CUSTOM_JOB_INDEX*2], allCustomLaunchers[CUSTOM_JOB_INDEX*2+1], ])
 
 console.log({
     TRAVIS_BRANCH,

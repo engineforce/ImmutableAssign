@@ -1,6 +1,6 @@
 'use strict';
 
-(function(root, factory) {
+(function(root: any, factory) {
   if (typeof module === 'object' && typeof module.exports === 'object') {
     const v = factory(require, exports);
     if (v !== undefined) module.exports = v;
@@ -8,7 +8,7 @@
     define(['require', 'exports'], factory);
   } else {
     // Browser globals (root is window)
-    let browserRequire = name => {
+    let browserRequire = (name) => {
       if (
         (name == 'deep-freeze' || name == 'deep-freeze-strict') &&
         root.deepFreeze
@@ -82,8 +82,8 @@
 
       const o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           ci.d++;
           return ci;
         }
@@ -141,8 +141,8 @@
       expect(() => {
         iassign(
           o1,
-          o => o.a.b.c[0][0],
-          ci => {
+          (o) => o.a.b.c[0][0],
+          (ci) => {
             ci.d++;
             return ci;
           },
@@ -173,8 +173,8 @@
 
       const o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           return ci;
         },
         undefined,
@@ -220,8 +220,8 @@
       expect(() => {
         iassign(
           o1,
-          o => o.a.b.c[0][0],
-          ci => {
+          (o) => o.a.b.c[0][0],
+          (ci) => {
             ci.d++;
             return ci;
           }
@@ -256,8 +256,8 @@
 
       const o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           return ci;
         }
       );
@@ -299,7 +299,7 @@
       let count = 0;
       let o2: any = iassign(
         o1,
-        o => {
+        (o) => {
           count++;
           return o;
         },
@@ -315,7 +315,7 @@
       count = 0;
       o2 = iassign(
         o1,
-        o => {
+        (o) => {
           count++;
           return <any>{};
         },
@@ -331,8 +331,8 @@
       count = 0;
       o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           count++;
           return ci;
         },
@@ -349,8 +349,8 @@
       count = 0;
       o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           count++;
           return <any>{};
         },
@@ -367,8 +367,8 @@
       count = 0;
       o2 = iassign(
         o1,
-        o => o,
-        o => {
+        (o) => o,
+        (o) => {
           count++;
           return o;
         },
@@ -385,8 +385,8 @@
       count = 0;
       o2 = iassign(
         o1,
-        o => o,
-        o => {
+        (o) => o,
+        (o) => {
           count++;
           return <any>{};
         },
@@ -415,8 +415,8 @@
 
       const o2 = iassign(
         o1,
-        o => o.a.b.c[0][0],
-        ci => {
+        (o) => o.a.b.c[0][0],
+        (ci) => {
           ci.d++;
           return ci;
         },
@@ -478,8 +478,8 @@
 
       const o2 = iassign(
         o1,
-        o => o.a.b.c[1],
-        c => {
+        (o) => o.a.b.c[1],
+        (c) => {
           c.push(<any>101);
           return c;
         }
@@ -556,8 +556,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a.b.c,
-        c => {
+        (o) => o.a.b.c,
+        (c) => {
           c.d++;
           return c;
         }
@@ -582,8 +582,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a.b.c[0][0].d,
-        d => {
+        (o) => o.a.b.c[0][0].d,
+        (d) => {
           return d + 1;
         }
       );
@@ -604,8 +604,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a.b.c.f,
-        f => {
+        (o) => o.a.b.c.f,
+        (f) => {
           return new Date(2016, 1, 1);
         }
       );
@@ -629,8 +629,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a.b.c['1']['0'].d,
-        d => {
+        (o) => o.a.b.c['1']['0'].d,
+        (d) => {
           return d + 1;
         }
       );
@@ -657,8 +657,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a['propB'].c['1'][0].d,
-        d => {
+        (o) => o.a['propB'].c['1'][0].d,
+        (d) => {
           return d + 1;
         }
       );
@@ -691,8 +691,8 @@
 
       let o2 = iassign(
         o1,
-        o => o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]['1'][0].d,
-        d => {
+        (o) => o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"]['1'][0].d,
+        (d) => {
           return d + 1;
         }
       );
@@ -738,11 +738,11 @@
 
       let o2 = iassign(
         o1,
-        o =>
+        (o) =>
           o.a['p\\ro.p t[] e.stB']["h\\e'llo w'or\"ld"]['h\\e"llo w"or\'ld'][
             'p\\ro.p t[] e.stB'
           ]['1'][0].d,
-        d => {
+        (d) => {
           return d + 1;
         }
       );
@@ -794,11 +794,11 @@
 
       let o2 = iassign(
         o1,
-        o =>
+        (o) =>
           o.a["p\\r\"o.p t[] e.s't'B"]["h\\e'llo w'or\"ld"][
             'h\\e"llo w"or\'ld'
           ]['p\\r\'o.p t[] e.s"t"B']['1'][0].d,
-        d => {
+        (d) => {
           return d + 1;
         }
       );
@@ -945,10 +945,10 @@
       //
       let o2 = iassign(
         o1,
-        o => o.a.b.c[0],
-        c => {
-          return _.map(c, item => {
-            return iassign(item, o => o.d, d => d + 1);
+        (o) => o.a.b.c[0],
+        (c) => {
+          return _.map(c, (item) => {
+            return iassign(item, (o) => o.d, (d) => d + 1);
           });
         }
       );
@@ -989,9 +989,9 @@
       //
       let o2 = iassign(
         o1,
-        o => o.a.b.c,
-        c => {
-          return _.map(c, i => i + 1);
+        (o) => o.a.b.c,
+        (c) => {
+          return _.map(c, (i) => i + 1);
         }
       );
 
@@ -1018,8 +1018,8 @@
       //
       let o2 = iassign(
         o1,
-        o => o[0],
-        o => {
+        (o) => o[0],
+        (o) => {
           return _.map(o, (item, index) => {
             if (index < 2) {
               item = _.cloneDeep(item);
@@ -1060,8 +1060,8 @@
       //
       let o2 = iassign(
         o1,
-        o => o,
-        o => {
+        (o) => o,
+        (o) => {
           return _.map(o, (item, index) => {
             if (index < 2) {
               item = _.cloneDeep(item);
@@ -1107,8 +1107,8 @@
 
       const o2 = iassign(
         o1,
-        o => o,
-        o => {
+        (o) => o,
+        (o) => {
           o.a = <any>{ b: 1 };
           return o;
         }
@@ -1226,10 +1226,10 @@
 
       let o2 = iassign(
         o1,
-        o => o.a.b.c[0],
-        c => {
-          return _.map(c, item => {
-            return iassign(item, o => o.d, d => d + 1);
+        (o) => o.a.b.c[0],
+        (c) => {
+          return _.map(c, (item) => {
+            return iassign(item, (o) => o.d, (d) => d + 1);
           });
         }
       );
@@ -1292,7 +1292,7 @@
       const map1 = { a: 1, b: 2, c: 3 };
 
       // 1: Calling iassign() to update map1.b
-      const map2 = iassign(map1, m => {
+      const map2 = iassign(map1, (m) => {
         m.b = 50;
         return m;
       });
@@ -1313,7 +1313,7 @@
       const map1 = { a: 1, b: 2, c: 3 };
 
       // 1: Calling iassign() to update map1.b
-      const map2 = iassign(map1, m => {
+      const map2 = iassign(map1, (m) => {
         m.b = 50;
         return m;
       });
@@ -1328,7 +1328,7 @@
 
       const map3 = iassign(
         map2,
-        m => {
+        (m) => {
           m.c = 60;
           return m;
         },
@@ -1353,7 +1353,7 @@
       const map1 = { a: 1, b: 2, c: 3 };
 
       // 1c: Calling iassign() to update map1.b
-      const map2 = iassign<any, { b: number }, any>(map1, undefined, m => {
+      const map2 = iassign<any, { b: number }, any>(map1, undefined, (m) => {
         m.b = 50;
         return m;
       });
@@ -1374,7 +1374,7 @@
       const map1 = { a: 1, b: 2, c: 3 };
 
       // 1: Calling iassign() to update map1.b
-      const map2 = iassign<any, { b: number }, any>(map1, undefined, m => {
+      const map2 = iassign<any, { b: number }, any>(map1, undefined, (m) => {
         m.b = 50;
         return m;
       });
@@ -1390,7 +1390,7 @@
       const map3 = iassign<any, { c: number }, any>(
         map2,
         undefined,
-        m => {
+        (m) => {
           m.c = 60;
           return m;
         },
@@ -1568,7 +1568,7 @@
     it('Issue 3: nicer api', function() {
       iassign.freeze = true;
 
-      const mutate = (getter, setter, context?) => state =>
+      const mutate = (getter, setter, context?) => (state) =>
         iassign(state, getter, setter, context, { freeze: true });
 
       const nested1 = { a: { b: { c: [3, 4, 5] } } };
@@ -1576,8 +1576,8 @@
       // 3.1: Calling iassign() to assign d to nested1.a.b
 
       let nested2 = mutate(
-        n => n.a.b,
-        b => {
+        (n) => n.a.b,
+        (b) => {
           b.d = 6;
           return b;
         }
@@ -1623,8 +1623,8 @@
 
       const t1 = iassign(
         s,
-        x => x.arr,
-        arr => {
+        (x) => x.arr,
+        (arr) => {
           arr.push(2);
           return arr;
         },
@@ -1634,17 +1634,17 @@
       expect(s.arr.length).toEqual(1);
       expect(t1.arr.length).toEqual(2);
 
-      const t2 = iassign(s, x => x.obj.prop, y => y + 1, null, option);
+      const t2 = iassign(s, (x) => x.obj.prop, (y) => y + 1, null, option);
       expect(s.obj.prop).toEqual(1);
       expect(t2.obj.prop).toEqual(2);
       expect(t2.obj.func()).toEqual('Klass2');
 
-      const t3 = iassign(s, x => x.inst.prop, v => v + 1, null, option);
+      const t3 = iassign(s, (x) => x.inst.prop, (v) => v + 1, null, option);
       expect(s.inst.prop).toEqual(11);
       expect(t3.inst.prop).toEqual(12);
       expect(t3.inst.func()).toEqual('Klass12');
 
-      const t4 = iassign(s, x => x.inst2.prop, v => v + 1, null, option);
+      const t4 = iassign(s, (x) => x.inst2.prop, (v) => v + 1, null, option);
       expect(s.inst2.prop).toEqual(101);
       expect(t4.inst2.prop).toEqual(102);
       expect(t4.inst2.func()).toEqual('Klass102');
@@ -1697,8 +1697,8 @@
 
       const t1 = iassign(
         s,
-        x => x.arr,
-        arr => {
+        (x) => x.arr,
+        (arr) => {
           arr.push(2);
           return arr;
         },
@@ -1708,17 +1708,17 @@
       expect(s.arr.length).toEqual(1);
       expect(t1.arr.length).toEqual(2);
 
-      const t2 = iassign(s, x => x.obj.prop, y => y + 1, null, option);
+      const t2 = iassign(s, (x) => x.obj.prop, (y) => y + 1, null, option);
       expect(s.obj.prop).toEqual(1);
       expect(t2.obj.prop).toEqual(2);
       expect(t2.obj.func()).toEqual('Klass2');
 
-      const t3 = iassign(s, x => x.inst.k.prop, v => v + 1, null, option);
+      const t3 = iassign(s, (x) => x.inst.k.prop, (v) => v + 1, null, option);
       expect(s.inst.k.prop).toEqual(11);
       expect(t3.inst.k.prop).toEqual(12);
       expect(t3.inst.k.func()).toEqual('Klass12');
 
-      const t4 = iassign(s, x => x.inst2.ck.prop, v => v + 1, null, option);
+      const t4 = iassign(s, (x) => x.inst2.ck.prop, (v) => v + 1, null, option);
       expect(s.inst2.ck.prop).toEqual(101);
       expect(t4.inst2.ck.prop).toEqual(102);
       expect(t4.inst2.ck.func()).toEqual('Klass102');
@@ -1793,6 +1793,52 @@
       expect(nested4).not.toBe(nested3);
     });
 
+    it('iassign.fp 2: test Date', function() {
+      //const iassign = require("immutable-assign");
+
+      // Deep freeze both input and output, can be used in development to make sure they don't change.
+      iassign.freeze = true;
+
+      const nested1 = { a: { b: { c: [3, 4, 5] } } };
+
+      // 3.1: Calling iassign() to assign d to nested1.a.b
+      const now1 = new Date();
+      const nested2 = iassign.fp(
+        undefined,
+        function(n) {
+          return n.a.b;
+        },
+        function(b: any) {
+          b.d = now1;
+          return b;
+        },
+        undefined,
+        nested1
+      );
+
+      expect(nested1).toEqual({ a: { b: { c: [3, 4, 5] } } });
+      expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: now1 } } });
+      expect(nested2).not.toBe(nested1);
+
+      // 3.2: Calling iassign() to increment nested2.a.b.d
+      const now2 = new Date();
+      const nested3 = iassign.fp(
+        undefined,
+        function(n) {
+          return (<any>n.a.b).d;
+        },
+        function(d) {
+          return now2;
+        },
+        undefined,
+        nested2
+      );
+
+      expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: now1 } } });
+      expect(nested3).toEqual({ a: { b: { c: [3, 4, 5], d: now2 } } });
+      expect(nested3).not.toBe(nested2);
+    });
+
     it('undefined property', function() {
       // Deep freeze both input and output, can be used in development to make sure they don't change.
       iassign.freeze = true;
@@ -1807,8 +1853,8 @@
 
       const obj2 = iassign(
         obj1,
-        o => o.a,
-        a => {
+        (o) => o.a,
+        (a) => {
           return 'test a';
         }
       );
@@ -1817,8 +1863,8 @@
 
       const obj3 = iassign(
         obj1,
-        o => (<any>o).d,
-        d => {
+        (o) => (<any>o).d,
+        (d) => {
           return 'test d';
         }
       );
@@ -1831,8 +1877,8 @@
 
       const obj4 = iassign(
         obj1,
-        o => (<any>o).b.e,
-        e => {
+        (o) => (<any>o).b.e,
+        (e) => {
           return 'test e';
         }
       );
@@ -1845,7 +1891,7 @@
       const obj5 = iassign(
         obj1,
         (o, ctx) => (<any>o)[ctx.prop].f,
-        f => {
+        (f) => {
           return 'test f';
         },
         {
@@ -1862,7 +1908,7 @@
         iassign(
           obj1,
           (o, ctx) => (<any>o)[ctx.prop].g,
-          f => {
+          (f) => {
             return 'test g';
           },
           {
@@ -1874,7 +1920,7 @@
       const obj6 = iassign(
         obj1,
         (o, ctx) => (<any>o).b[ctx.prop].h,
-        h => {
+        (h) => {
           return 'test h';
         },
         {
@@ -1892,7 +1938,7 @@
           iassign(
             obj1,
             (o, ctx) => (<any>o).b.c2[ctx.prop],
-            h => {
+            (h) => {
               return 'test i';
             },
             {
@@ -1914,13 +1960,13 @@
         }
       };
 
-      let obj2 = immer(obj1, o => {
+      let obj2 = immer(obj1, (o) => {
         o.a = 'test a';
       });
       expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
       expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
 
-      let obj3 = immer(obj1, o => {
+      let obj3 = immer(obj1, (o) => {
         o.d = 'test d';
       });
       expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
@@ -2063,7 +2109,7 @@
       let o2: any = iassign(
         o1,
         [],
-        o => {
+        (o) => {
           count++;
           return o;
         },
@@ -2081,7 +2127,7 @@
       o2 = iassign(
         o1,
         [],
-        o => {
+        (o) => {
           count++;
           return <any>{};
         },
@@ -2099,7 +2145,7 @@
       o2 = iassign(
         o1,
         ['a', 'b', 'c', '0', 0],
-        ci => {
+        (ci) => {
           count++;
           return ci;
         },
@@ -2117,7 +2163,7 @@
       o2 = iassign(
         o1,
         ['a', 'b', 'c', 0, 0],
-        ci => {
+        (ci) => {
           count++;
           return <any>{};
         },
@@ -2135,7 +2181,7 @@
       o2 = iassign(
         o1,
         [],
-        o => {
+        (o) => {
           count++;
           return o;
         },
@@ -2153,7 +2199,7 @@
       o2 = iassign(
         o1,
         [],
-        o => {
+        (o) => {
           count++;
           return <any>{};
         },
@@ -2273,7 +2319,7 @@
           'artificial-intelligence/',
           'opened'
         ],
-        opened => !opened
+        (opened) => !opened
       );
 
       //

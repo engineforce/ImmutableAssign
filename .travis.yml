@@ -20,7 +20,7 @@ jobs:
     - stage: pre-browser-test
       script:
         - export LAUNCHERS_COUNT=$(node -p -e "Object.keys(require('./allCustomLaunchers.json')).length")
-        - export TESTS_COUNT=14
+        - export TESTS_COUNT=12
         - test $LAUNCHERS_COUNT == $TESTS_COUNT || { echo "Number of browser tests ($"TESTS_COUNT") is not the same as number of launchers ($LAUNCHERS_COUNT)"; false; }
 
     - stage: browser-test
@@ -36,8 +36,6 @@ jobs:
     - script: CUSTOM_JOB_INDEX=9 npm run test-karma
     - script: CUSTOM_JOB_INDEX=10 npm run test-karma
     - script: CUSTOM_JOB_INDEX=11 npm run test-karma
-    - script: CUSTOM_JOB_INDEX=12 npm run test-karma
-    - script: CUSTOM_JOB_INDEX=13 npm run test-karma
 
     - stage: deploy
       script: 

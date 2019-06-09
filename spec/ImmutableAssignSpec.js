@@ -1321,6 +1321,33 @@ var __extends = (this && this.__extends) || (function () {
             expect(nested4).toEqual({ a: { b: { c: [3, 4, 5, 6], d: 7 } } });
             expect(nested4).not.toBe(nested3);
         });
+        it('iassign.fp 2: test Date', function () {
+            //const iassign = require("immutable-assign");
+            // Deep freeze both input and output, can be used in development to make sure they don't change.
+            iassign.freeze = true;
+            var nested1 = { a: { b: { c: [3, 4, 5] } } };
+            // 3.1: Calling iassign() to assign d to nested1.a.b
+            var now1 = new Date();
+            var nested2 = iassign.fp(undefined, function (n) {
+                return n.a.b;
+            }, function (b) {
+                b.d = now1;
+                return b;
+            }, undefined, nested1);
+            expect(nested1).toEqual({ a: { b: { c: [3, 4, 5] } } });
+            expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: now1 } } });
+            expect(nested2).not.toBe(nested1);
+            // 3.2: Calling iassign() to increment nested2.a.b.d
+            var now2 = new Date();
+            var nested3 = iassign.fp(undefined, function (n) {
+                return n.a.b.d;
+            }, function (d) {
+                return now2;
+            }, undefined, nested2);
+            expect(nested2).toEqual({ a: { b: { c: [3, 4, 5], d: now1 } } });
+            expect(nested3).toEqual({ a: { b: { c: [3, 4, 5], d: now2 } } });
+            expect(nested3).not.toBe(nested2);
+        });
         it('undefined property', function () {
             // Deep freeze both input and output, can be used in development to make sure they don't change.
             iassign.freeze = true;

@@ -2,22 +2,41 @@
 // Generated on Wed Aug 10 2016 13:14:23 GMT+1000 (AUS Eastern Standard Time)
 var { readFileSync } = require("fs")
 var { toPairs, fromPairs, } = require("lodash")
-var { TRAVIS_COMMIT, CUSTOM_JOB_INDEX } = process.env
+var { 
+    NO_PROXY,
+    TRAVIS_COMMIT, 
+    TRAVIS_BRANCH, 
+    CUSTOM_JOB_INDEX, 
+    IASSIGN_SAUCE_USERNAME, 
+    IASSIGN_SAUCE_ACCESS_KEY,
+    IASSIGN_QA_SAUCE_USERNAME, 
+    IASSIGN_QA_SAUCE_ACCESS_KEY, 
+} = process.env
 
 console.assert(TRAVIS_COMMIT, "TRAVIS_COMMIT must exist")
 console.assert(CUSTOM_JOB_INDEX, "CUSTOM_JOB_INDEX must exist")
 
-var buildId = TRAVIS_COMMIT
-var customJobIndex = parseInt(CUSTOM_JOB_INDEX)
+CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX)
+var branch = TRAVIS_BRANCH || "branch"
+
+if (branch !== "master") {
+    SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME
+    SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY
+}
+else {
+    SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME
+    SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY
+}
 
 var allCustomLaunchers = JSON.parse(readFileSync(`./allCustomLaunchers.json`, "utf8"))
-var customLaunchers = fromPairs([toPairs(allCustomLaunchers)[customJobIndex]])
+var customLaunchers = fromPairs([toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]])
 
 console.log({
-    buildId, 
-    customJobIndex, 
+    TRAVIS_BRANCH,
+    TRAVIS_COMMIT, 
+    CUSTOM_JOB_INDEX, 
     customLaunchers, 
-    browserCount: Object.keys(allCustomLaunchers).length 
+    browserCount: Object.keys(allCustomLaunchers).length
 })
 
 module.exports = function (config) {
@@ -34,7 +53,7 @@ module.exports = function (config) {
 
         // list of files/patterns to load in the browser
         files: [
-            ...(process.env.NO_PROXY ? ["spec/disableProxy.js"] : []),
+            ...(NO_PROXY ? ["spec/disableProxy.js"] : []),
             'src/Libs/*.js',
             'node_modules/lodash/lodash.js',
             'node_modules/immutable/dist/immutable.js',
@@ -79,10 +98,10 @@ module.exports = function (config) {
 
         sauceLabs: {
             testName: 'Immutable Assign Unit Tests',
-            username: process.env.SAUCE_USERNAME,
-            accessKey: process.env.SAUCE_ACCESS_KEY,
+            username: SAUCE_USERNAME,
+            accessKey: SAUCE_ACCESS_KEY,
             startConnect: true,
-            build: buildId
+            build: TRAVIS_COMMIT
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),

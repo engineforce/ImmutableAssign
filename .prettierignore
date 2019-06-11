@@ -1,2 +1,2 @@
-*.js
+spec/*.js
 *.md

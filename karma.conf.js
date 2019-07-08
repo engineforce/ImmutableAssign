@@ -14,36 +14,40 @@ var {
   IASSIGN_QA_SAUCE_ACCESS_KEY
 } = process.env;
 
-console.assert(TRAVIS_COMMIT, 'TRAVIS_COMMIT must exist');
-console.assert(TRAVIS_BUILD_NUMBER, 'TRAVIS_BUILD_NUMBER must exist');
-console.assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
+var customLaunchers = [];
 
-CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
-var buildId = TRAVIS_COMMIT + '-' + TRAVIS_BUILD_NUMBER;
-var branch = TRAVIS_BRANCH || 'branch';
+if (process.argv.indexOf('--browsers') <= -1) {
+  console.assert(TRAVIS_COMMIT, 'TRAVIS_COMMIT must exist');
+  console.assert(TRAVIS_BUILD_NUMBER, 'TRAVIS_BUILD_NUMBER must exist');
+  console.assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
 
-if (branch !== 'master') {
-  SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
-  SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
-} else {
-  SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
-  SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
+  CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
+  var buildId = TRAVIS_COMMIT + '-' + TRAVIS_BUILD_NUMBER;
+  var branch = TRAVIS_BRANCH || 'branch';
+
+  if (branch !== 'master') {
+    var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
+    var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
+  } else {
+    var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
+    var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
+  }
+
+  var allCustomLaunchers = JSON.parse(
+    readFileSync(`./allCustomLaunchers.json`, 'utf8')
+  );
+  var customLaunchers = fromPairs([
+    toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]
+  ]);
+
+  console.log({
+    TRAVIS_BRANCH,
+    buildId,
+    CUSTOM_JOB_INDEX,
+    customLaunchers,
+    browserCount: Object.keys(allCustomLaunchers).length
+  });
 }
-
-var allCustomLaunchers = JSON.parse(
-  readFileSync(`./allCustomLaunchers.json`, 'utf8')
-);
-var customLaunchers = fromPairs([
-  toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]
-]);
-
-console.log({
-  TRAVIS_BRANCH,
-  buildId,
-  CUSTOM_JOB_INDEX,
-  customLaunchers,
-  browserCount: Object.keys(allCustomLaunchers).length
-});
 
 module.exports = function(config) {
   config.set({
@@ -57,7 +61,7 @@ module.exports = function(config) {
     // list of files/patterns to load in the browser
     files: [
       ...(NO_PROXY ? ['spec/disableProxy.js'] : []),
-      'src/Libs/*.js',
+      'spec/libs/*.js',
       'node_modules/lodash/lodash.js',
       'node_modules/immutable/dist/immutable.js',
       'node_modules/immer/dist/immer.umd.js',

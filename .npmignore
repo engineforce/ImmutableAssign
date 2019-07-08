@@ -1,7 +1,2 @@
-/node_modules/
-/src/
-/typings/
-/spec/
-/debug/
-/coverage/
-karma.conf.js
+*
+!deploy/**/*

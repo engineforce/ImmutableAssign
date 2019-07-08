@@ -445,6 +445,7 @@ interface IIassignOption {
 
 ## History
 
+* 2.1.4 - Reduce the package size to 11.9 kB
 * 2.1.1 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-nested-level-object-properties-using-property-paths-overload-3)
 * 2.0.8 - Fixed bug for undefined properties.
 * 2.0.4 - Replaced the proxy-polyfill with Object.defineProperty(), which has a much better browser support.

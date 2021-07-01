@@ -18,9 +18,9 @@ env:
   GIT_COMMIT: ${{ github.sha }}
   BUILD_NUMBER: ${{ github.run_id }}
   GIT_BRANCH: ${{ github.ref }}
-  COVERALLS_SERVICE_NAME: GitHub Actions
-  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-  COVERALLS_GIT_BRANCH: ${{ github.ref }}
+  COVERALLS_SERVICE_NAME: 'GitHub Actions'
+  # COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  
 
 jobs:
   build:
@@ -79,4 +79,5 @@ jobs:
           export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
           export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
           test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish
-
+        env:
+          COVERALLS_GIT_BRANCH: master

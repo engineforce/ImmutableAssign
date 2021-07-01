@@ -73,6 +73,5 @@ jobs:
           npm run coveralls
           export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
           export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
-          # test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish
-          test "$REMOTE_VERSION" != "$LOCAL_VERSION" && echo "Paul Debug"
+          test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish
 

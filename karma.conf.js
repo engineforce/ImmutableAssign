@@ -50,7 +50,7 @@ if (process.argv.indexOf('--browsers') <= -1) {
   CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
   var buildId = GIT_COMMIT + '-' + BUILD_NUMBER;
 
-  if (branch !== 'refs/heads/master') {
+  if (GIT_BRANCH !== 'refs/heads/master') {
     var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
   } else {

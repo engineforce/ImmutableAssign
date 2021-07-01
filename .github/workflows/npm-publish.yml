@@ -70,14 +70,15 @@ jobs:
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
-      - run: |
+
+      - name: Deploy
+        run: |
           npm install
           rm -rf ./coverage
-          echo $COVERALLS_REPO_TOKEN
           npm test
           npm run coveralls
           export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
           export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
-          test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish
+          test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish || true
         env:
           COVERALLS_GIT_BRANCH: master

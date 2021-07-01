@@ -51,7 +51,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: |
           npm ci
-          CUSTOM_JOB_INDEX=${{ matrix.node }} npm run test-karma
+          CUSTOM_JOB_INDEX=${{ matrix.job }} npm run test-karma
 
   deploy:
     runs-on: ubuntu-latest

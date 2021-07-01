@@ -52,7 +52,6 @@ if (process.argv.indexOf('--browsers') <= -1) {
 
   var buildId = GIT_COMMIT + '-' + BUILD_NUMBER;
 
-  // Paul Debug
   if (GIT_BRANCH !== 'refs/heads/master') {
     var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;

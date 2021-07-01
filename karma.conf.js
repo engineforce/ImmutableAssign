@@ -27,7 +27,9 @@ console.log("ENV", {
   IASSIGN_QA_SAUCE_ACCESS_KEY: `${mask(IASSIGN_QA_SAUCE_ACCESS_KEY)}`,
 })
 
-function mask(text) {
+function mask(text, size) {
+  size = size || 3
+
   if (!text) {
     return text
   }
@@ -36,7 +38,7 @@ function mask(text) {
     return text
   }
 
-  return text.slice(0, 3) + '...' + text.slice(-3)
+  return text.slice(0, size) + '...' + text.slice(-size)
 }
 
 var customLaunchers = [];
@@ -51,16 +53,21 @@ if (process.argv.indexOf('--browsers') <= -1) {
   var buildId = GIT_COMMIT + '-' + BUILD_NUMBER;
 
   // Paul Debug
-  // if (GIT_BRANCH !== 'refs/heads/master') {
+  if (GIT_BRANCH !== 'refs/heads/master') {
     var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
-  // } else {
-  //   var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
-  //   var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
-  // }
+  } else {
+    var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
+    var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
+  }
 
   assert(SAUCE_USERNAME, 'SAUCE_USERNAME must exist');
   assert(SAUCE_ACCESS_KEY, 'SAUCE_ACCESS_KEY must exist');
+
+  console.log("SAUCE_LABS", {
+    SAUCE_USERNAME: `${mask(SAUCE_USERNAME, 2)}`,
+    SAUCE_ACCESS_KEY: `${mask(SAUCE_ACCESS_KEY)}`,
+  })
 
   var allCustomLaunchers = JSON.parse(
     readFileSync(`./allCustomLaunchers.json`, 'utf8')
@@ -97,7 +104,7 @@ module.exports = function(config) {
       'spec/libs/*.js',
       'node_modules/lodash/lodash.js',
       'node_modules/immutable/dist/immutable.js',
-      'node_modules/immer/dist/immer.umd.js',
+      // 'node_modules/immer/dist/immer.umd.js',
       'src/*.js',
       'spec/**/*Spec.js'
     ],

@@ -18,7 +18,7 @@ env:
   GIT_COMMIT: ${{ github.sha }}
   BUILD_NUMBER: ${{ github.run_id }}
   GIT_BRANCH: ${{ github.ref }}
-  COVERALLS_SERVICE_NAME: 'GitHub Actions'
+  COVERALLS_SERVICE_NAME: GitHub
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   
 

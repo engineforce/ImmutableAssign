@@ -1,12 +1,13 @@
 // Karma configuration
 // Generated on Wed Aug 10 2016 13:14:23 GMT+1000 (AUS Eastern Standard Time)
 var { readFileSync } = require('fs');
-var { toPairs, fromPairs } = require('lodash');
+var { toPairs, fromPairs, take } = require('lodash');
+var assert = require('assert')
 var {
   NO_PROXY,
-  TRAVIS_COMMIT,
-  TRAVIS_BUILD_NUMBER,
-  TRAVIS_BRANCH,
+  GIT_COMMIT,
+  BUILD_NUMBER,
+  GIT_BRANCH,
   CUSTOM_JOB_INDEX,
   IASSIGN_SAUCE_USERNAME,
   IASSIGN_SAUCE_ACCESS_KEY,
@@ -14,24 +15,51 @@ var {
   IASSIGN_QA_SAUCE_ACCESS_KEY
 } = process.env;
 
+console.log("ENV", {
+  NO_PROXY,
+  GIT_COMMIT,
+  BUILD_NUMBER,
+  GIT_BRANCH,
+  CUSTOM_JOB_INDEX,
+  IASSIGN_SAUCE_USERNAME,
+  IASSIGN_SAUCE_ACCESS_KEY: `${mask(IASSIGN_SAUCE_ACCESS_KEY)}`,
+  IASSIGN_QA_SAUCE_USERNAME,
+  IASSIGN_QA_SAUCE_ACCESS_KEY: `${mask(IASSIGN_QA_SAUCE_ACCESS_KEY)}`,
+})
+
+function mask(text) {
+  if (!text) {
+    return text
+  }
+
+  if (typeof text !== "string") {
+    return text
+  }
+
+  return text.slice(0, 3) + '...' + text.slice(-3)
+}
+
 var customLaunchers = [];
 
 if (process.argv.indexOf('--browsers') <= -1) {
-  console.assert(TRAVIS_COMMIT, 'TRAVIS_COMMIT must exist');
-  console.assert(TRAVIS_BUILD_NUMBER, 'TRAVIS_BUILD_NUMBER must exist');
-  console.assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
+  assert(GIT_COMMIT, 'GIT_COMMIT must exist');
+  assert(BUILD_NUMBER, 'BUILD_NUMBER must exist');
+  assert(GIT_BRANCH, 'GIT_BRANCH must exist');
+  assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
 
   CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
-  var buildId = TRAVIS_COMMIT + '-' + TRAVIS_BUILD_NUMBER;
-  var branch = TRAVIS_BRANCH || 'branch';
+  var buildId = GIT_COMMIT + '-' + BUILD_NUMBER;
 
-  if (branch !== 'master') {
+  if (branch !== 'refs/heads/master') {
     var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
   } else {
     var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
   }
+
+  assert(SAUCE_USERNAME, 'CUSTOM_JOB_INDEX must exist');
+  assert(SAUCE_ACCESS_KEY, 'CUSTOM_JOB_INDEX must exist');
 
   var allCustomLaunchers = JSON.parse(
     readFileSync(`./allCustomLaunchers.json`, 'utf8')
@@ -41,7 +69,7 @@ if (process.argv.indexOf('--browsers') <= -1) {
   ]);
 
   console.log({
-    TRAVIS_BRANCH,
+    GIT_BRANCH,
     buildId,
     CUSTOM_JOB_INDEX,
     customLaunchers,

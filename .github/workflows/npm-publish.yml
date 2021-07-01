@@ -5,24 +5,51 @@ name: Node.js Package
 
 on: push
 
+env:
+  CI: true
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  IASSIGN_SAUCE_USERNAME: ${{ secrets.IASSIGN_SAUCE_USERNAME }}
+  IASSIGN_SAUCE_ACCESS_KEY: ${{ secrets.IASSIGN_SAUCE_ACCESS_KEY }}
+  IASSIGN_QA_SAUCE_USERNAME: ${{ secrets.IASSIGN_QA_SAUCE_USERNAME }}
+  IASSIGN_QA_SAUCE_ACCESS_KEY: ${{ secrets.IASSIGN_QA_SAUCE_ACCESS_KEY }}
+  GIT_COMMIT: ${{ github.sha }}
+  BUILD_NUMBER: ${{ github.run_id }}
+  GIT_BRANCH: ${{ github.ref }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: 14
+
+      - name: pre-browser-test
+        run: |
+          export LAUNCHERS_COUNT=$(node -p -e "Object.keys(require('./allCustomLaunchers.json')).length")
+          export TESTS_COUNT=12
+          test $LAUNCHERS_COUNT == $TESTS_COUNT || { echo "Number of browser tests ($"TESTS_COUNT") is not the same as number of launchers ($LAUNCHERS_COUNT)"; false; }
       - run: npm ci
       - run: npm test
 
-  publish-npm:
-    needs: build
+  deploy:
     runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master'
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
+      - run: |
+          npm ci
+          npm run coveralls
+          export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
+          export LOCAL_VERSION=$(node -p -e "require('./package.json').version")
+          test "$REMOTE_VERSION" != "$LOCAL_VERSION" && echo "paul debug should publish"
+          # test "$REMOTE_VERSION" != "$LOCAL_VERSION" && npm publish
+

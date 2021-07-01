@@ -445,6 +445,7 @@ interface IIassignOption {
 
 ## History
 
+* 2.1.5 - Migrated to github actions
 * 2.1.4 - Reduce the package size to 11.9 kB
 * 2.1.1 - Added function overload 3 to pass in known property paths (array). Refer to [example 10](#example-10-update-nested-level-object-properties-using-property-paths-overload-3)
 * 2.0.8 - Fixed bug for undefined properties.
@@ -472,8 +473,8 @@ interface IIassignOption {
 * 1.0.16 - Tested in Node.js and major browsers (IE 11, Chrome 52, Firefox 47, Edge 13, PhantomJS 2)
 
 
-[1]: https://travis-ci.org/engineforce/ImmutableAssign.svg?branch=master
-[2]: https://travis-ci.org/engineforce/ImmutableAssign
+[1]: https://github.com/engineforce/ImmutableAssign/actions/workflows/npm-publish.yml/badge.svg?branch=master
+[2]: https://github.com/engineforce/ImmutableAssign/actions
 [3]: https://badge.fury.io/js/immutable-assign.svg
 [4]: https://badge.fury.io/js/immutable-assign
 [5]: https://coveralls.io/repos/github/engineforce/ImmutableAssign/badge.svg?branch=master

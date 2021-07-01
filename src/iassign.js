@@ -1,4 +1,9 @@
 'use strict';
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 (function (root, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
         try {
@@ -156,7 +161,7 @@
                         throw new Error("Cannot handle " + token.propName + " when the property it point to is undefined.");
                     }
                 }
-                paths = paths.concat(remainingFunctionTokens.map(function (s) { return s.propName; }));
+                paths = __spreadArray(__spreadArray([], paths), remainingFunctionTokens.map(function (s) { return s.propName; }));
             }
         }
         return paths;

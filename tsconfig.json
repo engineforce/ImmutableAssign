@@ -8,8 +8,11 @@
         ],
         "removeComments": false,
         // "noUnusedLocals": true,
-        "jsx": "preserve" /*,
-        "declaration": true */
+        "jsx": "preserve",
+        // Declaration is manually created by me
+        // "declaration": true
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true
     },
     "compileOnSave": true,
     "exclude": [

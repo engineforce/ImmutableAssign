@@ -61,7 +61,7 @@
   }
 
   const _: _.LoDashStatic = require('lodash');
-  const immer = require('immer').default;
+  // const immer = require('immer').default;
   // const immutable = require("immutable");
 
   describe('Test', function() {
@@ -1949,29 +1949,29 @@
       }
     });
 
-    it('undefined property using immer', function() {
-      // Deep freeze both input and output, can be used in development to make sure they don't change.
-      iassign.freeze = true;
+    // it('undefined property using immer', function() {
+    //   // Deep freeze both input and output, can be used in development to make sure they don't change.
+    //   iassign.freeze = true;
 
-      let obj1 = {
-        a: undefined,
-        b: {
-          c: undefined
-        }
-      };
+    //   let obj1 = {
+    //     a: undefined,
+    //     b: {
+    //       c: undefined
+    //     }
+    //   };
 
-      let obj2 = immer(obj1, (o) => {
-        o.a = 'test a';
-      });
-      expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-      expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
+    //   let obj2 = immer(obj1, (o) => {
+    //     o.a = 'test a';
+    //   });
+    //   expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+    //   expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
 
-      let obj3 = immer(obj1, (o) => {
-        o.d = 'test d';
-      });
-      expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-      expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
-    });
+    //   let obj3 = immer(obj1, (o) => {
+    //     o.d = 'test d';
+    //   });
+    //   expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+    //   expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
+    // });
 
     it('test exposed deepFreeze should freeze', function() {
       const nested1 = { a: { b: { c: [3, 4, 5] } } };

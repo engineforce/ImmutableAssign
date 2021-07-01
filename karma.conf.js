@@ -45,28 +45,33 @@ if (process.argv.indexOf('--browsers') <= -1) {
   assert(GIT_COMMIT, 'GIT_COMMIT must exist');
   assert(BUILD_NUMBER, 'BUILD_NUMBER must exist');
   assert(GIT_BRANCH, 'GIT_BRANCH must exist');
-  assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
+  // assert(CUSTOM_JOB_INDEX, 'CUSTOM_JOB_INDEX must exist');
+  // CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
 
-  CUSTOM_JOB_INDEX = parseInt(CUSTOM_JOB_INDEX);
   var buildId = GIT_COMMIT + '-' + BUILD_NUMBER;
 
-  if (GIT_BRANCH !== 'refs/heads/master') {
+  // Paul Debug
+  // if (GIT_BRANCH !== 'refs/heads/master') {
     var SAUCE_USERNAME = IASSIGN_QA_SAUCE_USERNAME;
     var SAUCE_ACCESS_KEY = IASSIGN_QA_SAUCE_ACCESS_KEY;
-  } else {
-    var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
-    var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
-  }
+  // } else {
+  //   var SAUCE_USERNAME = IASSIGN_SAUCE_USERNAME;
+  //   var SAUCE_ACCESS_KEY = IASSIGN_SAUCE_ACCESS_KEY;
+  // }
 
-  assert(SAUCE_USERNAME, 'CUSTOM_JOB_INDEX must exist');
-  assert(SAUCE_ACCESS_KEY, 'CUSTOM_JOB_INDEX must exist');
+  assert(SAUCE_USERNAME, 'SAUCE_USERNAME must exist');
+  assert(SAUCE_ACCESS_KEY, 'SAUCE_ACCESS_KEY must exist');
 
   var allCustomLaunchers = JSON.parse(
     readFileSync(`./allCustomLaunchers.json`, 'utf8')
   );
-  var customLaunchers = fromPairs([
-    toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]
-  ]);
+
+  var customLaunchers = allCustomLaunchers
+  if (CUSTOM_JOB_INDEX !== undefined) {
+    customLaunchers = fromPairs([
+      toPairs(allCustomLaunchers)[CUSTOM_JOB_INDEX]
+    ]);
+  }
 
   console.log({
     GIT_BRANCH,

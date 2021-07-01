@@ -68,7 +68,7 @@ var __extends = (this && this.__extends) || (function () {
         willThrowWhenUpdateFrozenArray = true;
     }
     var _ = require('lodash');
-    var immer = require('immer').default;
+    // const immer = require('immer').default;
     // const immutable = require("immutable");
     describe('Test', function () {
         beforeEach(function () { });
@@ -1419,26 +1419,26 @@ var __extends = (this && this.__extends) || (function () {
                 }).toThrowError(/Cannot handle ctx\.prop/i);
             }
         });
-        it('undefined property using immer', function () {
-            // Deep freeze both input and output, can be used in development to make sure they don't change.
-            iassign.freeze = true;
-            var obj1 = {
-                a: undefined,
-                b: {
-                    c: undefined
-                }
-            };
-            var obj2 = immer(obj1, function (o) {
-                o.a = 'test a';
-            });
-            expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-            expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
-            var obj3 = immer(obj1, function (o) {
-                o.d = 'test d';
-            });
-            expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
-            expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
-        });
+        // it('undefined property using immer', function() {
+        //   // Deep freeze both input and output, can be used in development to make sure they don't change.
+        //   iassign.freeze = true;
+        //   let obj1 = {
+        //     a: undefined,
+        //     b: {
+        //       c: undefined
+        //     }
+        //   };
+        //   let obj2 = immer(obj1, (o) => {
+        //     o.a = 'test a';
+        //   });
+        //   expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+        //   expect(obj2).toEqual({ a: 'test a', b: { c: undefined } });
+        //   let obj3 = immer(obj1, (o) => {
+        //     o.d = 'test d';
+        //   });
+        //   expect(obj1).toEqual({ a: undefined, b: { c: undefined } });
+        //   expect(obj3).toEqual({ a: undefined, b: { c: undefined }, d: 'test d' });
+        // });
         it('test exposed deepFreeze should freeze', function () {
             var nested1 = { a: { b: { c: [3, 4, 5] } } };
             if (willThrowWhenUpdateFrozenArray) {

@@ -72,6 +72,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: |
           npm ci
+          rm -rf ./coverage
           npm test
           npm run coveralls
           export REMOTE_VERSION=$(npm dist-tag ls immutable-assign | cut -d' ' -f 2)
